@@ -7,7 +7,9 @@ import numpy as np
 from mathutils import Vector, Matrix
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-FONT = '/System/Library/Fonts/Supplemental/DIN Alternate Bold.ttf'
+FONT = next((f for f in ('/System/Library/Fonts/Supplemental/DIN Alternate Bold.ttf',
+             '/usr/share/fonts/opentype/inter/Inter-SemiBold.otf',
+             '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf') if os.path.exists(f)), None)
 TRIM = math.radians(1.5)          # bow-up planing trim
 PIVOT = (0.0, 0.0, 0.0)           # trim pivot: transom at DWL (stern sits, bow lifts)
 D2R = math.radians
@@ -161,6 +163,32 @@ def cyl(name, p0, p1, r, mat, seg=24, r1=None, smooth=True, caps=True):
     q = Vector((0, 0, 1)).rotation_difference(ax.normalized())
     bmesh.ops.transform(bm, matrix=Matrix.Translation((p0 + p1) / 2) @ q.to_matrix().to_4x4(), verts=bm.verts)
     return bm_to_obj(name, bm, mat, smooth=40 if smooth else None)
+
+def bolts(name, pts, normal, r=0.009, h=0.009, mat=None):
+    """Hex bolt heads standing on a surface (normal = outward)."""
+    n = Vector(normal).normalized()
+    for i, p in enumerate(pts):
+        p = Vector(p); cyl('%s_%d' % (name, i), p - n * 0.002, p + n * h, r, mat or M['steel'], seg=6, smooth=False)
+
+def bolt_ring(name, c, rad, n, normal=(0, 0, 1), **kw):
+    c = Vector(c); nn = Vector(normal).normalized(); a = nn.orthogonal().normalized(); b = nn.cross(a)
+    bolts(name, [c + (a * math.cos(2 * math.pi * i / n) + b * math.sin(2 * math.pi * i / n)) * rad for i in range(n)], nn, **kw)
+
+def tube(name, pts, r, mat, res=6):
+    """Smooth cable / conduit through points (auto-handle Bezier)."""
+    cu = bpy.data.curves.new(name, 'CURVE'); cu.dimensions = '3D'; cu.resolution_u = res
+    sp = cu.splines.new('BEZIER'); sp.bezier_points.add(len(pts) - 1)
+    for bp, p in zip(sp.bezier_points, pts):
+        bp.co = p; bp.handle_left_type = bp.handle_right_type = 'AUTO'
+    cu.bevel_depth = r; cu.bevel_resolution = 2; cu.use_fill_caps = True
+    ob = bpy.data.objects.new(name + '_tmp', cu); BOAT.objects.link(ob)
+    return to_mesh(ob, name, mat)
+
+def gland(name, p, d, r=0.014, mat=None):
+    """Cable gland: hex nut + dome where a cable enters a housing (d = outward)."""
+    p, d = Vector(p), Vector(d).normalized()
+    cyl(name + '_nut', p - d * 0.004, p + d * 0.012, r * 1.45, mat or M['dark'], seg=6, smooth=False)
+    lathe(name + '_dome', [(0, 0), (0, r * 1.15), (r * 0.9, r * 0.9), (r * 1.6, r * 0.8), (r * 1.6, 0)], p + d * 0.012, d, mat or M['dark'], seg=12)
 
 def lathe(name, prof, p0, axis, mat, seg=32):
     """prof: [(t, r)] along axis from p0. Closed at r=0 ends."""
@@ -462,9 +490,13 @@ def build_mast():
     cyl('Whip_m2', (3.36, -0.09, 4.40), (3.37, -0.09, 5.30), 0.010, M['dark'], seg=8, r1=0.004)
     # EO/IR gimbal ball
     lathe('EO_base', [(0, 0), (0, 0.20), (0.025, 0.20), (0.04, 0.175), (0.17, 0.16), (0.20, 0.155), (0.20, 0)], (4.46, 0, Z_ROOF), (0, 0, 1), M['super'], seg=40)
+    bolt_ring('EO_basebolt', (4.46, 0, Z_ROOF + 0.025), 0.188, 12, (0, 0, 1), r=0.007, h=0.006)
     eaz = pivot('eoir_az', (4.46, 0, Z_ROOF + 0.20)); PARENT.append(eaz)
     cyl('EO_turntable', (4.46, 0, Z_ROOF + 0.20), (4.46, 0, Z_ROOF + 0.24), 0.17, M['super'], seg=32)
-    for s in (1, -1): box('EO_yoke_%d' % s, (4.46, s * 0.225, 3.33), (0.12, 0.04, 0.22), M['super'], bevel=0.01)
+    for s in (1, -1):
+        box('EO_yoke_%d' % s, (4.46, s * 0.228, 3.33), (0.13, 0.05, 0.24), M['super'], bevel=0.022, seg=3)
+        bolt_ring('EO_axlebolt_%d' % s, (4.46, s * 0.253, 3.43), 0.032, 6, (0, s, 0), r=0.006, h=0.005)
+        gland('EO_gland_%d' % s, (4.40, s * 0.253, 3.27), (0, s, 0), r=0.009)
     PARENT.append(pivot('eoir_el', (4.46, 0, 3.43)))
     for s in (1, -1): cyl('EO_axle_%d' % s, (4.46, s * 0.17, 3.43), (4.46, s * 0.21, 3.43), 0.05, M['super'])
     lathe('EO_ball', [(0, 0)] + [(0.19 - 0.19 * math.cos(a), 0.19 * math.sin(a)) for a in np.linspace(0.1, math.pi - 0.1, 14)] + [(0.38, 0)],
@@ -478,9 +510,18 @@ def build_mast():
     eaz.rotation_euler = (0, 0, D2R(72))   # lens looking to port-forward as in master
     # pan-tilt camera turret
     cyl('PT_base', (5.20, 0, Z_ROOF), (5.20, 0, Z_ROOF + 0.10), 0.13, M['super'])
-    for s in (1, -1): box('PT_yoke_%d' % s, (5.20, s * 0.17, 3.18), (0.10, 0.035, 0.22), M['super'], bevel=0.008)
-    box('PT_body', (5.20, 0, 3.28), (0.36, 0.28, 0.25), M['super'], bevel=0.06, seg=4, ang=20)
-    box('PT_shade', (5.23, 0, 3.418), (0.44, 0.30, 0.014), M['super'], bevel=0.005)
+    lathe('PT_base_top', [(0, 0), (0, 0.13), (0.012, 0.125), (0.03, 0.09), (0.03, 0)], (5.20, 0, Z_ROOF + 0.10), (0, 0, 1), M['super'], seg=32)
+    bolt_ring('PT_basebolt', (5.20, 0, Z_ROOF + 0.10), 0.112, 8, (0, 0, 1), r=0.006, h=0.005)
+    for s in (1, -1):
+        box('PT_yoke_%d' % s, (5.20, s * 0.172, 3.20), (0.11, 0.04, 0.24), M['super'], bevel=0.018, seg=3)
+        cyl('PT_axle_%d' % s, (5.20, s * 0.15, 3.28), (5.20, s * 0.205, 3.28), 0.045, M['super'], seg=24)
+        bolt_ring('PT_axlebolt_%d' % s, (5.20, s * 0.205, 3.28), 0.028, 5, (0, s, 0), r=0.005, h=0.004)
+    box('PT_body', (5.20, 0, 3.28), (0.36, 0.26, 0.24), M['super'], bevel=0.085, seg=6, ang=20)
+    box('PT_seam', (5.30, 0, 3.28), (0.006, 0.262, 0.242), M['dark'], bevel=0.003)
+    box('PT_shade', (5.24, 0, 3.413), (0.42, 0.27, 0.016), M['super'], bevel=0.0075, seg=2)
+    for yy in (-0.09, 0.09): box('PT_shadeleg', (5.24, yy, 3.40), (0.05, 0.02, 0.02), M['super'], bevel=0.005)
+    gland('PT_gland', (5.02, 0.0, 3.24), (-1, 0, 0), r=0.011)
+    tube('PT_cable', [(4.995, 0, 3.24), (4.96, 0, 3.20), (4.98, 0.05, 3.10), (5.06, 0.08, Z_ROOF + 0.05)], 0.009, M['rubber'])
     for (yy, zz, r) in ((0.06, 3.28, 0.055), (-0.075, 3.30, 0.03)):
         cyl('PT_hood', (5.36, yy, zz), (5.41, yy, zz), r + 0.012, M['dark'], seg=20)
         cyl('PT_lens', (5.40, yy, zz), (5.412, yy, zz), r, M['lens'], seg=20)
@@ -576,22 +617,34 @@ def build_rws():
     PARENT.append(pivot('gun_az', (x0, 0, zd + 0.08)))
     lathe('RWS_drum', [(0, 0), (0, 0.30), (0.08, 0.30), (0.10, 0.285), (0.10, 0)], (x0, 0, zd + 0.08), (0, 0, 1), M['wgrey'], seg=48)
     zb = zd + 0.18
-    prof = [(9.38, zb), (10.15, zb), (10.22, zb + 0.30), (10.08, zb + 0.43), (9.38, zb + 0.43)]
+    # armoured housing: rounded-rectangle plan (cast/pressed corners), raked front, chamfered roof edge
     pts = []
-    for x, z in prof:                         # chamfered cross-section: full width low, pulled in at the top edge
-        w = 0.30 if z < zb + 0.35 else 0.25
-        pts += [(x, w, z)]
-        if z < zb + 0.35 and z > zb: pts += [(x, 0.30, z)]
-    pts += [(9.40, 0.30, zb + 0.36), (10.12, 0.30, zb + 0.36), (9.43, 0.22, zb + 0.43)]
-    hull_obj('RWS_body', pts, M['wgrey'], bevel=0.02, mirror_y=True, seg=3)
+    for z, xa, xf, w, rc in ((zb, 9.38, 10.15, 0.30, 0.11), (zb + 0.30, 9.38, 10.22, 0.30, 0.11),
+                             (zb + 0.37, 9.40, 10.16, 0.285, 0.10), (zb + 0.43, 9.45, 10.07, 0.235, 0.08)):
+        for cx, cy, a0 in ((xf - rc, w - rc, 0.0), (xa + rc, w - rc, 90.0), (xa + rc, -w + rc, 180.0), (xf - rc, -w + rc, 270.0)):
+            for k in range(7):
+                a = D2R(a0 + 90.0 * k / 6); pts.append((cx + rc * math.cos(a), cy + rc * math.sin(a), z))
+    ob = hull_obj('RWS_body', pts, M['wgrey'], bevel=0.012, dissolve=False, seg=2)
+    for p in ob.data.polygons: p.use_smooth = True
+    ob.data.set_sharp_from_angle(angle=D2R(32))
     for s in (1, -1):                         # access panels + hinges on the sides
-        box('RWS_panel', (9.72, s * 0.303, zb + 0.18), (0.42, 0.006, 0.22), M['wgrey'], bevel=0.003)
-        for xx in (9.54, 9.90): box('RWS_latch', (xx, s * 0.31, zb + 0.30), (0.04, 0.012, 0.025), M['dark'])
+        box('RWS_panel', (9.72, s * 0.303, zb + 0.17), (0.40, 0.006, 0.22), M['wgrey'], bevel=0.003)
+        for xx in (9.54, 9.90): box('RWS_latch', (xx, s * 0.31, zb + 0.30), (0.04, 0.012, 0.025), M['dark'], bevel=0.004)
+        bolts('RWS_panelbolt', [(xx, s * 0.306, zz) for xx in (9.53, 9.72, 9.91) for zz in (zb + 0.08, zb + 0.28)], (0, s, 0), r=0.007, h=0.006)
     zt = zb + 0.43
     PARENT.append(pivot('gun_el', (9.72, 0.0, zt + 0.12)))
-    box('RWS_cradle', (9.70, 0.06, zt + 0.08), (0.62, 0.24, 0.16), M['wgrey'], bevel=0.035, seg=3)
-    box('RWS_sight', (9.78, -0.24, zt + 0.07), (0.42, 0.17, 0.22), M['wgrey'], bevel=0.04, seg=3)
-    box('RWS_sightshade', (9.82, -0.24, zt + 0.19), (0.44, 0.19, 0.012), M['wgrey'], bevel=0.004)
+    box('RWS_cradle', (9.70, 0.06, zt + 0.08), (0.62, 0.24, 0.16), M['wgrey'], bevel=0.06, seg=4)
+    for s in (1, -1):                         # elevation trunnion caps with bolt circles
+        yy = 0.06 + s * 0.125
+        cyl('RWS_trunnion', (9.72, yy - s * 0.01, zt + 0.12), (9.72, yy + s * 0.025, zt + 0.12), 0.055, M['wgrey'], seg=28)
+        bolt_ring('RWS_trunbolt', (9.72, yy + s * 0.025, zt + 0.12), 0.038, 6, (0, s, 0), r=0.006, h=0.006)
+    box('RWS_sight', (9.78, -0.24, zt + 0.07), (0.42, 0.17, 0.22), M['wgrey'], bevel=0.075, seg=5)
+    box('RWS_sightshade', (9.84, -0.24, zt + 0.188), (0.40, 0.185, 0.016), M['wgrey'], bevel=0.0075, seg=2)
+    cyl('RWS_sightseam', (9.67, -0.24 - 0.087, zt + 0.07), (9.67, -0.24 + 0.087, zt + 0.07), 0.002, M['dark'], seg=4)
+    box('RWS_sightseam2', (9.67, -0.24, zt + 0.07), (0.006, 0.172, 0.222), M['dark'], bevel=0.003)
+    gland('RWS_gland', (9.57, -0.24, zt + 0.03), (-1, 0, 0), r=0.012)
+    tube('RWS_cable', [(9.545, -0.24, zt + 0.03), (9.47, -0.24, zt + 0.0), (9.45, -0.20, zt - 0.04), (9.50, -0.16, zt - 0.02)], 0.011, M['rubber'])
+    bolts('RWS_sightbolt', [(9.72 + k * 0.12, -0.24 - 0.086, zt + 0.07 + j * 0.07) for k in (0, 1) for j in (-1, 1)], (0, -1, 0), r=0.006, h=0.005)
     for (yy, zz, r) in ((-0.205, zt + 0.10, 0.045), (-0.275, zt + 0.10, 0.032), (-0.24, zt + 0.02, 0.025)):
         cyl('RWS_hood', (9.97, yy, zz), (10.02, yy, zz), r + 0.01, M['dark'], seg=18)
         cyl('RWS_sightlens', (10.01, yy, zz), (10.022, yy, zz), r, M['lens'], seg=18)
@@ -612,7 +665,9 @@ def build_rws():
     for k in (1, -1): box('Gun_brake_slot', (11.02, 0.07 + k * 0.034, gz), (0.06, 0.012, 0.03), M['dark'])
     cyl('Gun_handle', (10.18, 0.07, gz + 0.03), (10.18, 0.07, gz + 0.10), 0.01, M['gun'], seg=8)
     cyl('Gun_handle', (10.18, 0.07, gz + 0.10), (10.30, 0.07, gz + 0.10), 0.012, M['gun'], seg=8)
-    box('Ammo_box', (9.55, 0.30, zt + 0.06), (0.42, 0.22, 0.26), M['wgrey'], bevel=0.018, seg=2)
+    box('Ammo_box', (9.55, 0.30, zt + 0.06), (0.42, 0.22, 0.26), M['wgrey'], bevel=0.03, seg=3)
+    for xx in (9.42, 9.68): box('Ammo_rib', (xx, 0.30, zt + 0.04), (0.025, 0.232, 0.20), M['wgrey'], bevel=0.008, seg=2)
+    tube('Ammo_handle', [(9.48, 0.415, zt + 0.12), (9.50, 0.44, zt + 0.13), (9.60, 0.44, zt + 0.13), (9.62, 0.415, zt + 0.12)], 0.007, M['dark'])
     box('Ammo_lid', (9.55, 0.30, zt + 0.195), (0.44, 0.235, 0.02), M['wgrey'], bevel=0.006)
     for xx in (9.40, 9.70): box('Ammo_latch', (xx, 0.42, zt + 0.15), (0.03, 0.012, 0.05), M['dark'])
     box('Ammo_chute', (9.42, 0.17, zt + 0.17), (0.18, 0.08, 0.05), M['gun'], bevel=0.008)
@@ -692,6 +747,10 @@ def build_fittings():
         box('Fairlead', (x, y, z + 0.03), (0.16, 0.035, 0.06), M['steel'], rot=(0, 0, s * -0.5), bevel=0.012, seg=2)
         x = 2.4; y = s * 1.45
         cyl('FuelFiller', (x, y, cock_z(x) - 0.005), (x, y, cock_z(x) + 0.012), 0.055, M['steel'], seg=20)
+    # stainless towing eye on the stem (U-bolt with backing plate)
+    xs = 12.33; zs = keel_z(xs) + 0.06
+    box('BowEye_plate', (xs + 0.01, 0, zs), (0.02, 0.07, 0.13), M['steel'], bevel=0.006)
+    tube('BowEye', [(xs, 0, zs - 0.035), (xs + 0.07, 0, zs - 0.04), (xs + 0.10, 0, zs), (xs + 0.07, 0, zs + 0.04), (xs, 0, zs + 0.035)], 0.011, M['steel'])
     # foredeck hatch (aerial view) + glacis hatch with grab-rail frame
     x = 11.15; z = deck_z(x, 0)
     box('Hatch_fwd', (x, 0, z + 0.012), (0.60, 0.60, 0.03), M['super'], bevel=0.012)

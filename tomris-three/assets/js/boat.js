@@ -59,8 +59,8 @@ function surface(name, params, { kind = "plain", wet = false, seams = false, pee
         float pr = bh(vec3(cell, 3.1)), pr2 = bh(vec3(cell, 7.7));
         diffuseColor.rgb *= 0.985 + 0.03 * pr2 + 0.02 * (bn(vBoatP * 0.6) - 0.5);
         float sm = 0.0;
-        ${seams ? "sm = seam(vBoatP.x, 2.4, 2.6, 0.005) * step(-0.3, vBoatP.y);" : ""}
-        diffuseColor.rgb *= 1.0 - 0.45 * sm;
+        ${seams ? "sm = seam(vBoatP.x, 2.4, 2.6, 0.006) * step(-0.3, vBoatP.y);" : ""}
+        diffuseColor.rgb *= 1.0 - 0.28 * sm;
         ${kind === "deck" ? `float gfw = length(fwidth(vBoatP * 260.0)); float gk = 1.0 - smoothstep(0.4, 1.2, gfw);
         diffuseColor.rgb *= mix(1.0, 0.86 + 0.28 * bn(vBoatP * 260.0), gk);` : ""}`)
       .replace("#include <roughnessmap_fragment>", `#include <roughnessmap_fragment>
@@ -75,6 +75,11 @@ function surface(name, params, { kind = "plain", wet = false, seams = false, pee
             ? "vec3 q = vBoatP * 260.0; float a = 0.00035 * (1.0 - smoothstep(0.4, 1.2, length(fwidth(q))));"
             : `vec3 q = vBoatP * 85.0; float a = ${peel.toFixed(6)} * (1.0 - smoothstep(0.35, 1.0, length(fwidth(q))));`}
           float hgt = a * (bn(q) + 0.5 * bn(q * 2.13 + 4.0));
+          ${seams ? `{ // weld seam: shallow groove with a raised bead, faded out where it would alias
+            float sx = abs(fract((vBoatP.x - 2.6) / 2.4 + 0.5) - 0.5) * 2.4;
+            float ff = 1.0 - smoothstep(0.002, 0.006, length(fwidth(vBoatP)));
+            float g = (1.0 - smoothstep(0.0, 0.007, sx)) * step(-0.3, vBoatP.y);
+            hgt += ff * 0.0005 * (g - 1.6 * g * g * g); }` : ""}
           normal = bumpN(-vViewPosition, normal, hgt, faceDirection);
         }`)
       .replace("#include <lights_fragment_begin>", `${wet ? "diffuseColor.rgb *= mix(1.0, 0.62, wetk);" : ""}\n#include <lights_fragment_begin>`);
@@ -85,7 +90,9 @@ function surface(name, params, { kind = "plain", wet = false, seams = false, pee
         reflectedLight.directSpecular *= mix(1.0, ambientOcclusion, uAoDirect);
       #endif
       { float l = dot(reflectedLight.directDiffuse, vec3(0.2126, 0.7152, 0.0722));
-        reflectedLight.directDiffuse = mix(reflectedLight.directDiffuse, l * vec3(0.98, 1.0, 1.03), uHold); }`);
+        reflectedLight.directDiffuse = mix(reflectedLight.directDiffuse, l * vec3(0.97, 1.0, 1.04), uHold);
+        float li = dot(reflectedLight.indirectDiffuse, vec3(0.2126, 0.7152, 0.0722));
+        reflectedLight.indirectDiffuse = mix(reflectedLight.indirectDiffuse, li * vec3(0.97, 1.0, 1.04), 0.6 * uHold); }`);
     sh.fragmentShader = f;
   };
   m.customProgramCacheKey = () => `tomris-${kind}${wet ? "W" : ""}${seams ? "S" : ""}${peel}`;
@@ -103,11 +110,12 @@ function flagMaterial(map) {
       const float FW = 0.84, FH = 0.56;
       float flagZ(float u, float v){
         float w = mix(7.0, 24.0, uWind), t = uTime;
-        float A = mix(0.075, 0.042, uWind) * pow(u + 0.04, 1.3);
-        float p1 = 6.2832 * 1.55 * u - w * t + 1.2 * v;
-        float p2 = 6.2832 * 2.6 * u - w * 1.41 * t - 2.3 * v + 1.3;
-        float p3 = 6.2832 * 5.2 * u - w * 2.05 * t + 3.1 * v + 0.4;
-        return A * (sin(p1) + 0.42 * sin(p2) + 0.22 * smoothstep(0.45, 1.0, u) * sin(p3)); }`)
+        float A = mix(0.055, 0.04, uWind) * pow(u + 0.05, 1.2);
+        float p1 = 6.2832 * 1.9 * u - w * t + 1.1 * v;                        // main travelling fold (~0.44 m)
+        float p2 = 6.2832 * 3.3 * u - w * 1.33 * t - 2.2 * v + 1.3;           // secondary, slanted the other way
+        float p3 = 6.2832 * 6.0 * u - w * 2.1 * t + 3.0 * v + 0.4;            // fly-end flutter
+        float p4 = 6.2832 * 0.7 * v - w * 0.5 * t + 1.7 * u;                  // slow diagonal billow
+        return A * (sin(p1) + 0.35 * sin(p2) + 0.18 * smoothstep(0.4, 1.0, u) * sin(p3)) + 0.012 * u * sin(p4); }`)
       .replace("#include <beginnormal_vertex>", `
         float fu = uv.x, fv = uv.y, e = 0.004;
         float dz = flagZ(fu, fv);
@@ -117,15 +125,17 @@ function flagMaterial(map) {
         vec3 objectNormal = normalize(vec3(dzdu / FW, -dzdv / FH, 1.0));`)
       .replace("#include <begin_vertex>", `vec3 transformed = vec3(position);
         transformed.z += dz;
-        float sl = dzdu / FW;
-        transformed.x += fu * FW * 0.22 * sl * sl;                                   // folds shorten the fly
+        float ak = mix(0.055, 0.04, uWind) * 6.2832 * 1.9 / FW;
+        transformed.x += FW * 0.22 * ak * ak * fu * fu;                              // cloth length taken up by the folds
         transformed.y -= (0.06 * (1.0 - uWind) + 0.012) * fu * fu * (1.0 - 0.5 * fv);   // slight sag of the fly`);
-    // two-sided: light transmitted through the bunting when the sun is behind the flag
-    sh.fragmentShader = sh.fragmentShader.replace("#include <lights_fragment_end>", `#include <lights_fragment_end>
+    // two-sided: light transmitted through the bunting when the sun is behind the flag; uHold keeps it red, not orange
+    sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\nuniform float uHold;").replace("#include <lights_fragment_end>", `#include <lights_fragment_end>
       #if NUM_DIR_LIGHTS > 0
         { float bl = max(-dot(normal, directionalLights[0].direction), 0.0);
           reflectedLight.directDiffuse += diffuseColor.rgb * diffuseColor.rgb * directionalLights[0].color * bl * 0.55; }
-      #endif`);
+      #endif
+      { float l = dot(reflectedLight.directDiffuse, vec3(0.2126, 0.7152, 0.0722)) / max(dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722)), 1e-3);
+        reflectedLight.directDiffuse = mix(reflectedLight.directDiffuse, l * diffuseColor.rgb, 0.5 * uHold); }`);
   };
   m.customProgramCacheKey = () => "tomris-flag";
   return m;
@@ -179,8 +189,8 @@ export async function loadBoat(url, renderer) {
   const A = ao ? { aoMap: ao, aoMapIntensity: 1 } : {};
   // albedo from master_varA: hull/sky ratio gives a slightly cool mid grey (sRGB ~ 124/130/138)
   const M = {
-    hull_grey: surface("hull_grey", { color: 0x7c828a, roughness: 0.5, ...A }, { kind: "paint", wet: true, seams: true, peel: 0.00006 }),
-    super_grey: surface("super_grey", { color: 0x80868d, roughness: 0.48, ...A }, { kind: "paint", peel: 0.00006 }),
+    hull_grey: surface("hull_grey", { color: 0x7c828a, roughness: 0.58, ...A }, { kind: "paint", wet: true, seams: true, peel: 0.00006 }),
+    super_grey: surface("super_grey", { color: 0x80868d, roughness: 0.57, ...A }, { kind: "paint", peel: 0.00006 }),
     deck_antiskid: surface("deck_antiskid", { color: 0x6c7177, roughness: 0.86, ...A }, { kind: "deck" }),
     weapon_grey: surface("weapon_grey", { color: 0x6f747a, roughness: 0.55, ...A }, { kind: "paint", peel: 0.00004 }),
     missile_grey: surface("missile_grey", { color: 0x9a9fa4, roughness: 0.42, ...A }, { kind: "paint", peel: 0.00003 }),
@@ -193,7 +203,7 @@ export async function loadBoat(url, renderer) {
     halyard: surface("halyard", { color: 0x2a2a28, roughness: 0.85 }),
     letter_white: surface("letter_white", { color: 0xe4e5e2, roughness: 0.5, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2, ...A }),
     beacon_amber: new THREE.MeshPhysicalMaterial({ name: "beacon_amber", color: 0xb8761c, roughness: 0.18, clearcoat: 1, envMapIntensity: 1.2 }),
-    glass_tinted: new THREE.MeshPhysicalMaterial({ name: "glass_tinted", color: 0x0b0d10, roughness: 0.035, metalness: 0, transparent: true, opacity: 0.84, specularIntensity: 1, ior: 1.52, envMapIntensity: 1.3 }),
+    glass_tinted: new THREE.MeshPhysicalMaterial({ name: "glass_tinted", color: 0x0b0d10, roughness: 0.03, metalness: 0, transparent: true, opacity: 0.86, specularIntensity: 1, ior: 1.52, envMapIntensity: 1.6, clearcoat: 1, clearcoatRoughness: 0.02 }),
     seeker_glass: new THREE.MeshPhysicalMaterial({ name: "seeker_glass", color: 0x0a0e12, roughness: 0.03, clearcoat: 1, iridescence: 0.5, iridescenceIOR: 1.6, envMapIntensity: 1.4 }),
     sensor_lens: new THREE.MeshPhysicalMaterial({ name: "sensor_lens", color: 0x07060b, roughness: 0.03, clearcoat: 1, iridescence: 0.7, iridescenceIOR: 1.5, envMapIntensity: 1.5 }),
     screen_dim: new THREE.MeshStandardMaterial({ name: "screen_dim", color: 0x050608, roughness: 0.15, emissive: 0xffffff, emissiveMap: screenTexture(), emissiveIntensity: 0.05 }),
@@ -288,7 +298,7 @@ export function applyBoat(boat, st, pose, t, look) {
   boatShared.uTime.value = t;
   boatShared.uWind.value = THREE.MathUtils.clamp((st.speed + 4) / 20, 0, 1);
   // grey hold only under a strong, saturated key (sunset); none at blue hour
-  boatShared.uHold.value = 0.3 * THREE.MathUtils.clamp((look.sunGain ?? 0) / 9, 0, 1);
+  boatShared.uHold.value = 0.62 * THREE.MathUtils.clamp((look.sunGain ?? 0) / 9, 0, 1);
   const r = boat.pivots.radar_spin; if (r) r.obj.quaternion.copy(r.q0).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), t * 2.5));
   for (const l of boat.lamps) {
     l.emit = look.navEmissive; l.light.intensity = look.navLight * 6;

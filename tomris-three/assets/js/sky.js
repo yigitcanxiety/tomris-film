@@ -149,7 +149,10 @@ vec3 skyBg(vec3 d) {
          + (textureLod(uSkyFull, vec2(h0.x, h1.y), 0.0).rgb * g0.x + textureLod(uSkyFull, h1, 0.0).rgb * g1.x) * g1.y;
   return max(c, vec3(0.0)) * uSkyGain;
 }
-vec3 hazeColor(vec3 d) { vec3 h = normalize(vec3(d.x, 0.0, d.z) + vec3(0.0, 0.03, 0.0)); return textureLod(uSkyClamp, skyUv(h), 5.0).rgb * uSkyGain; }
+// horizon haze colour in direction d; luminance soft-capped so the glare around the sun does not turn distant
+// objects (cranes, the sea under the sun) into flat white
+vec3 hazeColor(vec3 d) { vec3 h = normalize(vec3(d.x, 0.0, d.z) + vec3(0.0, 0.03, 0.0)); vec3 c = textureLod(uSkyClamp, skyUv(h), 5.0).rgb;
+  float l = dot(c, vec3(0.2126, 0.7152, 0.0722)); c *= 1.0 / (1.0 + max(l - 3.0, 0.0) / 3.0); return c * uSkyGain; }
 `;
 
 // uSunDir / uSunIrr / uSkyRad live here so the ocean (which spreads these uniforms) and the dome share them;

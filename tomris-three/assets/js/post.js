@@ -129,7 +129,7 @@ export function createPost(renderer, W, H, skyShared = null) {
         vec3 fl = texture2D(tFlare, vUv).rgb;
         float fll = dot(fl, vec3(0.333));
         c = c + b * uBloom + b1 * vec3(1.0, 0.3, 0.12) * uBloom * uHal          // halation: red fringe around highlights
-          + (fl * 0.35 + uFlareTint * fll) * uFlare;                              // anamorphic streak, cool-tinted
+          + (fl * 0.5 + uFlareTint * fll * 0.5) * uFlare;                         // short, faint anamorphic streak, cool-tinted
         c *= uExposure * uWB;
         c = aces(c);
         // grade in display space
@@ -189,13 +189,13 @@ export function createPost(renderer, W, H, skyShared = null) {
     blur(q1.texture, q2b, q2, W >> 3, H >> 3);
     blur(q2.texture, q3b, q3, W >> 4, H >> 4);
     // anamorphic streak: only what is far above display white (sun disc, nav lights)
-    brightMat.uniforms.tSrc.value = dofRT.texture; brightMat.uniforms.uThresh.value = (look.flareThresh ?? 14) / Math.max(look.exposure, 1e-3); pass(brightMat, fHalf);
+    brightMat.uniforms.tSrc.value = dofRT.texture; brightMat.uniforms.uThresh.value = (look.flareThresh ?? 40) / Math.max(look.exposure, 1e-3); pass(brightMat, fHalf);
     streakMat.uniforms.tSrc.value = fHalf.texture; streakMat.uniforms.uStep.value = 1 / (W >> 2); pass(streakMat, fA);
-    streakMat.uniforms.tSrc.value = fA.texture; streakMat.uniforms.uStep.value = 6 / (W >> 2); pass(streakMat, fB);
-    streakMat.uniforms.tSrc.value = fB.texture; streakMat.uniforms.uStep.value = 30 / (W >> 2); pass(streakMat, fA);
+    streakMat.uniforms.tSrc.value = fA.texture; streakMat.uniforms.uStep.value = 2.5 / (W >> 2); pass(streakMat, fB);
+    streakMat.uniforms.tSrc.value = fB.texture; streakMat.uniforms.uStep.value = 6 / (W >> 2); pass(streakMat, fA);
     const f = finalMat.uniforms;
     f.tSrc.value = dofRT.texture; f.uExposure.value = look.exposure; f.uBloom.value = look.bloom ?? 0.06; f.uFrame.value = frame;
-    f.uFlare.value = look.flare ?? 0.5; f.uHal.value = look.halation ?? 0.35; f.uDemag.value = look.demag ?? 0.5;
+    f.uFlare.value = look.flare ?? 0.12; f.uHal.value = look.halation ?? 0.35; f.uDemag.value = look.demag ?? 0.5;
     for (const k of ["grain", "vignette", "sat", "contrast", "lift"]) if (look[k] !== undefined) f["u" + k[0].toUpperCase() + k.slice(1)].value = look[k];
     f.uWB.value.set(...(look.wb || [1, 1, 1])); if (look.teal) f.uTeal.value.set(...look.teal); if (look.orange) f.uOrange.value.set(...look.orange);
     pass(finalMat, null);

@@ -230,11 +230,11 @@ void main(){
   if (nearHull && imm > -0.05 && lp.x > -10.0) {
     float root = smoothstep(-0.05, 0.1, imm);
     float aft = clamp(uRootX - lp.x, 0.0, 15.0);                       // metres behind the spray root
-    float wb = 0.45 + 0.3 * aft;
+    float wb = 0.35 + 0.16 * aft;
     float sheet = exp(-max(s, 0.0) / wb);
     float rootLine = exp(-pow(max(s, 0.0) / 0.5, 2.0)) * (1.0 - smoothstep(0.0, 0.5, imm));
-    float slz = 0.8 + 0.34 * aft, wl = 0.5 + 0.16 * aft;           // where the thrown sheet lands
-    float landing = exp(-pow((s - slz) / wl, 2.0)) * smoothstep(0.2, 1.5, aft);
+    float slz = 0.6 + 0.22 * aft, wl = 0.4 + 0.1 * aft;            // where the thrown sheet lands
+    float landing = 0.75 * exp(-pow((s - slz) / wl, 2.0)) * smoothstep(0.2, 1.5, aft);
     bowBand = pow(max(max(sheet, rootLine), landing) * root * smoothstep(-10.0, -1.5, lp.x), 0.5);
   }
   float yA = 1.7 + ARM_TAN * (wd + 7.5);
@@ -251,10 +251,14 @@ void main(){
     // jet wash: sharp-edged turbulent band, widening aft
     float edgeN = nT(fw * 0.8 + 3.7).b - 0.5;
     float washBand = (1.0 - smoothstep(ww * 0.78, ww * 1.05, wy + edgeN * (0.6 + 0.04 * wd))) * wk.w;
-    float wash = washBand * exp(-age / 6.0) * smoothstep(-1.0, 0.3, wd);
+    float wash = washBand * exp(-age / 4.5) * smoothstep(-1.0, 0.3, wd);
     float fresh = clamp(max(max(bowBand, wash * 1.25), armF) * sf, 0.0, 1.0);
     // ---- foam texture ----
-    vec2 wq = fw * 0.35 + nT(fw * 0.21 + 3.1).rg * 1.7;
+    // inside the wake the foam lives in track coordinates (along-track stretched ~3.5x): marbled streaks that
+    // follow the boat's path, curved tracks included; outside it (whitecaps) plain world coordinates
+    vec2 tq = vec2(wk.y * 0.28, wk.x);
+    vec2 bq = mix(fw, tq, step(0.3, wk.w));
+    vec2 wq = bq * 0.35 + nT(fw * 0.21 + 3.1).rg * 1.7;
     vec4 n1 = nT(wq * 2.2 + uTime * 0.06);
     float f1 = n1.b;
     float f2 = nT(wq * 7.5 - f1 * 2.0).a;
@@ -262,19 +266,21 @@ void main(){
     float churn = clamp((0.5 * f1 + 0.25 * f2 + 0.45 * mix(f1, streak, wk.w) - 0.32) / 0.5, 0.0, 1.0);
     // bubble rafts with round holes (worley F1 on warped coordinates, two scales): holes shrink as the foam
     // gets denser; sparse foam breaks into separate patches instead of a thin cracked-ice network
-    vec2 hw = fw + (n1.rg - 0.47) * 1.4 + (vec2(f2, n1.a) - 0.47) * 0.5;
+    vec2 hw = bq + (n1.rg - 0.47) * 1.4 + (vec2(f2, n1.a) - 0.47) * 0.5;
     vec4 cA = cT(hw * 0.32 + uTime * 0.01), cB = cT(hw * 0.85 - uTime * 0.017 + 0.3);
     float dens = max(old, fresh * 0.8);
     float jit = (f2 - 0.47) * 0.5;                                                 // hole size varies hole to hole
     float rA = mix(0.5, 0.1, dens) + jit, rB = mix(0.42, 0.04, dens) - jit * 0.6;
     float mA = cA.r - 0.25 * cA.g, mB = cB.b - 0.25 * cB.a;                        // F1 - F2 mix: rounded-polygonal, not discs
     float holes = smoothstep(rA - 0.1, rA + 0.1, mA) * mix(1.0, smoothstep(rB - 0.08, rB + 0.1, mB), 0.7);
-    float Df = smoothstep(1.0 - fresh - 0.08, 1.0 - fresh + 0.14, churn);
-    Df = max(Df, smoothstep(0.7, 1.0, fresh) * (0.75 + 0.25 * f2)) * mix(1.0, holes, 0.45 * (1.0 - smoothstep(0.8, 1.0, fresh)));
-    float patchK = smoothstep(0.62 - 0.55 * old, 0.8 - 0.55 * old, f1 * 0.55 + churn * 0.45 + 0.1);
-    float Do = holes * patchK * smoothstep(0.02, 0.25, old);
+    // fresh white water: dense core, edges that thin out (translucent) instead of a hard paper cut
+    float Df = smoothstep(1.0 - fresh - 0.2, 1.0 - fresh + 0.3, churn) * smoothstep(0.0, 0.5, fresh);
+    Df = max(Df, smoothstep(0.7, 1.0, fresh) * (0.75 + 0.25 * f2)) * mix(1.0, holes, 0.4 * (1.0 - smoothstep(0.8, 1.0, fresh)));
+    // old foam: marbled streaks (connected, thinning with age) with bubble-raft holes, never isolated blobs
+    float marb = 0.6 * streak + 0.4 * f1;
+    float Do = smoothstep(0.64 - 0.32 * old, 0.8 - 0.32 * old, marb + 0.12 * f2) * mix(0.55, 1.0, holes) * smoothstep(0.02, 0.3, old);
     float capS = cap * smoothstep(0.35, 0.75, n1.a * 0.7 + f2 * 0.5 + cap * 0.25 - 0.1);   // whitecaps: ragged, streaky
-    float Dc = smoothstep(0.1, 0.55, capS * (0.4 + 0.8 * churn)) * mix(0.35, 1.0, holes) * 0.85;
+    float Dc = smoothstep(0.15, 0.6, capS * (0.4 + 0.8 * churn)) * mix(0.35, 1.0, holes) * 0.7;
     float D = clamp(max(max(Df, Do * 0.9), Dc * 0.9), 0.0, 1.0);
     float cov = clamp(max(max(fresh * 0.85, old * 0.35), cap * 0.3), 0.0, 1.0);   // what D averages to from far away
     D = mix(D, cov, smoothstep(0.06, 0.4, fp));
@@ -408,8 +414,8 @@ export function createOcean(sea, skyShared, { renderer = null, maxR = 9000 } = {
     uBoatInv: { value: new THREE.Matrix4() }, uBoatWater: { value: 0 }, uSpeedF: { value: 1 }, uRootX: { value: 8 },
     uWakeMap: { value: null }, uWakeCenter: { value: new THREE.Vector2() }, uWakeExtent: { value: WAKE.extent },
     uSnow: { value: 0 }, uTnow: { value: 0 }, uWind: { value: sea.wind.clone() },
-    uRefl: { value: null }, uReflMat: { value: new THREE.Matrix4() }, uDeep: { value: new THREE.Vector3(0.006, 0.018, 0.042) }, uScatter: { value: new THREE.Vector3(0.05, 0.2, 0.17) },
-    uFogDist: { value: 2500 }, uFoamGain: { value: 1 }, uGlitter: { value: 1 }, uCapTh: { value: 0.855 }, uCapGain: { value: 1 }, uSubsurf: { value: 1 },
+    uRefl: { value: null }, uReflMat: { value: new THREE.Matrix4() }, uDeep: { value: new THREE.Vector3(0.009, 0.026, 0.055) }, uScatter: { value: new THREE.Vector3(0.05, 0.2, 0.17) },
+    uFogDist: { value: 2500 }, uFoamGain: { value: 1 }, uGlitter: { value: 1 }, uCapTh: { value: 0.83 }, uCapGain: { value: 1 }, uSubsurf: { value: 1 },
     uFineTA: { value: null }, uFineTB: { value: null }, uLA: { value: LA }, uLB: { value: LB }, uNoise: { value: makeNoiseTexture() }, uCells: { value: makeCellTexture() },
   };
   for (const k of ["uSunDir", "uSunIrr", "uSkyRad"]) if (!uniforms[k]) uniforms[k] = { value: new THREE.Vector3() };

@@ -88,7 +88,7 @@ export async function createEngine(canvas, { width = 1920, height = 804, base = 
     sun.color.setRGB(irr.x / m, irr.y / m, irr.z / m, THREE.LinearSRGBColorSpace); sun.intensity = m * (look.keyGain ?? 1);
     ocean.uniforms.uFogDist.value = look.fogDist ?? 2500; ocean.uniforms.uGlitter.value = look.glitter ?? 1;
     ocean.uniforms.uFoamGain.value = look.foamGain ?? 1; ocean.uniforms.uCapGain.value = look.capGain ?? 1; ocean.uniforms.uSubsurf.value = look.subsurf ?? 1; spray.uniforms.uGain.value = look.sprayGain ?? 1;
-    if (look.deep) ocean.uniforms.uDeep.value.set(...look.deep);
+    ocean.uniforms.uDeep.value.set(...(look.deep || [0.009, 0.026, 0.055]));      // always set: frames render out of order
     return sunDir;
   }
 

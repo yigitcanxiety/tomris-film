@@ -1,0 +1,2241 @@
+{
+ "fps": 30,
+ "totalFrames": 2100,
+ "setups": {
+  "B": {
+   "sunElevationDeg": 1,
+   "sunAzimuthDeg": 270,
+   "look": "sunset",
+   "sea": {
+    "windSpeed": 4,
+    "waveHeightM": 0.2,
+    "choppiness": 0.6
+   }
+  },
+  "A": {
+   "sunElevationDeg": 3,
+   "sunAzimuthDeg": 225,
+   "look": "sunset",
+   "sea": {
+    "windSpeed": 10,
+    "waveHeightM": 0.8,
+    "choppiness": 1.0
+   }
+  },
+  "Ap": {
+   "sunElevationDeg": -4,
+   "sunAzimuthDeg": 235,
+   "look": "bluehour",
+   "sea": {
+    "windSpeed": 8,
+    "waveHeightM": 0.6,
+    "choppiness": 0.9
+   }
+  },
+  "E": {
+   "sunElevationDeg": -4,
+   "sunAzimuthDeg": 235,
+   "look": "eoir",
+   "sea": {
+    "windSpeed": 8,
+    "waveHeightM": 0.6,
+    "choppiness": 0.9
+   }
+  },
+  "C": {
+   "sunElevationDeg": 45,
+   "sunAzimuthDeg": 0,
+   "look": "studio",
+   "sea": {
+    "windSpeed": 0,
+    "waveHeightM": 0,
+    "choppiness": 0
+   }
+  },
+  "W": {
+   "sunElevationDeg": 45,
+   "sunAzimuthDeg": 0,
+   "look": "wireframe",
+   "sea": {
+    "windSpeed": 0,
+    "waveHeightM": 0,
+    "choppiness": 0
+   }
+  }
+ },
+ "shots": [
+  {
+   "n": 1,
+   "startFrame": 0,
+   "frames": 105,
+   "kind": "overlay",
+   "setup": null,
+   "lensMm": null,
+   "camera": null,
+   "boat": null,
+   "anim": [],
+   "flagVisible": false,
+   "vo": "Son dakika. Ege'de kimliği belirsiz bir su üstü teması tespit edildi.",
+   "sfx": [
+    "radyo paraziti",
+    "radar bip",
+    "alçak drone müzik"
+   ],
+   "note": "HyperFrames: radar açılışı, isimsiz Ege kıyı çizgisi, kırmızı temas; küçük 'SON DAKİKA' künyesi; VO 0,5 sn'de (kare 15) başlar"
+  },
+  {
+   "n": 2,
+   "startFrame": 105,
+   "frames": 120,
+   "kind": "3d",
+   "setup": "B",
+   "lensMm": 85,
+   "camera": {
+    "type": "drone",
+    "from": {
+     "x": 268,
+     "y": 25,
+     "z": -14
+    },
+    "to": {
+     "x": 252,
+     "y": 26.2,
+     "z": -8
+    },
+    "lookAt": "boat",
+    "ease": "linear",
+    "handheld": 0.1,
+    "screenOffset": {
+     "x": 0.33,
+     "y": 0,
+     "z": 0
+    }
+   },
+   "boat": {
+    "speedKn": 8,
+    "headingDeg": 90,
+    "trimDeg": 0
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [
+    "radyo paraziti"
+   ],
+   "note": "Güneş iki vinç arasında; tekne sağ 1/3'te (screenOffset); VO1 sürer"
+  },
+  {
+   "n": 3,
+   "startFrame": 225,
+   "frames": 36,
+   "kind": "3d",
+   "setup": "B",
+   "lensMm": 100,
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 9,
+     "y": 4.6,
+     "z": -3
+    },
+    "to": {
+     "x": 8.8,
+     "y": 4.6,
+     "z": -3
+    },
+    "lookAt": "eoir",
+    "ease": "linear",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 8,
+    "headingDeg": 90,
+    "trimDeg": 0
+   },
+   "anim": [
+    {
+     "target": "eoir_az",
+     "fromDeg": 0,
+     "toDeg": 35
+    }
+   ],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [
+    "servo vızıltısı"
+   ],
+   "note": "Lense güneş parlaması; küre uyanır"
+  },
+  {
+   "n": 4,
+   "startFrame": 261,
+   "frames": 30,
+   "kind": "3d",
+   "setup": "B",
+   "lensMm": 135,
+   "camera": {
+    "type": "static",
+    "from": {
+     "x": 2.5,
+     "y": 3,
+     "z": 85
+    },
+    "to": {
+     "x": -1.5,
+     "y": 3,
+     "z": 85
+    },
+    "lookAt": "boat",
+    "ease": "linear",
+    "handheld": 0,
+    "fStop": 1.8
+   },
+   "boat": {
+    "speedKn": 8,
+    "headingDeg": 90,
+    "trimDeg": 0
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "Dünyada sabit kamera, tekne soldan sağa geçer; f/1,8 DOF, ön planda vinç ışığı bokeh"
+  },
+  {
+   "n": 5,
+   "startFrame": 291,
+   "frames": 24,
+   "kind": "3d",
+   "setup": "B",
+   "lensMm": 85,
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 5,
+     "y": 6.2,
+     "z": -4
+    },
+    "to": {
+     "x": 5,
+     "y": 6.2,
+     "z": -4
+    },
+    "lookAt": {
+     "x": -0.5,
+     "y": 5.2,
+     "z": 0
+    },
+    "ease": "linear",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 8,
+    "headingDeg": 90,
+    "trimDeg": 0
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [
+    "röle tıkı"
+   ],
+   "note": "Fenerler yanar: kırmızı/yeşil/beyaz; bayrak kenarda"
+  },
+  {
+   "n": 6,
+   "startFrame": 315,
+   "frames": 39,
+   "kind": "3d",
+   "setup": "B",
+   "lensMm": 50,
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 1.4,
+     "y": 1.8,
+     "z": -3.2
+    },
+    "to": {
+     "x": 0.6,
+     "y": 1.8,
+     "z": -3.2
+    },
+    "lookAt": {
+     "x": -0.6,
+     "y": 1.9,
+     "z": -1.4
+    },
+    "ease": "linear",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 8,
+    "headingDeg": 90,
+    "trimDeg": 0
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": "Liman komutanlığından tek bir emir çıktı.",
+   "sfx": [],
+   "note": "Köşk yan camı, içi boş; camda vinç ışıkları"
+  },
+  {
+   "n": 7,
+   "startFrame": 354,
+   "frames": 36,
+   "kind": "3d",
+   "setup": "B",
+   "lensMm": 35,
+   "camera": {
+    "type": "drone",
+    "from": {
+     "x": 2,
+     "y": 20,
+     "z": 0
+    },
+    "to": {
+     "x": 2,
+     "y": 20,
+     "z": 0
+    },
+    "lookAt": "boat",
+    "ease": "linear",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 8,
+    "headingDeg": 90,
+    "trimDeg": 0,
+    "speedToKn": 12
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "Tepeden 90°, mendirek ağzı; hız 8→12 kn"
+  },
+  {
+   "n": 8,
+   "startFrame": 390,
+   "frames": 36,
+   "kind": "3d",
+   "setup": "B",
+   "lensMm": 135,
+   "flagBake": "slow",
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 9,
+     "y": 6.5,
+     "z": -5
+    },
+    "to": {
+     "x": 9,
+     "y": 6.5,
+     "z": -5
+    },
+    "lookAt": "flag",
+    "ease": "linear",
+    "handheld": 0.15
+   },
+   "boat": {
+    "speedKn": 12,
+    "headingDeg": 90,
+    "trimDeg": 0
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": "Gemide tek bir asker yok.",
+   "sfx": [],
+   "note": "HERO bayrak, yavaş bake, güneş arkadan"
+  },
+  {
+   "n": 9,
+   "startFrame": 426,
+   "frames": 42,
+   "kind": "3d",
+   "setup": "B",
+   "lensMm": 35,
+   "camera": {
+    "type": "waterline",
+    "from": {
+     "x": -8.5,
+     "y": 0.35,
+     "z": -1.2
+    },
+    "to": {
+     "x": -19.5,
+     "y": 0.35,
+     "z": -1.2
+    },
+    "lookAt": "stern",
+    "ease": "easeIn",
+    "handheld": 0.1
+   },
+   "boat": {
+    "speedKn": 12,
+    "headingDeg": 90,
+    "trimDeg": 2,
+    "speedToKn": 20,
+    "trimToDeg": 2
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [
+    "jet türbini yükselir"
+   ],
+   "note": "Dünyada sabit alçak kamera, tekne uzaklaşır; jetler devreye girer, kıç 2° çömelir"
+  },
+  {
+   "n": 10,
+   "startFrame": 468,
+   "frames": 45,
+   "kind": "3d",
+   "setup": "B",
+   "lensMm": 50,
+   "camera": {
+    "type": "static",
+    "from": {
+     "x": 9.5,
+     "y": 2.5,
+     "z": 30
+    },
+    "to": {
+     "x": -9.5,
+     "y": 2.5,
+     "z": 30
+    },
+    "lookAt": "boat",
+    "ease": "linear",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 25,
+    "headingDeg": 90,
+    "trimDeg": 3
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "Mendirek feneri ön planda, silüet; pan ~20°/sn"
+  },
+  {
+   "n": 11,
+   "startFrame": 513,
+   "frames": 105,
+   "kind": "3d",
+   "setup": "A",
+   "lensMm": 35,
+   "camera": {
+    "type": "drone",
+    "from": {
+     "x": -69,
+     "y": 40,
+     "z": -6
+    },
+    "to": {
+     "x": -40,
+     "y": 40,
+     "z": -6
+    },
+    "lookAt": "boat",
+    "ease": "easeInOut",
+    "handheld": 0.05
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 225,
+    "trimDeg": 4
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": "On üç metre.",
+   "sfx": [
+    "müzik ritmi girer"
+   ],
+   "note": "Güneş parıltı yolu, silüet; tilt 30°→45° mesafe değişimiyle; sis ufku gizler"
+  },
+  {
+   "n": 12,
+   "startFrame": 618,
+   "frames": 36,
+   "kind": "3d",
+   "setup": "A",
+   "lensMm": 50,
+   "camera": {
+    "type": "chase",
+    "from": {
+     "x": -1,
+     "y": 1.2,
+     "z": -15
+    },
+    "to": {
+     "x": -0.4,
+     "y": 1.2,
+     "z": -15
+    },
+    "lookAt": "boat",
+    "ease": "linear",
+    "handheld": 0.05
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": "On ton.",
+   "sfx": [],
+   "note": "MASTER referans açısı; bob 0,3°"
+  },
+  {
+   "n": 13,
+   "startFrame": 654,
+   "frames": 27,
+   "kind": "3d",
+   "setup": "A",
+   "lensMm": 100,
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": -4.0,
+     "y": 1.2,
+     "z": -6.2
+    },
+    "to": {
+     "x": -4.0,
+     "y": 1.2,
+     "z": -6.2
+    },
+    "lookAt": {
+     "x": -4.4,
+     "y": 1.0,
+     "z": -1.8
+    },
+    "ease": "linear",
+    "handheld": 0.05,
+    "focusOn": "hull_text"
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "TOMRİS / TCB-1601 yazısı okunur; spray; odak yazıda"
+  },
+  {
+   "n": 14,
+   "startFrame": 681,
+   "frames": 30,
+   "kind": "3d",
+   "setup": "A",
+   "lensMm": 24,
+   "camera": {
+    "type": "waterline",
+    "from": {
+     "x": 14,
+     "y": 0.4,
+     "z": 0
+    },
+    "to": {
+     "x": 12,
+     "y": 0.4,
+     "z": 0
+    },
+    "lookAt": "bow",
+    "ease": "linear",
+    "handheld": 0.1
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": "Saatte otuz beş knot.",
+   "sfx": [],
+   "note": "Pruva kameraya gelir; lens damlası compositor'da"
+  },
+  {
+   "n": 15,
+   "startFrame": 711,
+   "frames": 30,
+   "kind": "3d",
+   "setup": "A",
+   "lensMm": 24,
+   "camera": {
+    "type": "static",
+    "from": {
+     "x": 9,
+     "y": 0.5,
+     "z": 25
+    },
+    "to": {
+     "x": -9,
+     "y": 0.5,
+     "z": 25
+    },
+    "lookAt": "boat",
+    "ease": "linear",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [
+    "Doppler motor geçişi"
+   ],
+   "note": "Dünyada sabit; ~40° pan; motion blur şart"
+  },
+  {
+   "n": 16,
+   "startFrame": 741,
+   "frames": 24,
+   "kind": "3d",
+   "setup": "A",
+   "lensMm": 85,
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 6.5,
+     "y": 6,
+     "z": -3.5
+    },
+    "to": {
+     "x": 6.5,
+     "y": 6,
+     "z": -3.5
+    },
+    "lookAt": {
+     "x": -0.8,
+     "y": 5.4,
+     "z": 0
+    },
+    "ease": "linear",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 45,
+    "trimDeg": 4
+   },
+   "anim": [
+    {
+     "target": "radar_spin",
+     "fromDeg": 0,
+     "toDeg": 720
+    }
+   ],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "Radar çubuğu döner, güneş arkada; kenarda bayrak"
+  },
+  {
+   "n": 17,
+   "startFrame": 765,
+   "frames": 33,
+   "kind": "3d",
+   "setup": "A",
+   "lensMm": 35,
+   "camera": {
+    "type": "drone",
+    "from": {
+     "x": 7,
+     "y": 30,
+     "z": -5
+    },
+    "to": {
+     "x": -7,
+     "y": 30,
+     "z": 5
+    },
+    "lookAt": "boat",
+    "ease": "linear",
+    "handheld": 0.05,
+    "rollDegPerSec": 2
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "Tepeden 90°, 2°/sn roll, V iz ≥60 m"
+  },
+  {
+   "n": 18,
+   "startFrame": 798,
+   "frames": 27,
+   "kind": "3d",
+   "setup": "A",
+   "lensMm": 50,
+   "camera": {
+    "type": "chase",
+    "from": {
+     "x": -14.5,
+     "y": 0.8,
+     "z": 0
+    },
+    "to": {
+     "x": -14.5,
+     "y": 0.8,
+     "z": 0
+    },
+    "lookAt": "stern",
+    "ease": "linear",
+    "handheld": 0.05
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": "İki su jetiyle,",
+   "sfx": [],
+   "note": "İki jet wash"
+  },
+  {
+   "n": 19,
+   "startFrame": 825,
+   "frames": 24,
+   "kind": "3d",
+   "setup": "A",
+   "lensMm": 200,
+   "flagBake": "fast",
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 55,
+     "y": 0.8,
+     "z": -6
+    },
+    "to": {
+     "x": 55,
+     "y": 0.8,
+     "z": -6
+    },
+    "lookAt": "flag",
+    "ease": "linear",
+    "handheld": 0.05
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 45,
+    "trimDeg": 1.5
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "HERO hızlı bake; bayrak güneş diskinin önünde"
+  },
+  {
+   "n": 20,
+   "startFrame": 849,
+   "frames": 36,
+   "kind": "3d",
+   "setup": "A",
+   "lensMm": 50,
+   "camera": {
+    "type": "chase",
+    "from": {
+     "x": 8,
+     "y": 2,
+     "z": 12
+    },
+    "to": {
+     "x": 8,
+     "y": 2,
+     "z": 12
+    },
+    "lookAt": "boat",
+    "ease": "linear",
+    "handheld": 0.05
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 6,
+    "trimToDeg": -1
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": "uzaktan ya da tamamen otonom.",
+   "sfx": [
+    "slam darbesi"
+   ],
+   "note": "Dalgaya biner; pitch +6°→−1° / 0,5 sn; sancak 3/4 ön"
+  },
+  {
+   "n": 21,
+   "startFrame": 885,
+   "frames": 24,
+   "kind": "3d",
+   "setup": "A",
+   "lensMm": 35,
+   "camera": {
+    "type": "waterline",
+    "from": {
+     "x": 2.5,
+     "y": 0.5,
+     "z": -3.0
+    },
+    "to": {
+     "x": 2.5,
+     "y": 0.5,
+     "z": -3.0
+    },
+    "lookAt": {
+     "x": 2.5,
+     "y": 0.2,
+     "z": -1.7
+    },
+    "ease": "linear",
+    "handheld": 0.05
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "Chine ve usturmaça; su gövdeye girmemeli (maske)"
+  },
+  {
+   "n": 22,
+   "startFrame": 909,
+   "frames": 27,
+   "kind": "3d",
+   "setup": "A",
+   "lensMm": 24,
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": -6,
+     "y": 3.9,
+     "z": 0.5
+    },
+    "to": {
+     "x": -6,
+     "y": 3.9,
+     "z": 0.5
+    },
+    "lookAt": "eoir",
+    "ease": "linear",
+    "handheld": 0.25
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [
+    {
+     "target": "radar_spin",
+     "fromDeg": 0,
+     "toDeg": 360
+    }
+   ],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "Güverte arkasından köşk üstü, EO/IR + direk silüeti, ufuk"
+  },
+  {
+   "n": 23,
+   "startFrame": 936,
+   "frames": 36,
+   "kind": "3d",
+   "setup": "A",
+   "lensMm": 28,
+   "camera": {
+    "type": "orbit",
+    "from": {
+     "x": -11.0,
+     "y": 25,
+     "z": -19.05
+    },
+    "to": {
+     "x": -8.53,
+     "y": 25,
+     "z": -20.28
+    },
+    "lookAt": "boat",
+    "ease": "linear",
+    "handheld": 0,
+    "orbitDegPerSec": 6
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [
+    "motor gürlemesi",
+    "müzik nefes alır"
+   ],
+   "note": "Orbit 6°/sn"
+  },
+  {
+   "n": 24,
+   "startFrame": 972,
+   "frames": 60,
+   "kind": "3d",
+   "setup": "W",
+   "lensMm": 50,
+   "camera": {
+    "type": "static",
+    "from": {
+     "x": 1,
+     "y": 2,
+     "z": -22
+    },
+    "to": {
+     "x": 1,
+     "y": 2,
+     "z": -21.4
+    },
+    "lookAt": "boat",
+    "ease": "linear",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 0,
+    "headingDeg": 0,
+    "trimDeg": 0
+   },
+   "anim": [],
+   "flagVisible": false,
+   "vo": "Yirmi insansız deniz aracı incelendi,",
+   "sfx": [
+    "elektronik tik"
+   ],
+   "note": "Camgöbeği tel kafes pruvadan kıça çizilir (maske anim.); dolly 0,3 m/s"
+  },
+  {
+   "n": 25,
+   "startFrame": 1032,
+   "frames": 45,
+   "kind": "3d",
+   "setup": "W",
+   "lensMm": 35,
+   "flagBake": "slow",
+   "camera": {
+    "type": "orbit",
+    "from": {
+     "x": -17.32,
+     "y": 5,
+     "z": -10.0
+    },
+    "to": {
+     "x": -10.0,
+     "y": 5,
+     "z": -17.32
+    },
+    "lookAt": "boat",
+    "ease": "linear",
+    "handheld": 0,
+    "orbitDegPerSec": 20
+   },
+   "boat": {
+    "speedKn": 0,
+    "headingDeg": 0,
+    "trimDeg": 0
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": "her ölçü hesapla doğrulandı.",
+   "sfx": [],
+   "note": "Tel kafesten mat griye geçiş, turntable 20°/sn"
+  },
+  {
+   "n": 26,
+   "startFrame": 1077,
+   "frames": 36,
+   "kind": "3d",
+   "setup": "C",
+   "lensMm": 85,
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 11.5,
+     "y": 0.4,
+     "z": -3.5
+    },
+    "to": {
+     "x": 11.3,
+     "y": 0.4,
+     "z": -3.5
+    },
+    "lookAt": "gun",
+    "ease": "linear",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 0,
+    "headingDeg": 0,
+    "trimDeg": 0
+   },
+   "anim": [
+    {
+     "target": "gun_az",
+     "fromDeg": 0,
+     "toDeg": 40
+    },
+    {
+     "target": "gun_el",
+     "fromDeg": 0,
+     "toDeg": 10
+    }
+   ],
+   "flagVisible": true,
+   "vo": "Burnunda ASELSAN STAMP,",
+   "sfx": [
+    "servo"
+   ],
+   "note": "STAMP alttan; 40° traverse + 10° yükselme"
+  },
+  {
+   "n": 27,
+   "startFrame": 1113,
+   "frames": 27,
+   "kind": "3d",
+   "setup": "A",
+   "lensMm": 50,
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 2.6,
+     "y": 3.8,
+     "z": 0.4
+    },
+    "to": {
+     "x": 2.6,
+     "y": 3.8,
+     "z": 0.4
+    },
+    "lookAt": {
+     "x": 20,
+     "y": 2.2,
+     "z": 0
+    },
+    "ease": "linear",
+    "handheld": 0.05
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 225,
+    "trimDeg": 4
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "Silahın arkasından ileri, namlu ön planda, güneşe doğru"
+  },
+  {
+   "n": 28,
+   "startFrame": 1140,
+   "frames": 24,
+   "kind": "3d",
+   "setup": "C",
+   "lensMm": 135,
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 10,
+     "y": 2.3,
+     "z": -3.6
+    },
+    "to": {
+     "x": 10,
+     "y": 2.3,
+     "z": -3.5
+    },
+    "lookAt": {
+     "x": 6.4,
+     "y": 2.2,
+     "z": 0
+    },
+    "ease": "linear",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 0,
+    "headingDeg": 0,
+    "trimDeg": 0
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": "on iki koma yedi milimetre",
+   "sfx": [],
+   "note": "Namlu ucu makro, rim ışığı"
+  },
+  {
+   "n": 29,
+   "startFrame": 1164,
+   "frames": 27,
+   "kind": "3d",
+   "setup": "A",
+   "lensMm": 85,
+   "camera": {
+    "type": "chase",
+    "from": {
+     "x": 5.5,
+     "y": 2,
+     "z": -10
+    },
+    "to": {
+     "x": 5.5,
+     "y": 2,
+     "z": -10
+    },
+    "lookAt": "gun",
+    "ease": "linear",
+    "handheld": 0.05
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [
+    {
+     "target": "gun_az",
+     "fromDeg": 0,
+     "toDeg": -75
+    }
+   ],
+   "flagVisible": true,
+   "vo": "uzaktan komutalı silah.",
+   "sfx": [],
+   "note": "Silah yana döner"
+  },
+  {
+   "n": 30,
+   "startFrame": 1191,
+   "frames": 45,
+   "kind": "3d",
+   "setup": "C",
+   "lensMm": 50,
+   "camera": {
+    "type": "orbit",
+    "from": {
+     "x": -13.86,
+     "y": 4,
+     "z": -8.0
+    },
+    "to": {
+     "x": -9.74,
+     "y": 4,
+     "z": -12.69
+    },
+    "lookAt": "launcher",
+    "ease": "linear",
+    "handheld": 0,
+    "orbitDegPerSec": 15
+   },
+   "boat": {
+    "speedKn": 0,
+    "headingDeg": 0,
+    "trimDeg": 0
+   },
+   "anim": [
+    {
+     "target": "launcher_el",
+     "fromDeg": 0,
+     "toDeg": 25
+    }
+   ],
+   "flagVisible": true,
+   "vo": "Kıçında dört L-UMTAS füzesi.",
+   "sfx": [
+    "hidrolik"
+   ],
+   "note": "Lançer 0→25°; 3/4 kıç; DÖRT füze (karar)"
+  },
+  {
+   "n": 31,
+   "startFrame": 1236,
+   "frames": 30,
+   "kind": "3d",
+   "setup": "C",
+   "lensMm": 100,
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 3.5,
+     "y": 3.9,
+     "z": -1.5
+    },
+    "to": {
+     "x": 3.5,
+     "y": 3.9,
+     "z": -1.5
+    },
+    "lookAt": {
+     "x": -3.6,
+     "y": 3.2,
+     "z": 0
+    },
+    "ease": "linear",
+    "handheld": 0,
+    "rackFocus": [
+     "front_row",
+     "rear_row"
+    ]
+   },
+   "boat": {
+    "speedKn": 0,
+    "headingDeg": 0,
+    "trimDeg": 0
+   },
+   "anim": [
+    {
+     "target": "launcher_el",
+     "fromDeg": 25,
+     "toDeg": 25
+    }
+   ],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "Dört füze burnu; rack focus ön sıra→arka sıra"
+  },
+  {
+   "n": 32,
+   "startFrame": 1266,
+   "frames": 30,
+   "kind": "3d",
+   "setup": "A",
+   "lensMm": 85,
+   "camera": {
+    "type": "chase",
+    "from": {
+     "x": 1,
+     "y": 2.2,
+     "z": -28
+    },
+    "to": {
+     "x": 1,
+     "y": 2.2,
+     "z": -28
+    },
+    "lookAt": "boat",
+    "ease": "linear",
+    "handheld": 0.05
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [
+    {
+     "target": "launcher_el",
+     "fromDeg": 25,
+     "toDeg": 25
+    }
+   ],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "Silah + lançer yan profil, gün batımı"
+  },
+  {
+   "n": 33,
+   "startFrame": 1296,
+   "frames": 30,
+   "kind": "3d",
+   "setup": "C",
+   "lensMm": 50,
+   "camera": {
+    "type": "static",
+    "from": {
+     "x": -5,
+     "y": 12,
+     "z": 0
+    },
+    "to": {
+     "x": -5,
+     "y": 12,
+     "z": 0
+    },
+    "lookAt": "launcher",
+    "ease": "linear",
+    "handheld": 0,
+    "rollDegPerSec": 5
+   },
+   "boat": {
+    "speedKn": 0,
+    "headingDeg": 0,
+    "trimDeg": 0
+   },
+   "anim": [
+    {
+     "target": "launcher_el",
+     "fromDeg": 25,
+     "toDeg": 25
+    }
+   ],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "Lançer tepeden, burunlar hizalı; 5°/sn dönüş"
+  },
+  {
+   "n": 34,
+   "startFrame": 1326,
+   "frames": 27,
+   "kind": "3d",
+   "setup": "A",
+   "lensMm": 35,
+   "camera": {
+    "type": "chase",
+    "from": {
+     "x": -12,
+     "y": 3,
+     "z": -1.5
+    },
+    "to": {
+     "x": -12,
+     "y": 3,
+     "z": -1.5
+    },
+    "lookAt": "launcher",
+    "ease": "linear",
+    "handheld": 0.05
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 225,
+    "trimDeg": 4
+   },
+   "anim": [
+    {
+     "target": "launcher_el",
+     "fromDeg": 25,
+     "toDeg": 25
+    }
+   ],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "Tekneye bağlı kıç kamerası, arkada güneş. ÖNERİ cümlesi 'Menzil [MENZİL].' varsayılan düşük (vo null); değer gelirse eklenir"
+  },
+  {
+   "n": 35,
+   "startFrame": 1353,
+   "frames": 24,
+   "kind": "3d",
+   "setup": "C",
+   "lensMm": 100,
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 7.5,
+     "y": 4.8,
+     "z": 3.4
+    },
+    "to": {
+     "x": 7.5,
+     "y": 4.8,
+     "z": 3.4
+    },
+    "lookAt": "eoir",
+    "ease": "linear",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 0,
+    "headingDeg": 0,
+    "trimDeg": 0
+   },
+   "anim": [
+    {
+     "target": "eoir_az",
+     "fromDeg": -60,
+     "toDeg": 28
+    }
+   ],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "EO/IR küresi kameraya döner"
+  },
+  {
+   "n": 36,
+   "startFrame": 1377,
+   "frames": 24,
+   "kind": "3d",
+   "setup": "A",
+   "lensMm": 135,
+   "camera": {
+    "type": "chase",
+    "from": {
+     "x": 12,
+     "y": 4.6,
+     "z": -5
+    },
+    "to": {
+     "x": 12,
+     "y": 4.6,
+     "z": -5
+    },
+    "lookAt": "eoir",
+    "ease": "linear",
+    "handheld": 0.05
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "EO/IR camında güneş yansıması"
+  },
+  {
+   "n": 37,
+   "startFrame": 1401,
+   "frames": 43,
+   "kind": "3d",
+   "setup": "C",
+   "lensMm": 35,
+   "flagBake": "slow",
+   "camera": {
+    "type": "orbit",
+    "from": {
+     "x": -11.0,
+     "y": 3.2,
+     "z": -19.05
+    },
+    "to": {
+     "x": 4.95,
+     "y": 3.2,
+     "z": -21.44
+    },
+    "lookAt": "boat",
+    "ease": "linear",
+    "handheld": 0,
+    "orbitDegPerSec": 30
+   },
+   "boat": {
+    "speedKn": 0,
+    "headingDeg": 0,
+    "trimDeg": 0
+   },
+   "anim": [
+    {
+     "target": "launcher_el",
+     "fromDeg": 0,
+     "toDeg": 0
+    }
+   ],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [
+    "drop öncesi gerilim"
+   ],
+   "note": "Tam turntable 30°/sn, parlak siyah zemin yansıması; lançer inik"
+  },
+  {
+   "n": 38,
+   "startFrame": 1444,
+   "frames": 4,
+   "kind": "black",
+   "setup": null,
+   "lensMm": null,
+   "camera": null,
+   "boat": null,
+   "anim": [],
+   "flagVisible": false,
+   "vo": null,
+   "sfx": [
+    "ses kesilir"
+   ],
+   "note": "Siyah flaş"
+  },
+  {
+   "n": 39,
+   "startFrame": 1448,
+   "frames": 24,
+   "kind": "3d",
+   "setup": "Ap",
+   "lensMm": 35,
+   "camera": {
+    "type": "static",
+    "from": {
+     "x": 7,
+     "y": 2.5,
+     "z": -22
+    },
+    "to": {
+     "x": -7,
+     "y": 2.5,
+     "z": -22
+    },
+    "lookAt": "boat",
+    "ease": "easeOut",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": "Hedef tespit edildi.",
+   "sfx": [
+    "müzik drop"
+   ],
+   "note": "Whip pan 60°/sn→0; fenerler yanık"
+  },
+  {
+   "n": 40,
+   "startFrame": 1472,
+   "frames": 21,
+   "kind": "3d",
+   "setup": "E",
+   "lensMm": 200,
+   "overlay": "eoir_reticle",
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 0,
+     "y": 4.6,
+     "z": 0
+    },
+    "to": {
+     "x": 0,
+     "y": 4.6,
+     "z": 0
+    },
+    "lookAt": {
+     "x": 900,
+     "y": 6,
+     "z": -120
+    },
+    "ease": "easeIn",
+    "handheld": 0,
+    "digitalZoom": {
+     "fromX": 2,
+     "toX": 6
+    }
+   },
+   "boat": null,
+   "anim": [],
+   "flagVisible": false,
+   "vo": null,
+   "sfx": [],
+   "note": "EO/IR beyaz-sıcak; ufukta bayraksız, adsız genel hedef; crash zoom 1→3×"
+  },
+  {
+   "n": 41,
+   "startFrame": 1493,
+   "frames": 18,
+   "kind": "3d",
+   "setup": "Ap",
+   "lensMm": 85,
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 8,
+     "y": 4.8,
+     "z": -3.6
+    },
+    "to": {
+     "x": 8,
+     "y": 4.8,
+     "z": -3.6
+    },
+    "lookAt": "eoir",
+    "ease": "linear",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [
+    {
+     "target": "eoir_az",
+     "fromDeg": 0,
+     "toDeg": -35
+    }
+   ],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "EO/IR küresi hedefe döner"
+  },
+  {
+   "n": 42,
+   "startFrame": 1511,
+   "frames": 18,
+   "kind": "3d",
+   "setup": "Ap",
+   "lensMm": 50,
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 9.5,
+     "y": 0.7,
+     "z": 2.8
+    },
+    "to": {
+     "x": 9.5,
+     "y": 0.7,
+     "z": 2.8
+    },
+    "lookAt": "gun",
+    "ease": "linear",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [
+    {
+     "target": "gun_az",
+     "fromDeg": 0,
+     "toDeg": -35
+    }
+   ],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [
+    "servo"
+   ],
+   "note": "Silah döner, alttan"
+  },
+  {
+   "n": 43,
+   "startFrame": 1529,
+   "frames": 18,
+   "kind": "3d",
+   "setup": "E",
+   "lensMm": 200,
+   "overlay": "eoir_reticle_lock",
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 0,
+     "y": 4.6,
+     "z": 0
+    },
+    "to": {
+     "x": 0,
+     "y": 4.6,
+     "z": 0
+    },
+    "lookAt": {
+     "x": 900,
+     "y": 6,
+     "z": -120
+    },
+    "ease": "linear",
+    "handheld": 0,
+    "digitalZoom": {
+     "fromX": 2,
+     "toX": 2
+    }
+   },
+   "boat": null,
+   "anim": [],
+   "flagVisible": false,
+   "vo": null,
+   "sfx": [
+    "kilit tonu"
+   ],
+   "note": "Kilit: retikül daralır (HF, yazısız)"
+  },
+  {
+   "n": 44,
+   "startFrame": 1547,
+   "frames": 21,
+   "kind": "3d",
+   "setup": "Ap",
+   "lensMm": 35,
+   "camera": {
+    "type": "chase",
+    "from": {
+     "x": -12,
+     "y": 3.2,
+     "z": -1.5
+    },
+    "to": {
+     "x": -12,
+     "y": 3.2,
+     "z": -1.5
+    },
+    "lookAt": "launcher",
+    "ease": "linear",
+    "handheld": 0.05
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [
+    {
+     "target": "launcher_el",
+     "fromDeg": 0,
+     "toDeg": 25
+    }
+   ],
+   "flagVisible": true,
+   "vo": "Görüntü, şifreli bağlantıyla",
+   "sfx": [],
+   "note": "Lançer kalkar, denizde"
+  },
+  {
+   "n": 45,
+   "startFrame": 1568,
+   "frames": 18,
+   "kind": "3d",
+   "setup": "Ap",
+   "lensMm": 24,
+   "camera": {
+    "type": "drone",
+    "from": {
+     "x": -4,
+     "y": 24,
+     "z": 2
+    },
+    "to": {
+     "x": 2,
+     "y": 24,
+     "z": 2
+    },
+    "lookAt": "boat",
+    "ease": "linear",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [
+    {
+     "target": "launcher_el",
+     "fromDeg": 25,
+     "toDeg": 25
+    }
+   ],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "Tepeden, mavi-beyaz iz, fenerler"
+  },
+  {
+   "n": 46,
+   "startFrame": 1586,
+   "frames": 15,
+   "kind": "3d",
+   "setup": "Ap",
+   "lensMm": 135,
+   "flagBake": "fast",
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 9,
+     "y": 6,
+     "z": -3
+    },
+    "to": {
+     "x": 9,
+     "y": 6,
+     "z": -3
+    },
+    "lookAt": "flag",
+    "ease": "linear",
+    "handheld": 0.05
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "HERO hızlı bake; bayrak kırmızı fener ışığında"
+  },
+  {
+   "n": 47,
+   "startFrame": 1601,
+   "frames": 18,
+   "kind": "3d",
+   "setup": "Ap",
+   "lensMm": 24,
+   "camera": {
+    "type": "waterline",
+    "from": {
+     "x": 13,
+     "y": 0.5,
+     "z": 0
+    },
+    "to": {
+     "x": 11,
+     "y": 0.5,
+     "z": 0
+    },
+    "lookAt": "bow",
+    "ease": "linear",
+    "handheld": 0.1
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": "anında komuta merkezinde.",
+   "sfx": [],
+   "note": "Alçak-ön pruva spray; geri 16 m/s"
+  },
+  {
+   "n": 48,
+   "startFrame": 1619,
+   "frames": 15,
+   "kind": "3d",
+   "setup": "Ap",
+   "lensMm": 50,
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 1.2,
+     "y": 1.8,
+     "z": -3.2
+    },
+    "to": {
+     "x": 0.8,
+     "y": 1.8,
+     "z": -3.2
+    },
+    "lookAt": {
+     "x": -0.6,
+     "y": 1.9,
+     "z": -1.4
+    },
+    "ease": "linear",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "Köşk camı, boş, ekran ışığı"
+  },
+  {
+   "n": 49,
+   "startFrame": 1634,
+   "frames": 15,
+   "kind": "3d",
+   "setup": "Ap",
+   "lensMm": 50,
+   "camera": {
+    "type": "chase",
+    "from": {
+     "x": -11,
+     "y": 0.9,
+     "z": 0
+    },
+    "to": {
+     "x": -11,
+     "y": 0.9,
+     "z": 0
+    },
+    "lookAt": "stern",
+    "ease": "linear",
+    "handheld": 0.05
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "Jet wash"
+  },
+  {
+   "n": 50,
+   "startFrame": 1649,
+   "frames": 18,
+   "kind": "3d",
+   "setup": "Ap",
+   "lensMm": 85,
+   "camera": {
+    "type": "chase",
+    "from": {
+     "x": 2,
+     "y": 1.6,
+     "z": -30
+    },
+    "to": {
+     "x": 3,
+     "y": 1.6,
+     "z": -30
+    },
+    "lookAt": "boat",
+    "ease": "linear",
+    "handheld": 0.05
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "Yan takip, hız"
+  },
+  {
+   "n": 51,
+   "startFrame": 1667,
+   "frames": 15,
+   "kind": "3d",
+   "setup": "E",
+   "lensMm": 200,
+   "overlay": "eoir_reticle_lock",
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 0,
+     "y": 4.6,
+     "z": 0
+    },
+    "to": {
+     "x": 0,
+     "y": 4.6,
+     "z": 0
+    },
+    "lookAt": {
+     "x": 900,
+     "y": 6,
+     "z": -120
+    },
+    "ease": "linear",
+    "handheld": 0,
+    "digitalZoom": {
+     "fromX": 2,
+     "toX": 2
+    }
+   },
+   "boat": null,
+   "anim": [],
+   "flagVisible": false,
+   "vo": null,
+   "sfx": [
+    "kilit tonu sürekli"
+   ],
+   "note": "Hedef ortada, kilitli"
+  },
+  {
+   "n": 52,
+   "startFrame": 1682,
+   "frames": 15,
+   "kind": "3d",
+   "setup": "Ap",
+   "lensMm": 100,
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": -4,
+     "y": 1.2,
+     "z": 6.2
+    },
+    "to": {
+     "x": -4,
+     "y": 1.2,
+     "z": 6.2
+    },
+    "lookAt": {
+     "x": -4.4,
+     "y": 1.0,
+     "z": 1.8
+    },
+    "ease": "linear",
+    "handheld": 0.05,
+    "focusOn": "hull_text"
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "TOMRİS yazısı fener ışığında (sancak borda)"
+  },
+  {
+   "n": 53,
+   "startFrame": 1697,
+   "frames": 18,
+   "kind": "3d",
+   "setup": "Ap",
+   "lensMm": 100,
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": -3,
+     "y": 3.9,
+     "z": -6
+    },
+    "to": {
+     "x": -3,
+     "y": 3.9,
+     "z": -6
+    },
+    "lookAt": {
+     "x": -3.8,
+     "y": 3.2,
+     "z": 0
+    },
+    "ease": "linear",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [
+    {
+     "target": "launcher_el",
+     "fromDeg": 25,
+     "toDeg": 25
+    }
+   ],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "Füze burunları yandan"
+  },
+  {
+   "n": 54,
+   "startFrame": 1715,
+   "frames": 6,
+   "kind": "black",
+   "setup": null,
+   "lensMm": null,
+   "camera": null,
+   "boat": null,
+   "anim": [],
+   "flagVisible": false,
+   "vo": null,
+   "sfx": [
+    "sessizlik"
+   ],
+   "note": "Siyah flaş"
+  },
+  {
+   "n": 55,
+   "startFrame": 1721,
+   "frames": 30,
+   "kind": "3d",
+   "setup": "Ap",
+   "lensMm": 24,
+   "camera": {
+    "type": "drone",
+    "from": {
+     "x": -10,
+     "y": 5.2,
+     "z": -2.6
+    },
+    "to": {
+     "x": 12,
+     "y": 4.5,
+     "z": -3
+    },
+    "lookAt": "boat",
+    "ease": "easeInOut",
+    "handheld": 0.1
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [
+    {
+     "target": "launcher_el",
+     "fromDeg": 25,
+     "toDeg": 25
+    },
+    {
+     "target": "gun_az",
+     "fromDeg": -35,
+     "toDeg": -35
+    }
+   ],
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [
+    "müzik zirvesi"
+   ],
+   "note": "Kıçtan direk yanından pruva önüne; bayrak kadrajı süpürür; ateşleme YOK, yalnız kilit/lançer"
+  },
+  {
+   "n": 56,
+   "startFrame": 1751,
+   "frames": 4,
+   "kind": "black",
+   "setup": null,
+   "lensMm": null,
+   "camera": null,
+   "boat": null,
+   "anim": [],
+   "flagVisible": false,
+   "vo": null,
+   "sfx": [],
+   "note": "Siyah flaş"
+  },
+  {
+   "n": 57,
+   "startFrame": 1755,
+   "frames": 120,
+   "kind": "3d",
+   "setup": "Ap",
+   "lensMm": 35,
+   "camera": {
+    "type": "drone",
+    "from": {
+     "x": -12,
+     "y": 5,
+     "z": -5
+    },
+    "to": {
+     "x": -100,
+     "y": 40,
+     "z": -5
+    },
+    "lookAt": "boat",
+    "ease": "easeOut",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [
+    {
+     "target": "launcher_el",
+     "fromDeg": 25,
+     "toDeg": 25
+    }
+   ],
+   "flagVisible": true,
+   "vo": "TOMRİS, İstanbul Teknik Üniversitesi'nde tasarlandı.",
+   "sfx": [],
+   "note": "Geri çekilip yükselir, yavaşlayarak; tekne ufka"
+  },
+  {
+   "n": 58,
+   "startFrame": 1875,
+   "frames": 105,
+   "kind": "3d",
+   "setup": "Ap",
+   "lensMm": 85,
+   "flagBake": "fast",
+   "camera": {
+    "type": "detail",
+    "from": {
+     "x": 5,
+     "y": 2.2,
+     "z": -3.4
+    },
+    "to": {
+     "x": 4.5,
+     "y": 2.5,
+     "z": -3.1
+    },
+    "lookAt": "flag",
+    "ease": "linear",
+    "handheld": 0
+   },
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [
+    {
+     "target": "radar_spin",
+     "fromDeg": 0,
+     "toDeg": 720
+    }
+   ],
+   "flagVisible": true,
+   "vo": "TOMRİS. Denizde, nöbette.",
+   "sfx": [],
+   "note": "Direk, bayrak, fenerler, mavi gök; HERO hızlı bake"
+  },
+  {
+   "n": 59,
+   "startFrame": 1980,
+   "frames": 120,
+   "kind": "overlay",
+   "setup": null,
+   "lensMm": null,
+   "camera": null,
+   "boat": null,
+   "anim": [],
+   "flagVisible": false,
+   "vo": null,
+   "sfx": [
+    "müzik kuyruğu"
+   ],
+   "note": "HyperFrames: TOMRİS · TCB-1601 logosu, ekip adları, İTÜ Gemi İnşaatı ve Deniz Bilimleri Fakültesi"
+  }
+ ]
+}

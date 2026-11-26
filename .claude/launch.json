@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "tomris-three", "runtimeExecutable": "sh", "runtimeArgs": ["-c", "cd tomris-three && exec python3 serve.py 8765"], "port": 8765 }
+  ]
+}

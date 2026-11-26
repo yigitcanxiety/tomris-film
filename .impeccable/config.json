@@ -1,0 +1,62 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "dark-glow",
+        "value": "*",
+        "files": [
+          "/Users/yigit/saas-motion-kit/films/tomris/index.html"
+        ],
+        "createdAt": "2026-11-25T09:54:27.822Z",
+        "reason": "agent: brief specifies a glowing thin cyan light-line motif for this video composition"
+      },
+      {
+        "rule": "clipped-overflow-container",
+        "value": "*",
+        "files": [
+          "/Users/yigit/saas-motion-kit/films/tomris/index.html"
+        ],
+        "createdAt": "2026-11-25T09:54:27.840Z",
+        "reason": "agent: overflow:hidden containers are intentional video mask reveals/odometer strips, no popovers"
+      },
+      {
+        "rule": "dark-glow",
+        "value": "*",
+        "files": [
+          "/Users/yigit/Library/Application Support/Claude/scratch-workspaces/42e931c8-3446-4efb-9392-649d248c3a81/69039389-ef12-408c-8a3d-12f8976ba2ca/scratch-2026-11-25-97ed37/tomris-overlays/opening/index.html"
+        ],
+        "createdAt": "2026-11-26T15:34:41.570Z",
+        "reason": "brief: video titles built from a glowing cyan light line on black; glow is the motif"
+      },
+      {
+        "rule": "clipped-overflow-container",
+        "value": "*",
+        "files": [
+          "/Users/yigit/Library/Application Support/Claude/scratch-workspaces/42e931c8-3446-4efb-9392-649d248c3a81/69039389-ef12-408c-8a3d-12f8976ba2ca/scratch-2026-11-25-97ed37/tomris-overlays/opening/index.html"
+        ],
+        "createdAt": "2026-11-26T15:34:41.588Z",
+        "reason": "brief: 2.39:1 letterbox picture area must clip; video frame, no popovers"
+      },
+      {
+        "rule": "dark-glow",
+        "value": "*",
+        "files": [
+          "/Users/yigit/Library/Application Support/Claude/scratch-workspaces/42e931c8-3446-4efb-9392-649d248c3a81/69039389-ef12-408c-8a3d-12f8976ba2ca/scratch-2026-11-25-97ed37/tomris-overlays/endcard/index.html"
+        ],
+        "createdAt": "2026-11-26T15:34:41.603Z",
+        "reason": "brief: video titles built from a glowing cyan light line on black; glow is the motif"
+      },
+      {
+        "rule": "clipped-overflow-container",
+        "value": "*",
+        "files": [
+          "/Users/yigit/Library/Application Support/Claude/scratch-workspaces/42e931c8-3446-4efb-9392-649d248c3a81/69039389-ef12-408c-8a3d-12f8976ba2ca/scratch-2026-11-25-97ed37/tomris-overlays/endcard/index.html"
+        ],
+        "createdAt": "2026-11-26T15:34:41.618Z",
+        "reason": "brief: 2.39:1 letterbox picture area must clip; video frame, no popovers"
+      }
+    ]
+  }
+}

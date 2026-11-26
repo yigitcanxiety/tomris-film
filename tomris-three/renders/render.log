@@ -1,0 +1,627 @@
+
+◆  Rendering tomris-three → /Users/yigit/Library/Application Support/Claude/scratch-workspaces/42e931c8-3446-4efb-9392-649d248c3a81/69039389-ef12-408c-8a3d-12f8976ba2ca/scratch-2026-11-25-97ed37/tomris-three/renders/looktest.mp4
+   30fps · draft · 1 workers
+   GPU: browser GPU (auto-detect)
+
+
+  Lint: 0 error(s), 1 warning(s) — run `hyperframes lint` for full output.
+  Continuing render despite lint issues. Use --strict to block errors.
+
+Checking browser...
+Browser: cache
+[INFO] [Render] Pipeline started {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","platform":"darwin","arch":"arm64","nodeVersion":"v26.9.0","fps":{"num":30,"den":1},"format":"mp4","quality":"draft","browserGpuMode":"auto","forceScreenshot":false,"protocolTimeout":300000,"browserTimeout":120000,"pageNavigationTimeout":60000,"playerReadyTimeout":45000}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"pipeline","status":"checkpoint","elapsedMs":3,"message":"started","format":"mp4","quality":"draft","browserGpuMode":"auto","forceScreenshot":false,"protocolTimeoutMs":300000,"pageNavigationTimeoutMs":60000,"playerReadyTimeoutMs":45000,"requestedWorkers":1}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"compile","status":"start","elapsedMs":5,"needsAlpha":false}
+  █░░░░░░░░░░░░░░░░░░░░░░░░  5%  Compiling composition
+@hf-progress {"code":"compile","pct":5}
+[INFO] Compiled composition metadata {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","entryFile":"index.html","staticDuration":12,"width":1920,"height":1080,"videoCount":0,"audioCount":0,"renderModeHints":{"recommendScreenshot":false,"reasons":[]}}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"compile","status":"end","elapsedMs":19,"durationMs":14,"needsAlpha":false}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"compile","status":"checkpoint","elapsedMs":20,"message":"composition metadata resolved","width":1920,"height":1080,"videoCount":0,"audioCount":0,"imageCount":0,"deviceScaleFactor":1,"forceScreenshot":false,"compositionHash":"7c312f63dc36251f"}
+[INFO] [Render] Low-memory render profile active: screenshot capture, auto-worker calibration skipped. Override with --no-low-memory-mode or PRODUCER_LOW_MEMORY_MODE=false. {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","totalMemMb":8192,"thresholdMb":8192}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"browser_probe","status":"start","elapsedMs":20,"forceScreenshot":true,"stagePhase":"calibrating"}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"browser_probe","status":"end","elapsedMs":21,"durationMs":1,"forceScreenshot":true,"stagePhase":"calibrating"}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"browser_probe","status":"checkpoint","elapsedMs":21,"message":"duration resolved","durationSeconds":12,"totalFrames":360,"compositionHash":"7c312f63dc36251f","beginFrameStalled":false}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"video_extract","status":"start","elapsedMs":21,"videoCount":0}
+  ██░░░░░░░░░░░░░░░░░░░░░░░  10%  Extracting video frames
+@hf-progress {"code":"extract_video","pct":10}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"video_extract","status":"end","elapsedMs":21,"durationMs":0,"videoCount":0}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"video_extract","status":"checkpoint","elapsedMs":22,"message":"frames resolved","videoCount":0,"extractedVideoCount":0,"totalFramesExtracted":0,"maxFramesPerVideo":0,"avgFramesPerExtractedVideo":null,"vfrPreflightCount":null,"vfrPreflightMs":null,"cacheHits":null,"cacheMisses":null,"transientRetries":null,"minVideoFrameCoverageRatio":null,"authoredTimedClipCount":2}
+[INFO] [Render] No HDR sources detected, rendering SDR {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b"}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"hdr_detection","status":"checkpoint","elapsedMs":22,"message":"resolved","requestedHdrMode":"auto","effectiveHdr":"sdr","nativeHdrVideoCount":0,"nativeHdrImageCount":0}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"audio_process","status":"start","elapsedMs":22,"audioCount":0}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"file_server","status":"start","elapsedMs":22,"reused":false}
+  █████░░░░░░░░░░░░░░░░░░░░  20%  Processing audio tracks
+@hf-progress {"code":"process_audio","pct":20}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"audio_process","status":"end","elapsedMs":25,"durationMs":3,"audioCount":0}
+  ██████░░░░░░░░░░░░░░░░░░░  25%  Starting frame capture
+@hf-progress {"code":"start_browsers","pct":25}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"file_server","status":"end","elapsedMs":27,"durationMs":5}
+  ██████░░░░░░░░░░░░░░░░░░░  25%  Checking browser GPU
+@hf-progress {"code":"start_browsers","pct":25}
+[hyperframes] browserGpuMode probe → hardware (WebGL renderer vendor="Google Inc. (Apple)" renderer="ANGLE (Apple, ANGLE Metal Renderer: Apple M3, Unspecified Version)")
+  ██████░░░░░░░░░░░░░░░░░░░  25%  Starting frame capture
+@hf-progress {"code":"start_browsers","pct":25}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"capture_calibration","status":"checkpoint","elapsedMs":360,"message":"skipped","requestedWorkers":1,"totalFrames":360,"htmlInCanvasDetected":false,"lowMemoryMode":true,"deInversionEligible":false,"deParallelRouterEligible":false}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"worker_resolution","status":"checkpoint","elapsedMs":360,"message":"resolved","workerCount":1}
+[INFO] streaming-encode gate {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","enabled":true,"reason":"single_worker","configFlag":true,"durationCapEnabled":false,"outputFormat":"mp4","workerCount":1,"durationSeconds":12,"maxDurationSeconds":240}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"capture_strategy","status":"checkpoint","elapsedMs":361,"message":"resolved","workerCount":1,"forceScreenshot":true,"captureBeyondViewport":null,"useStreamingEncode":true,"useLayeredComposite":false,"usePageSideCompositing":false,"hasHdrContent":false,"hasShaderTransitions":false,"isPngSequence":false}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"capture_streaming","status":"start","elapsedMs":361,"stagePhase":"capturing","workerCount":1,"forceScreenshot":true,"totalFrames":360,"framesCompleted":0,"captureMode":"screenshot","captureOperation":"captureScreenshot"}
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[Browser:WARN] [.WebGL-0x1340083de00] GL_INVALID_OPERATION: glDrawElements: Mismatch between texture format and sampler type (signed/unsigned/float/shadow).
+[engine] fast capture falls back to screenshot: render-mode compatibility hint forced screenshot capture (e.g. raw requestAnimationFrame composition).
+  ██████░░░░░░░░░░░░░░░░░░░  25%  Streaming frame 1/360
+@hf-progress {"code":"capture","done":1,"total":360,"pct":25}
+  ██████░░░░░░░░░░░░░░░░░░░  25%  Streaming frame 3/360
+@hf-progress {"code":"capture","done":3,"total":360,"pct":25}
+  ██████░░░░░░░░░░░░░░░░░░░  26%  Streaming frame 5/360
+@hf-progress {"code":"capture","done":5,"total":360,"pct":26}
+  ██████░░░░░░░░░░░░░░░░░░░  26%  Streaming frame 7/360
+@hf-progress {"code":"capture","done":7,"total":360,"pct":26}
+  ██████░░░░░░░░░░░░░░░░░░░  26%  Streaming frame 9/360
+@hf-progress {"code":"capture","done":9,"total":360,"pct":26}
+  ██████░░░░░░░░░░░░░░░░░░░  27%  Streaming frame 11/360
+@hf-progress {"code":"capture","done":11,"total":360,"pct":27}
+  ██████░░░░░░░░░░░░░░░░░░░  27%  Streaming frame 13/360
+@hf-progress {"code":"capture","done":13,"total":360,"pct":27}
+  ██████░░░░░░░░░░░░░░░░░░░  27%  Streaming frame 15/360
+@hf-progress {"code":"capture","done":15,"total":360,"pct":27}
+  ███████░░░░░░░░░░░░░░░░░░  28%  Streaming frame 17/360
+@hf-progress {"code":"capture","done":17,"total":360,"pct":28}
+  ███████░░░░░░░░░░░░░░░░░░  28%  Streaming frame 19/360
+@hf-progress {"code":"capture","done":19,"total":360,"pct":28}
+  ███████░░░░░░░░░░░░░░░░░░  28%  Streaming frame 21/360
+@hf-progress {"code":"capture","done":21,"total":360,"pct":28}
+  ███████░░░░░░░░░░░░░░░░░░  29%  Streaming frame 23/360
+@hf-progress {"code":"capture","done":23,"total":360,"pct":29}
+  ███████░░░░░░░░░░░░░░░░░░  29%  Streaming frame 24/360
+@hf-progress {"code":"capture","done":24,"total":360,"pct":29}
+  ███████░░░░░░░░░░░░░░░░░░  29%  Streaming frame 26/360
+@hf-progress {"code":"capture","done":26,"total":360,"pct":29}
+  ███████░░░░░░░░░░░░░░░░░░  29%  Streaming frame 28/360
+@hf-progress {"code":"capture","done":28,"total":360,"pct":29}
+  ███████░░░░░░░░░░░░░░░░░░  30%  Streaming frame 30/360
+@hf-progress {"code":"capture","done":30,"total":360,"pct":30}
+  ███████░░░░░░░░░░░░░░░░░░  30%  Streaming frame 32/360
+@hf-progress {"code":"capture","done":32,"total":360,"pct":30}
+  ███████░░░░░░░░░░░░░░░░░░  30%  Streaming frame 34/360
+@hf-progress {"code":"capture","done":34,"total":360,"pct":30}
+  ███████░░░░░░░░░░░░░░░░░░  31%  Streaming frame 36/360
+@hf-progress {"code":"capture","done":36,"total":360,"pct":31}
+  ███████░░░░░░░░░░░░░░░░░░  31%  Streaming frame 38/360
+@hf-progress {"code":"capture","done":38,"total":360,"pct":31}
+  ███████░░░░░░░░░░░░░░░░░░  31%  Streaming frame 40/360
+@hf-progress {"code":"capture","done":40,"total":360,"pct":31}
+  ███████░░░░░░░░░░░░░░░░░░  31%  Streaming frame 42/360
+@hf-progress {"code":"capture","done":42,"total":360,"pct":31}
+  ████████░░░░░░░░░░░░░░░░░  32%  Streaming frame 44/360
+@hf-progress {"code":"capture","done":44,"total":360,"pct":32}
+  ████████░░░░░░░░░░░░░░░░░  32%  Streaming frame 46/360
+@hf-progress {"code":"capture","done":46,"total":360,"pct":32}
+  ████████░░░░░░░░░░░░░░░░░  32%  Streaming frame 48/360
+@hf-progress {"code":"capture","done":48,"total":360,"pct":32}
+  ████████░░░░░░░░░░░░░░░░░  33%  Streaming frame 50/360
+@hf-progress {"code":"capture","done":50,"total":360,"pct":33}
+  ████████░░░░░░░░░░░░░░░░░  33%  Streaming frame 52/360
+@hf-progress {"code":"capture","done":52,"total":360,"pct":33}
+  ████████░░░░░░░░░░░░░░░░░  33%  Streaming frame 54/360
+@hf-progress {"code":"capture","done":54,"total":360,"pct":33}
+  ████████░░░░░░░░░░░░░░░░░  34%  Streaming frame 56/360
+@hf-progress {"code":"capture","done":56,"total":360,"pct":34}
+  ████████░░░░░░░░░░░░░░░░░  34%  Streaming frame 58/360
+@hf-progress {"code":"capture","done":58,"total":360,"pct":34}
+  ████████░░░░░░░░░░░░░░░░░  34%  Streaming frame 60/360
+@hf-progress {"code":"capture","done":60,"total":360,"pct":34}
+  ████████░░░░░░░░░░░░░░░░░  34%  Streaming frame 62/360
+@hf-progress {"code":"capture","done":62,"total":360,"pct":34}
+  ████████░░░░░░░░░░░░░░░░░  35%  Streaming frame 64/360
+@hf-progress {"code":"capture","done":64,"total":360,"pct":35}
+  ████████░░░░░░░░░░░░░░░░░  35%  Streaming frame 66/360
+@hf-progress {"code":"capture","done":66,"total":360,"pct":35}
+  ████████░░░░░░░░░░░░░░░░░  35%  Streaming frame 68/360
+@hf-progress {"code":"capture","done":68,"total":360,"pct":35}
+  █████████░░░░░░░░░░░░░░░░  36%  Streaming frame 70/360
+@hf-progress {"code":"capture","done":70,"total":360,"pct":36}
+  █████████░░░░░░░░░░░░░░░░  36%  Streaming frame 72/360
+@hf-progress {"code":"capture","done":72,"total":360,"pct":36}
+  █████████░░░░░░░░░░░░░░░░  36%  Streaming frame 74/360
+@hf-progress {"code":"capture","done":74,"total":360,"pct":36}
+  █████████░░░░░░░░░░░░░░░░  37%  Streaming frame 76/360
+@hf-progress {"code":"capture","done":76,"total":360,"pct":37}
+  █████████░░░░░░░░░░░░░░░░  37%  Streaming frame 78/360
+@hf-progress {"code":"capture","done":78,"total":360,"pct":37}
+  █████████░░░░░░░░░░░░░░░░  37%  Streaming frame 80/360
+@hf-progress {"code":"capture","done":80,"total":360,"pct":37}
+  █████████░░░░░░░░░░░░░░░░  38%  Streaming frame 82/360
+@hf-progress {"code":"capture","done":82,"total":360,"pct":38}
+  █████████░░░░░░░░░░░░░░░░  38%  Streaming frame 84/360
+@hf-progress {"code":"capture","done":84,"total":360,"pct":38}
+  █████████░░░░░░░░░░░░░░░░  38%  Streaming frame 86/360
+@hf-progress {"code":"capture","done":86,"total":360,"pct":38}
+  █████████░░░░░░░░░░░░░░░░  38%  Streaming frame 88/360
+@hf-progress {"code":"capture","done":88,"total":360,"pct":38}
+  █████████░░░░░░░░░░░░░░░░  39%  Streaming frame 90/360
+@hf-progress {"code":"capture","done":90,"total":360,"pct":39}
+  █████████░░░░░░░░░░░░░░░░  39%  Streaming frame 92/360
+@hf-progress {"code":"capture","done":92,"total":360,"pct":39}
+  █████████░░░░░░░░░░░░░░░░  39%  Streaming frame 94/360
+@hf-progress {"code":"capture","done":94,"total":360,"pct":39}
+  ██████████░░░░░░░░░░░░░░░  40%  Streaming frame 96/360
+@hf-progress {"code":"capture","done":96,"total":360,"pct":40}
+  ██████████░░░░░░░░░░░░░░░  40%  Streaming frame 98/360
+@hf-progress {"code":"capture","done":98,"total":360,"pct":40}
+  ██████████░░░░░░░░░░░░░░░  40%  Streaming frame 100/360
+@hf-progress {"code":"capture","done":100,"total":360,"pct":40}
+  ██████████░░░░░░░░░░░░░░░  41%  Streaming frame 102/360
+@hf-progress {"code":"capture","done":102,"total":360,"pct":41}
+  ██████████░░░░░░░░░░░░░░░  41%  Streaming frame 104/360
+@hf-progress {"code":"capture","done":104,"total":360,"pct":41}
+  ██████████░░░░░░░░░░░░░░░  41%  Streaming frame 106/360
+@hf-progress {"code":"capture","done":106,"total":360,"pct":41}
+  ██████████░░░░░░░░░░░░░░░  42%  Streaming frame 108/360
+@hf-progress {"code":"capture","done":108,"total":360,"pct":42}
+  ██████████░░░░░░░░░░░░░░░  42%  Streaming frame 110/360
+@hf-progress {"code":"capture","done":110,"total":360,"pct":42}
+  ██████████░░░░░░░░░░░░░░░  42%  Streaming frame 112/360
+@hf-progress {"code":"capture","done":112,"total":360,"pct":42}
+  ██████████░░░░░░░░░░░░░░░  42%  Streaming frame 114/360
+@hf-progress {"code":"capture","done":114,"total":360,"pct":42}
+  ██████████░░░░░░░░░░░░░░░  43%  Streaming frame 116/360
+@hf-progress {"code":"capture","done":116,"total":360,"pct":43}
+  ██████████░░░░░░░░░░░░░░░  43%  Streaming frame 118/360
+@hf-progress {"code":"capture","done":118,"total":360,"pct":43}
+  ██████████░░░░░░░░░░░░░░░  43%  Streaming frame 120/360
+@hf-progress {"code":"capture","done":120,"total":360,"pct":43}
+  ███████████░░░░░░░░░░░░░░  44%  Streaming frame 122/360
+@hf-progress {"code":"capture","done":122,"total":360,"pct":44}
+  ███████████░░░░░░░░░░░░░░  44%  Streaming frame 124/360
+@hf-progress {"code":"capture","done":124,"total":360,"pct":44}
+  ███████████░░░░░░░░░░░░░░  44%  Streaming frame 126/360
+@hf-progress {"code":"capture","done":126,"total":360,"pct":44}
+  ███████████░░░░░░░░░░░░░░  45%  Streaming frame 128/360
+@hf-progress {"code":"capture","done":128,"total":360,"pct":45}
+  ███████████░░░░░░░░░░░░░░  45%  Streaming frame 130/360
+@hf-progress {"code":"capture","done":130,"total":360,"pct":45}
+  ███████████░░░░░░░░░░░░░░  45%  Streaming frame 132/360
+@hf-progress {"code":"capture","done":132,"total":360,"pct":45}
+  ███████████░░░░░░░░░░░░░░  45%  Streaming frame 134/360
+@hf-progress {"code":"capture","done":134,"total":360,"pct":45}
+  ███████████░░░░░░░░░░░░░░  46%  Streaming frame 136/360
+@hf-progress {"code":"capture","done":136,"total":360,"pct":46}
+  ███████████░░░░░░░░░░░░░░  46%  Streaming frame 138/360
+@hf-progress {"code":"capture","done":138,"total":360,"pct":46}
+  ███████████░░░░░░░░░░░░░░  46%  Streaming frame 140/360
+@hf-progress {"code":"capture","done":140,"total":360,"pct":46}
+  ███████████░░░░░░░░░░░░░░  47%  Streaming frame 142/360
+@hf-progress {"code":"capture","done":142,"total":360,"pct":47}
+  ███████████░░░░░░░░░░░░░░  47%  Streaming frame 144/360
+@hf-progress {"code":"capture","done":144,"total":360,"pct":47}
+  ███████████░░░░░░░░░░░░░░  47%  Streaming frame 146/360
+@hf-progress {"code":"capture","done":146,"total":360,"pct":47}
+  ████████████░░░░░░░░░░░░░  48%  Streaming frame 148/360
+@hf-progress {"code":"capture","done":148,"total":360,"pct":48}
+  ████████████░░░░░░░░░░░░░  48%  Streaming frame 150/360
+@hf-progress {"code":"capture","done":150,"total":360,"pct":48}
+  ████████████░░░░░░░░░░░░░  48%  Streaming frame 152/360
+@hf-progress {"code":"capture","done":152,"total":360,"pct":48}
+  ████████████░░░░░░░░░░░░░  49%  Streaming frame 154/360
+@hf-progress {"code":"capture","done":154,"total":360,"pct":49}
+  ████████████░░░░░░░░░░░░░  49%  Streaming frame 156/360
+@hf-progress {"code":"capture","done":156,"total":360,"pct":49}
+  ████████████░░░░░░░░░░░░░  49%  Streaming frame 158/360
+@hf-progress {"code":"capture","done":158,"total":360,"pct":49}
+  ████████████░░░░░░░░░░░░░  49%  Streaming frame 160/360
+@hf-progress {"code":"capture","done":160,"total":360,"pct":49}
+  ████████████░░░░░░░░░░░░░  50%  Streaming frame 162/360
+@hf-progress {"code":"capture","done":162,"total":360,"pct":50}
+  ████████████░░░░░░░░░░░░░  50%  Streaming frame 164/360
+@hf-progress {"code":"capture","done":164,"total":360,"pct":50}
+  ████████████░░░░░░░░░░░░░  50%  Streaming frame 166/360
+@hf-progress {"code":"capture","done":166,"total":360,"pct":50}
+  ████████████░░░░░░░░░░░░░  51%  Streaming frame 168/360
+@hf-progress {"code":"capture","done":168,"total":360,"pct":51}
+  ████████████░░░░░░░░░░░░░  51%  Streaming frame 170/360
+@hf-progress {"code":"capture","done":170,"total":360,"pct":51}
+  ████████████░░░░░░░░░░░░░  51%  Streaming frame 172/360
+@hf-progress {"code":"capture","done":172,"total":360,"pct":51}
+  █████████████░░░░░░░░░░░░  52%  Streaming frame 174/360
+@hf-progress {"code":"capture","done":174,"total":360,"pct":52}
+  █████████████░░░░░░░░░░░░  52%  Streaming frame 176/360
+@hf-progress {"code":"capture","done":176,"total":360,"pct":52}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"capture_streaming","status":"checkpoint","elapsedMs":30364,"message":"stage still running","stagePhase":"capturing","workerCount":1,"forceScreenshot":true,"totalFrames":360,"framesCompleted":177,"captureMode":"screenshot","captureOperation":"captureScreenshot","heartbeatIndex":1,"stageElapsedMs":30003}
+  █████████████░░░░░░░░░░░░  52%  Streaming frame 178/360
+@hf-progress {"code":"capture","done":178,"total":360,"pct":52}
+  █████████████░░░░░░░░░░░░  53%  Streaming frame 180/360
+@hf-progress {"code":"capture","done":180,"total":360,"pct":53}
+  █████████████░░░░░░░░░░░░  53%  Streaming frame 182/360
+@hf-progress {"code":"capture","done":182,"total":360,"pct":53}
+  █████████████░░░░░░░░░░░░  53%  Streaming frame 184/360
+@hf-progress {"code":"capture","done":184,"total":360,"pct":53}
+  █████████████░░░░░░░░░░░░  53%  Streaming frame 186/360
+@hf-progress {"code":"capture","done":186,"total":360,"pct":53}
+  █████████████░░░░░░░░░░░░  54%  Streaming frame 188/360
+@hf-progress {"code":"capture","done":188,"total":360,"pct":54}
+  █████████████░░░░░░░░░░░░  54%  Streaming frame 190/360
+@hf-progress {"code":"capture","done":190,"total":360,"pct":54}
+  █████████████░░░░░░░░░░░░  54%  Streaming frame 192/360
+@hf-progress {"code":"capture","done":192,"total":360,"pct":54}
+  █████████████░░░░░░░░░░░░  55%  Streaming frame 194/360
+@hf-progress {"code":"capture","done":194,"total":360,"pct":55}
+  █████████████░░░░░░░░░░░░  55%  Streaming frame 196/360
+@hf-progress {"code":"capture","done":196,"total":360,"pct":55}
+  █████████████░░░░░░░░░░░░  55%  Streaming frame 198/360
+@hf-progress {"code":"capture","done":198,"total":360,"pct":55}
+  ██████████████░░░░░░░░░░░  56%  Streaming frame 200/360
+@hf-progress {"code":"capture","done":200,"total":360,"pct":56}
+  ██████████████░░░░░░░░░░░  56%  Streaming frame 202/360
+@hf-progress {"code":"capture","done":202,"total":360,"pct":56}
+  ██████████████░░░░░░░░░░░  56%  Streaming frame 204/360
+@hf-progress {"code":"capture","done":204,"total":360,"pct":56}
+  ██████████████░░░░░░░░░░░  56%  Streaming frame 206/360
+@hf-progress {"code":"capture","done":206,"total":360,"pct":56}
+  ██████████████░░░░░░░░░░░  57%  Streaming frame 208/360
+@hf-progress {"code":"capture","done":208,"total":360,"pct":57}
+  ██████████████░░░░░░░░░░░  57%  Streaming frame 210/360
+@hf-progress {"code":"capture","done":210,"total":360,"pct":57}
+  ██████████████░░░░░░░░░░░  57%  Streaming frame 212/360
+@hf-progress {"code":"capture","done":212,"total":360,"pct":57}
+  ██████████████░░░░░░░░░░░  58%  Streaming frame 214/360
+@hf-progress {"code":"capture","done":214,"total":360,"pct":58}
+  ██████████████░░░░░░░░░░░  58%  Streaming frame 216/360
+@hf-progress {"code":"capture","done":216,"total":360,"pct":58}
+  ██████████████░░░░░░░░░░░  58%  Streaming frame 218/360
+@hf-progress {"code":"capture","done":218,"total":360,"pct":58}
+  ██████████████░░░░░░░░░░░  59%  Streaming frame 220/360
+@hf-progress {"code":"capture","done":220,"total":360,"pct":59}
+  ██████████████░░░░░░░░░░░  59%  Streaming frame 222/360
+@hf-progress {"code":"capture","done":222,"total":360,"pct":59}
+  ██████████████░░░░░░░░░░░  59%  Streaming frame 224/360
+@hf-progress {"code":"capture","done":224,"total":360,"pct":59}
+  ███████████████░░░░░░░░░░  60%  Streaming frame 226/360
+@hf-progress {"code":"capture","done":226,"total":360,"pct":60}
+  ███████████████░░░░░░░░░░  60%  Streaming frame 228/360
+@hf-progress {"code":"capture","done":228,"total":360,"pct":60}
+  ███████████████░░░░░░░░░░  60%  Streaming frame 230/360
+@hf-progress {"code":"capture","done":230,"total":360,"pct":60}
+  ███████████████░░░░░░░░░░  60%  Streaming frame 232/360
+@hf-progress {"code":"capture","done":232,"total":360,"pct":60}
+  ███████████████░░░░░░░░░░  61%  Streaming frame 234/360
+@hf-progress {"code":"capture","done":234,"total":360,"pct":61}
+  ███████████████░░░░░░░░░░  61%  Streaming frame 236/360
+@hf-progress {"code":"capture","done":236,"total":360,"pct":61}
+  ███████████████░░░░░░░░░░  61%  Streaming frame 238/360
+@hf-progress {"code":"capture","done":238,"total":360,"pct":61}
+  ███████████████░░░░░░░░░░  62%  Streaming frame 240/360
+@hf-progress {"code":"capture","done":240,"total":360,"pct":62}
+  ███████████████░░░░░░░░░░  62%  Streaming frame 242/360
+@hf-progress {"code":"capture","done":242,"total":360,"pct":62}
+  ███████████████░░░░░░░░░░  62%  Streaming frame 244/360
+@hf-progress {"code":"capture","done":244,"total":360,"pct":62}
+  ███████████████░░░░░░░░░░  63%  Streaming frame 246/360
+@hf-progress {"code":"capture","done":246,"total":360,"pct":63}
+  ███████████████░░░░░░░░░░  63%  Streaming frame 248/360
+@hf-progress {"code":"capture","done":248,"total":360,"pct":63}
+  ███████████████░░░░░░░░░░  63%  Streaming frame 250/360
+@hf-progress {"code":"capture","done":250,"total":360,"pct":63}
+  ████████████████░░░░░░░░░  64%  Streaming frame 252/360
+@hf-progress {"code":"capture","done":252,"total":360,"pct":64}
+  ████████████████░░░░░░░░░  64%  Streaming frame 254/360
+@hf-progress {"code":"capture","done":254,"total":360,"pct":64}
+  ████████████████░░░░░░░░░  64%  Streaming frame 256/360
+@hf-progress {"code":"capture","done":256,"total":360,"pct":64}
+  ████████████████░░░░░░░░░  64%  Streaming frame 258/360
+@hf-progress {"code":"capture","done":258,"total":360,"pct":64}
+  ████████████████░░░░░░░░░  65%  Streaming frame 260/360
+@hf-progress {"code":"capture","done":260,"total":360,"pct":65}
+  ████████████████░░░░░░░░░  65%  Streaming frame 262/360
+@hf-progress {"code":"capture","done":262,"total":360,"pct":65}
+  ████████████████░░░░░░░░░  65%  Streaming frame 264/360
+@hf-progress {"code":"capture","done":264,"total":360,"pct":65}
+  ████████████████░░░░░░░░░  66%  Streaming frame 266/360
+@hf-progress {"code":"capture","done":266,"total":360,"pct":66}
+  ████████████████░░░░░░░░░  66%  Streaming frame 268/360
+@hf-progress {"code":"capture","done":268,"total":360,"pct":66}
+  ████████████████░░░░░░░░░  66%  Streaming frame 270/360
+@hf-progress {"code":"capture","done":270,"total":360,"pct":66}
+  ████████████████░░░░░░░░░  67%  Streaming frame 272/360
+@hf-progress {"code":"capture","done":272,"total":360,"pct":67}
+  ████████████████░░░░░░░░░  67%  Streaming frame 275/360
+@hf-progress {"code":"capture","done":275,"total":360,"pct":67}
+  ████████████████░░░░░░░░░  67%  Streaming frame 278/360
+@hf-progress {"code":"capture","done":278,"total":360,"pct":67}
+  █████████████████░░░░░░░░  68%  Streaming frame 281/360
+@hf-progress {"code":"capture","done":281,"total":360,"pct":68}
+  █████████████████░░░░░░░░  68%  Streaming frame 284/360
+@hf-progress {"code":"capture","done":284,"total":360,"pct":68}
+  █████████████████░░░░░░░░  69%  Streaming frame 287/360
+@hf-progress {"code":"capture","done":287,"total":360,"pct":69}
+  █████████████████░░░░░░░░  69%  Streaming frame 290/360
+@hf-progress {"code":"capture","done":290,"total":360,"pct":69}
+  █████████████████░░░░░░░░  70%  Streaming frame 293/360
+@hf-progress {"code":"capture","done":293,"total":360,"pct":70}
+  █████████████████░░░░░░░░  70%  Streaming frame 296/360
+@hf-progress {"code":"capture","done":296,"total":360,"pct":70}
+  █████████████████░░░░░░░░  71%  Streaming frame 299/360
+@hf-progress {"code":"capture","done":299,"total":360,"pct":71}
+  █████████████████░░░░░░░░  71%  Streaming frame 302/360
+@hf-progress {"code":"capture","done":302,"total":360,"pct":71}
+  █████████████████░░░░░░░░  71%  Streaming frame 304/360
+@hf-progress {"code":"capture","done":304,"total":360,"pct":71}
+  ██████████████████░░░░░░░  72%  Streaming frame 306/360
+@hf-progress {"code":"capture","done":306,"total":360,"pct":72}
+  ██████████████████░░░░░░░  72%  Streaming frame 308/360
+@hf-progress {"code":"capture","done":308,"total":360,"pct":72}
+  ██████████████████░░░░░░░  73%  Streaming frame 311/360
+@hf-progress {"code":"capture","done":311,"total":360,"pct":73}
+  ██████████████████░░░░░░░  73%  Streaming frame 314/360
+@hf-progress {"code":"capture","done":314,"total":360,"pct":73}
+  ██████████████████░░░░░░░  73%  Streaming frame 317/360
+@hf-progress {"code":"capture","done":317,"total":360,"pct":73}
+  ██████████████████░░░░░░░  74%  Streaming frame 319/360
+@hf-progress {"code":"capture","done":319,"total":360,"pct":74}
+  ██████████████████░░░░░░░  74%  Streaming frame 322/360
+@hf-progress {"code":"capture","done":322,"total":360,"pct":74}
+  ██████████████████░░░░░░░  75%  Streaming frame 324/360
+@hf-progress {"code":"capture","done":324,"total":360,"pct":75}
+  ██████████████████░░░░░░░  75%  Streaming frame 327/360
+@hf-progress {"code":"capture","done":327,"total":360,"pct":75}
+  ██████████████████░░░░░░░  75%  Streaming frame 330/360
+@hf-progress {"code":"capture","done":330,"total":360,"pct":75}
+  ███████████████████░░░░░░  76%  Streaming frame 333/360
+@hf-progress {"code":"capture","done":333,"total":360,"pct":76}
+  ███████████████████░░░░░░  76%  Streaming frame 336/360
+@hf-progress {"code":"capture","done":336,"total":360,"pct":76}
+  ███████████████████░░░░░░  77%  Streaming frame 339/360
+@hf-progress {"code":"capture","done":339,"total":360,"pct":77}
+  ███████████████████░░░░░░  77%  Streaming frame 342/360
+@hf-progress {"code":"capture","done":342,"total":360,"pct":77}
+  ███████████████████░░░░░░  78%  Streaming frame 345/360
+@hf-progress {"code":"capture","done":345,"total":360,"pct":78}
+  ███████████████████░░░░░░  78%  Streaming frame 348/360
+@hf-progress {"code":"capture","done":348,"total":360,"pct":78}
+  ███████████████████░░░░░░  78%  Streaming frame 350/360
+@hf-progress {"code":"capture","done":350,"total":360,"pct":78}
+  ███████████████████░░░░░░  79%  Streaming frame 352/360
+@hf-progress {"code":"capture","done":352,"total":360,"pct":79}
+  ███████████████████░░░░░░  79%  Streaming frame 354/360
+@hf-progress {"code":"capture","done":354,"total":360,"pct":79}
+  ███████████████████░░░░░░  79%  Streaming frame 356/360
+@hf-progress {"code":"capture","done":356,"total":360,"pct":79}
+  ████████████████████░░░░░  80%  Streaming frame 358/360
+@hf-progress {"code":"capture","done":358,"total":360,"pct":80}
+  ████████████████████░░░░░  80%  Streaming frame 360/360
+@hf-progress {"code":"capture","done":360,"total":360,"pct":80}
+  ██████████████████████░░░  90%  Encoding frame 350/360
+@hf-progress {"code":"encode","done":350,"total":360,"pct":90}
+  ██████████████████████░░░  90%  Encoding frame 360/360
+@hf-progress {"code":"encode","done":360,"total":360,"pct":90}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"capture_streaming","status":"end","elapsedMs":59875,"durationMs":59514,"stagePhase":"capturing","workerCount":1,"forceScreenshot":true,"totalFrames":360,"framesCompleted":360,"captureMode":"screenshot","captureOperation":"encode"}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"assemble","status":"start","elapsedMs":59881,"stagePhase":"capturing","hasAudio":false,"workerCount":1,"forceScreenshot":true,"totalFrames":360,"framesCompleted":360,"captureMode":"screenshot","captureOperation":"encode"}
+  ██████████████████████░░░  90%  Assembling final video
+@hf-progress {"code":"assemble","done":0,"total":12,"pct":90}
+  ████████████████████████░  99%  Assembling final video
+@hf-progress {"code":"assemble","done":12,"total":12,"pct":99}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"assemble","status":"end","elapsedMs":60036,"durationMs":155,"stagePhase":"capturing","hasAudio":false,"workerCount":1,"forceScreenshot":true,"totalFrames":360,"framesCompleted":360,"captureMode":"screenshot","captureOperation":"encode"}
+[INFO] [Render:trace] {"renderJobId":"3d7b86ed-6693-484c-a51b-05ae9328326b","phase":"pipeline","status":"checkpoint","elapsedMs":60113,"message":"artifact validated","totalElapsedMs":60113}
+  █████████████████████████  100%  Render complete
+
+◇  /Users/yigit/Library/Application Support/Claude/scratch-workspaces/42e931c8-3446-4efb-9392-649d248c3a81/69039389-ef12-408c-8a3d-12f8976ba2ca/scratch-2026-11-25-97ed37/tomris-three/renders/looktest.mp4
+   11.6 MB · 12.0s video · rendered in 1m 0.2s
+   screenshot capture · hardware gpu · compile 0.0s · extract 0.0s · audio 0.0s · probe 0.0s · setup 0.3s · capture 59.5s · encode (during capture) 59.5s · assemble 0.2s
+   Keep editing by chatting with Framey in the HyperFrames desktop app → https://hyperframes.studio/studio/download?src=cli
+@hf-result {"version":1,"operation":"render","reference_background":{"kind":"solid","rgb":[0,0,0]}}
+npx --yes hyperframes@0.9.94 render --quality draft --workers 1 --output   28.82s user 4.98s system 54% cpu 1:02.20 total

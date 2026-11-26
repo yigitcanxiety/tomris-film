@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, height=1080" />
+<title>TOMRİS film 3D</title>
+<script src="assets/vendor/gsap.min.js"></script>
+<script type="importmap">
+  { "imports": { "three": "./assets/vendor/three/three.module.js", "three/addons/": "./assets/vendor/three/addons/" } }
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#000}
+#root{position:relative;width:1920px;height:1080px;overflow:hidden;background:#000}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px}
+/* 2.39:1 picture area, letterboxed */
+#gl{position:absolute;left:0;top:138px;width:1920px;height:804px;display:block}
+</style>
+</head>
+<body>
+<!-- The whole 70 s timeline; 3D shots only (overlay and black-flash frames render black and are
+     replaced by the edit in tomris-film/build.sh). Render in chunks with --start/--end. -->
+<div id="root" data-composition-id="main" data-start="0" data-duration="70" data-width="1920" data-height="1080" data-fps="30">
+  <div id="stage" class="clip" data-start="0" data-duration="70" data-track-index="0"><canvas id="gl" width="1920" height="804"></canvas></div>
+</div>
+<script>
+(function () {
+  const tl = gsap.timeline({ paused: true });
+  tl.to({}, { duration: 70 }, 0);              // the film is drawn by three.js from the seek time
+  window.__timelines = window.__timelines || {};
+  window.__timelines["main"] = tl;
+})();
+</script>
+<script type="module">
+import { createEngine } from "./assets/js/engine.js";
+import { createFilm, FPS } from "./assets/js/film.js";
+
+const q = new URLSearchParams(location.search);
+const SUB = +(q.get("sub") || 8);
+window.__hf = window.__hf || {}; window.__hf.buildReady = window.__hf.buildReady || {};
+let engine = null, film = null;
+function renderAt(t) {
+  if (!engine) return;
+  const frame = Math.round(t * FPS), ft = frame / FPS;
+  if (!film.stateAt(ft)) {                      // overlay / black flash: black picture
+    const r = engine.renderer; r.setRenderTarget(null); r.setClearColor(0x000000, 1); r.clear(true, true, true); return;
+  }
+  engine.renderFrame(ft, (ts) => film.stateAt(ts, ft), { subframes: SUB, fps: FPS, shutter: 0.125, frame });
+}
+window.__hf.buildReady["tomris-3d"] = (async () => {
+  engine = await createEngine(document.getElementById("gl"), {
+    skies: { sunset: "hdri/belfast_sunset_puresky_2k.hdr", dusk: "hdri/qwantani_dusk_2_puresky_2k.hdr" },
+  });
+  const shots = await (await fetch("assets/shots.json")).json();
+  film = await createFilm(engine, shots);
+  window.__tomris = { engine, film, renderAt };
+  for (const t of film.warmTimes) renderAt(t);   // compiles every program used by every setup
+  renderAt(window.__hfThreeTime || 0);
+})();
+window.addEventListener("hf-seek", (e) => renderAt(e.detail.time));
+</script>
+</body>
+</html>

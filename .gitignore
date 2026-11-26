@@ -1,0 +1,7 @@
+node_modules/
+.hyperframes/
+*.blend1
+.DS_Store
+tomris-three/renders/snap/
+__pycache__/
+.render.lock/

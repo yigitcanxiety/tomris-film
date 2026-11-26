@@ -187,15 +187,18 @@ function flagMaterial(map) {
         vec3 W = vec3(0.2126, 0.7152, 0.0722); float al = max(dot(diffuseColor.rgb, W), 1e-3);
         float ld = dot(reflectedLight.directDiffuse, W) / al, li = dot(reflectedLight.indirectDiffuse, W) / al;
         reflectedLight.directDiffuse = mix(reflectedLight.directDiffuse, ld * diffuseColor.rgb, 0.9);
-        reflectedLight.indirectDiffuse = mix(reflectedLight.indirectDiffuse, li * diffuseColor.rgb, 0.9); }`)
+        reflectedLight.indirectDiffuse = mix(reflectedLight.indirectDiffuse, li * diffuseColor.rgb, 0.9);
+        // bunting has almost no sheen: a weak, neutral specular (a warm sun glint would turn the red salmon)
+        reflectedLight.directSpecular = vec3(dot(reflectedLight.directSpecular, W)) * 0.35;
+        reflectedLight.indirectSpecular = vec3(dot(reflectedLight.indirectSpecular, W)) * 0.5; }`)
       .replace("#include <opaque_fragment>", `outgoingLight *= uFlagWB;
         { // keep saturated bunting out of the tone curve's shoulder (where red would bleach toward orange/pink)
           float mx = max(outgoingLight.r, max(outgoingLight.g, outgoingLight.b));
           float sat = 1.0 - min(diffuseColor.g, diffuseColor.b) / max(diffuseColor.r, 1e-3);
-          float K = 1.8; outgoingLight *= mix(1.0, K / max(K, mx), smoothstep(0.5, 0.9, sat)); }
+          float K = 1.1; outgoingLight *= mix(1.0, K / max(K, mx), smoothstep(0.5, 0.9, sat)); }
         #include <opaque_fragment>`);
   };
-  m.customProgramCacheKey = () => "tomris-flag3";
+  m.customProgramCacheKey = () => "tomris-flag4";
   return m;
 }
 
@@ -252,7 +255,7 @@ export async function loadBoat(url, renderer) {
     deck_antiskid: surface("deck_antiskid", { color: 0x6c7177, roughness: 0.86, ...A }, { kind: "deck" }),
     weapon_grey: surface("weapon_grey", { color: 0x6f747a, roughness: 0.55, ...A }, { kind: "paint", peel: 0.00004 }),
     missile_grey: surface("missile_grey", { color: 0x9a9fa4, roughness: 0.42, ...A }, { kind: "paint", peel: 0.00003 }),
-    interior_grey: surface("interior_grey", { color: 0x26282b, roughness: 0.75, ...A }),
+    interior_grey: surface("interior_grey", { color: 0x3a3e43, roughness: 0.75, ...A }),
     rubrail_black: surface("rubrail_black", { color: 0x131416, roughness: 0.74, ...A }),
     gunmetal: surface("gunmetal", { color: 0x2a2c2f, roughness: 0.42, metalness: 0.55, ...A }),
     stainless: surface("stainless", { color: 0xc3c6ca, roughness: 0.24, metalness: 1, ...A }),
@@ -261,11 +264,12 @@ export async function loadBoat(url, renderer) {
     halyard: surface("halyard", { color: 0x2a2a28, roughness: 0.85 }),
     letter_white: surface("letter_white", { color: 0xe4e5e2, roughness: 0.5, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2, ...A }),
     beacon_amber: new THREE.MeshPhysicalMaterial({ name: "beacon_amber", color: 0xb8761c, roughness: 0.18, clearcoat: 1, envMapIntensity: 1.2 }),
-    glass_tinted: new THREE.MeshPhysicalMaterial({ name: "glass_tinted", color: 0x0b0d10, roughness: 0.03, metalness: 0, transparent: true, opacity: 0.74, specularIntensity: 1, ior: 1.52, envMapIntensity: 1.6, clearcoat: 1, clearcoatRoughness: 0.02 }),
+    glass_tinted: new THREE.MeshPhysicalMaterial({ name: "glass_tinted", color: 0x0b0d10, roughness: 0.03, metalness: 0, transparent: true, opacity: 0.64, specularIntensity: 1, ior: 1.52, envMapIntensity: 1.6, clearcoat: 1, clearcoatRoughness: 0.02 }),
     seeker_glass: new THREE.MeshPhysicalMaterial({ name: "seeker_glass", color: 0x0a0e12, roughness: 0.03, clearcoat: 1, iridescence: 0.5, iridescenceIOR: 1.6, envMapIntensity: 1.4 }),
     sensor_lens: new THREE.MeshPhysicalMaterial({ name: "sensor_lens", color: 0x07060b, roughness: 0.03, clearcoat: 1, iridescence: 0.7, iridescenceIOR: 1.5, envMapIntensity: 1.5 }),
     led_green: new THREE.MeshStandardMaterial({ name: "led_green", color: 0x041a08, roughness: 0.3, emissive: 0x30ff70, emissiveIntensity: 0.6 }),
     led_amber: new THREE.MeshStandardMaterial({ name: "led_amber", color: 0x1a0c02, roughness: 0.3, emissive: 0xffa020, emissiveIntensity: 0.6 }),
+    led_cabin: new THREE.MeshStandardMaterial({ name: "led_cabin", color: 0x101418, roughness: 0.4, emissive: 0x9fc8ff, emissiveIntensity: 0.2 }),
     screen_dim: new THREE.MeshStandardMaterial({ name: "screen_dim", color: 0x050608, roughness: 0.15, emissive: 0xffffff, emissiveMap: screenTexture(), emissiveIntensity: 0.05 }),
   };
   // lens colours: COLREG red, (bluish) green, LED white
@@ -369,6 +373,7 @@ export function applyBoat(boat, st, pose, t, look) {
   boat.materials.screen_dim.emissiveIntensity = 0.05 + 0.9 * night;
   boat.instr.intensity = 0.25 + 0.9 * night;
   boat.materials.led_green.emissiveIntensity = boat.materials.led_amber.emissiveIntensity = 0.6 + 3.5 * night;
+  boat.materials.led_cabin.emissiveIntensity = 0.15 + 0.9 * night;
   // flag: undo the grade's white balance on the flag only (keeps it flag-red at blue hour)
   const wb = look.wb || [1, 1, 1], c = wb.map((x) => 1 / x), n = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
   boatShared.uFlagWB.value.set(...c.map((x) => THREE.MathUtils.lerp(1, x / n, 0.65)));

@@ -97,6 +97,7 @@ M['seeker'].node_tree.nodes['Transparent BSDF'].inputs['Color'].default_value = 
 M['interior'] = paint('interior_grey', (0.07, 0.075, 0.08), rough=(0.6, 0.7))
 M['beacon'] = principled('beacon_amber', (0.55, 0.32, 0.06), rough=0.25)
 M['led_g'] = principled('led_green', (0.02, 0.2, 0.05), rough=0.3, emit=(0.1, 1.0, 0.3), emit_str=3)
+M['led_c'] = principled('led_cabin', (0.05, 0.06, 0.07), rough=0.4, emit=(0.6, 0.8, 1.0), emit_str=1)
 M['led_a'] = principled('led_amber', (0.2, 0.1, 0.01), rough=0.3, emit=(1.0, 0.5, 0.05), emit_str=3)
 M['screen'] = principled('screen_dim', (0.01, 0.012, 0.015), rough=0.15, emit=(0.25, 0.45, 0.6), emit_str=0.35)
 
@@ -459,6 +460,8 @@ def build_deckhouse():
                 box('WH_led', (4.58 + k * 0.035, s * 0.406, 1.67 + j * 0.2), (0.012, 0.003, 0.008), M['led_g' if (j + k) % 3 else 'led_a'])
     box('WH_tray', (5.0, 0, Z_ROOF - 0.10), (2.6, 0.18, 0.04), M['interior'])
     box('WH_overhead', (6.05, 0, Z_ROOF - 0.16), (0.30, 1.1, 0.16), M['interior'], bevel=0.01)
+    for s in (1, -1):                        # dim night-light strips along the cabin ceiling
+        box('WH_ceilstrip', (5.0, s * 0.62, Z_ROOF - 0.045), (2.2, 0.03, 0.01), M['led_c'])
     for k in range(8):
         box('WH_ovled', (5.895, -0.42 + k * 0.12, Z_ROOF - 0.18), (0.004, 0.02, 0.01), M['led_g' if k % 3 else 'led_a'])
     # wipers (one per windshield pane)

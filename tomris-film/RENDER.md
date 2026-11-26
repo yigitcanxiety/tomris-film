@@ -86,10 +86,10 @@ loses at most one chunk. The log is `chunks/c_kk.log` and the timings go to `chu
 | Preview still (`tools/shot.js`, sub 1, scale 0.5) | first ~20 s (compile), then ~4.5–6 s each; 54 shots in 5 min 24 s |
 | HyperFrames chunk `c_13`, 42 frames, SUB=1, full 1920×804 | 331 s wall: ~74 s startup (plan + reference background ~48 s + page/shader warm-up), 196 s capture (**4.7 s/frame**), ~60 s encode/finish |
 | HyperFrames 30 frames crossing a slice boundary (21.2–22.2 s), SUB=1 | 15 min wall (two sessions, heavy contention from another agent's GLB export: ~20 s/frame) |
-| Two chunks side by side (PAR=2), SUB=1 | PAR_RESULT |
+| Two chunks side by side (PAR=2), SUB=1 | two 30-frame spans in parallel: capture 7.0 and 8.3 s/frame each, i.e. ~4.1 s/frame combined vs 4.7 alone; 60 frames in 6 min 53 s wall vs ~9 min serial (≈1.3×). It helps a little, mainly by overlapping the fixed per-chunk startup/encode; SwiftShader already uses ~1.5–2 cores per render. `PAR=2` is safe (separate temp dirs and outputs); more than 2 is not worth it on 4 cores |
 | Estimate for the full 3D range, SUB=8 | 1740 frames × 8 × ~4.5 s ≈ 17 h + 14 × ~2 min overhead, unless the water/grade workstream's sub-frame speed-up lands (they measured ~7 s per sub-frame earlier). With SUB=4 it is about half that |
-| Edit + mix + mux + contact sheet (`--edit-only`) | EDIT_TIME |
-| Loudness of mix.wav | LOUDNESS |
+| Edit + mix + mux + contact sheet (`--edit-only`) | 94 s with `FILL=preview` (13 chunks synthesised from stills + 1 real HyperFrames chunk); output verified: H.264 High, yuv420p, 1920×1080, 30/1, 2100 frames, 70.000 s, AAC LC 48 kHz, 17 MB |
+| Loudness of mix.wav | −14.2 LUFS integrated (ebur128; loudnorm reads −14.1), true peak −2.0 dBTP, LRA 21 LU (VO only, no music yet); in the muxed AAC: −14.1 LUFS, −2.0 dBFS |
 
 ## On an Apple-silicon Mac (GPU)
 
@@ -102,8 +102,7 @@ HF_ARGS="--browser-gpu" SUB=8 PAR=1 bash tomris-film/build.sh
 
 With a real GPU, WebGL is one to two orders of magnitude faster than SwiftShader, and the capture and encode overheads
 take over. Run with `PAR=1` first. If `chunks/timings.txt` shows that the GPU is mostly idle, try `PAR=2`. `SUB=16`
-becomes affordable there. The scripts use only bash, ffmpeg, ffprobe, awk, python3 and node, and the GNU-only flags
-they used have been avoided, but `stat -c` in the size print falls back silently on macOS (the size line is cosmetic).
+becomes affordable there. The scripts use only bash, ffmpeg, ffprobe, awk, xargs, python3 (Pillow) and node; no GNU-only flags.
 
 ## Music and SFX
 

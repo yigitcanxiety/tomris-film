@@ -67,7 +67,7 @@ fi
 echo "audio"; bash "$F/mix.sh" "$F/mix.wav" | grep -vE "empty slot|^  (vo|sfx|mus) "
 
 echo "edit (missing chunks: $FILL)"
-TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
+TMP="$(mktemp -d)"; [ -n "${KEEP_TMP:-}" ] && echo "temp: $TMP" || trap 'rm -rf "$TMP"' EXIT
 IN=(-i "$P/tomris-overlays/renders/opening.mp4"); FC="[0:v]trim=end_frame=150,setpts=PTS-STARTPTS,fps=30,format=yuv420p,setsar=1[v0];"; n=1
 for ((k = 0; k < NCH; k++)); do
   read a b < <(chunk_range $k); name=$(printf "c_%02d" $k); want=$(( b - a ))
@@ -85,15 +85,13 @@ for s in S:
     img = os.path.join(d, f"f{s['startFrame'] + s['frames'] // 2:04d}.jpg")
     if s["kind"] != "3d" or not os.path.exists(img): img = "BLACK"
     L.append(f"{img}|{f1 - f0}")
-open(out, "w").write("\n".join(L))
+open(out, "w").write("\n".join(L) + "\n")
 PY
-    segs=(); j=0
+    # every segment as raw frames into one encoder: exact frame counts, no timestamp games
     while IFS='|' read -r img cnt; do
-      if [ "$img" = BLACK ]; then ffmpeg -v error -y -f lavfi -i "color=black:s=1920x1080:r=30" -frames:v "$cnt" -pix_fmt yuv420p -c:v libx264 -crf 30 "$TMP/${name}_$j.mp4"
-      else ffmpeg -v error -y -loop 1 -framerate 30 -i "$img" -vf "scale=1920:804,pad=1920:1080:0:138:black,format=yuv420p" -frames:v "$cnt" -c:v libx264 -crf 22 "$TMP/${name}_$j.mp4"; fi
-      echo "file '$TMP/${name}_$j.mp4'" >> "$TMP/$name.lst"; j=$((j+1))
-    done < "$TMP/$name.txt"
-    ffmpeg -v error -y -f concat -safe 0 -i "$TMP/$name.lst" -c copy "$TMP/$name.mp4"
+      if [ "$img" = BLACK ]; then ffmpeg -nostdin -v error -f lavfi -i "color=black:s=1920x1080:r=30" -frames:v "$cnt" -pix_fmt yuv420p -f rawvideo -
+      else ffmpeg -nostdin -v error -loop 1 -framerate 30 -i "$img" -vf "scale=1920:804,pad=1920:1080:0:138:black,format=yuv420p" -frames:v "$cnt" -f rawvideo -; fi
+    done < "$TMP/$name.txt" | ffmpeg -v error -y -f rawvideo -pix_fmt yuv420p -s 1920x1080 -framerate 30 -i - -c:v libx264 -preset veryfast -crf 20 -pix_fmt yuv420p "$TMP/$name.mp4"
     IN+=(-i "$TMP/$name.mp4"); echo "  $name: preview stills"
   else
     IN+=(-f lavfi -i "color=black:s=1920x1080:r=30:d=$(awk "BEGIN{printf \"%.4f\", $want/30}")"); echo "  $name: black"
@@ -110,7 +108,9 @@ ffmpeg -v error -y "${IN[@]}" -filter_complex "$FC" -map "[v]" -map "$n:a" -fram
   -c:v libx264 -profile:v high -preset slow -crf 18 -maxrate 9M -bufsize 18M -pix_fmt yuv420p -r 30 -g 60 \
   -c:a aac -b:a 256k -ar 48000 -t 70 -movflags +faststart "$F/tomris_v1.mp4"
 echo "tomris_v1.mp4: $(ffprobe -v error -count_frames -select_streams v -show_entries stream=codec_name,profile,width,height,pix_fmt,r_frame_rate,nb_read_frames -of csv=p=0 "$F/tomris_v1.mp4")"
-echo "  audio: $(ffprobe -v error -select_streams a -show_entries stream=codec_name,sample_rate,channels -of csv=p=0 "$F/tomris_v1.mp4")  duration $(ffprobe -v error -show_entries format=duration -of csv=p=0 "$F/tomris_v1.mp4") s  size $(( $(stat -c %s "$F/tomris_v1.mp4") / 1048576 )) MB"
+echo "  audio: $(ffprobe -v error -select_streams a -show_entries stream=codec_name,sample_rate,channels -of csv=p=0 "$F/tomris_v1.mp4")  duration $(ffprobe -v error -show_entries format=duration -of csv=p=0 "$F/tomris_v1.mp4") s  size $(( $(wc -c < "$F/tomris_v1.mp4") / 1048576 )) MB"
 
+NF=$(ffprobe -v error -count_packets -select_streams v -show_entries stream=nb_read_packets -of csv=p=0 "$F/tomris_v1.mp4")
+[ "$NF" = 2100 ] || { echo "ERROR: $NF video frames, expected 2100"; exit 1; }
 echo "contact sheet"; python3 "$F/contact.py" "$F/tomris_v1.mp4" "$F/contact.jpg"
 echo "done in $(( $(date +%s) - T0 )) s"

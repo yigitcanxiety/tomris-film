@@ -458,6 +458,9 @@ def build_deckhouse():
             for k in range(4):
                 box('WH_led', (4.58 + k * 0.035, s * 0.406, 1.67 + j * 0.2), (0.012, 0.003, 0.008), M['led_g' if (j + k) % 3 else 'led_a'])
     box('WH_tray', (5.0, 0, Z_ROOF - 0.10), (2.6, 0.18, 0.04), M['interior'])
+    box('WH_overhead', (6.05, 0, Z_ROOF - 0.16), (0.30, 1.1, 0.16), M['interior'], bevel=0.01)
+    for k in range(8):
+        box('WH_ovled', (5.895, -0.42 + k * 0.12, Z_ROOF - 0.18), (0.004, 0.02, 0.01), M['led_g' if k % 3 else 'led_a'])
     # wipers (one per windshield pane)
     for s in (1, -1):
         for base, top in (((7.16, s * 0.27, 2.25), (6.82, s * 0.20, 2.64)), ((6.98, s * 0.95, 2.25), (6.62, s * 0.80, 2.66))):

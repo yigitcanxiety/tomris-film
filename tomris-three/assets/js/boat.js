@@ -174,8 +174,8 @@ function flagMaterial(map) {
         { // fine wrinkles near the hoist and in the folds (metres), fading with distance
           vec2 q = vMapUv * vec2(0.84, 0.56);
           float wfw = length(fwidth(q * 30.0)); float wk = 1.0 - smoothstep(0.35, 0.9, wfw);
-          float hw = 0.0011 * wk * (bn(vec3(q * vec2(18.0, 30.0), uTime * 0.6)) - 0.5) * (1.3 - 0.6 * vMapUv.x)
-                   + 0.0006 * wk * sin(q.y * 140.0 + q.x * 40.0 + bn(vec3(q * 9.0, 1.0)) * 6.0);
+          float hw = 0.0005 * wk * ((bn(vec3(q * vec2(14.0, 24.0), uTime * 0.5)) - 0.5) + 0.5 * (bn(vec3(q * vec2(31.0, 47.0), 3.0)) - 0.5))
+                   * (1.2 - 0.5 * vMapUv.x);
           normal = bumpN(-vViewPosition, normal, hw, faceDirection); }`)
       .replace("#include <lights_fragment_end>", `#include <lights_fragment_end>
       #if NUM_DIR_LIGHTS > 0
@@ -188,9 +188,14 @@ function flagMaterial(map) {
         float ld = dot(reflectedLight.directDiffuse, W) / al, li = dot(reflectedLight.indirectDiffuse, W) / al;
         reflectedLight.directDiffuse = mix(reflectedLight.directDiffuse, ld * diffuseColor.rgb, 0.9);
         reflectedLight.indirectDiffuse = mix(reflectedLight.indirectDiffuse, li * diffuseColor.rgb, 0.9); }`)
-      .replace("#include <opaque_fragment>", `outgoingLight *= uFlagWB;\n#include <opaque_fragment>`);
+      .replace("#include <opaque_fragment>", `outgoingLight *= uFlagWB;
+        { // keep saturated bunting out of the tone curve's shoulder (where red would bleach toward orange/pink)
+          float mx = max(outgoingLight.r, max(outgoingLight.g, outgoingLight.b));
+          float sat = 1.0 - min(diffuseColor.g, diffuseColor.b) / max(diffuseColor.r, 1e-3);
+          float K = 1.8; outgoingLight *= mix(1.0, K / max(K, mx), smoothstep(0.5, 0.9, sat)); }
+        #include <opaque_fragment>`);
   };
-  m.customProgramCacheKey = () => "tomris-flag2";
+  m.customProgramCacheKey = () => "tomris-flag3";
   return m;
 }
 
@@ -310,7 +315,7 @@ export async function loadBoat(url, renderer) {
     lamps.push(lamp);
   }
   // faint cyan/amber glow of the instruments on the console and the cabin interior
-  const instr = new THREE.PointLight(new THREE.Color(0.55, 0.75, 1.0), 0, 2.2, 2);
+  const instr = new THREE.PointLight(new THREE.Color(0.55, 0.75, 1.0), 0, 3.2, 2);
   instr.position.set(6.25, 2.15, 0); root.add(instr);
   const pivots = {};
   for (const n of ["gun_az", "gun_el", "launcher_el", "eoir_az", "eoir_el", "radar_spin", "flag_hoist", "jet_L", "jet_R", "spray_L", "spray_R"]) {
@@ -362,7 +367,7 @@ export function applyBoat(boat, st, pose, t, look) {
   // instruments: off-looking by day, a faint glow once the key light is gone
   const night = THREE.MathUtils.clamp(1 - (look.sunGain ?? 0) / 3, 0, 1);
   boat.materials.screen_dim.emissiveIntensity = 0.05 + 0.9 * night;
-  boat.instr.intensity = 0.35 * night;
+  boat.instr.intensity = 0.25 + 0.9 * night;
   boat.materials.led_green.emissiveIntensity = boat.materials.led_amber.emissiveIntensity = 0.6 + 3.5 * night;
   // flag: undo the grade's white balance on the flag only (keeps it flag-red at blue hour)
   const wb = look.wb || [1, 1, 1], c = wb.map((x) => 1 / x), n = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];

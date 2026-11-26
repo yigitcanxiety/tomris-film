@@ -4,7 +4,7 @@
 
 | # | Başl. | Kare | Tür | Kur. | Lens | Kamera | Başlangıç → Bitiş | Bakış | kn / yön / trim | Anim | VO |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 0 | 150 | overlay | — | — | — | — | — | — | — | Son dakika. Ege'de kimliği belirsiz bir su üstü teması tespit edildi. |
+| 1 | 0 | 150 | overlay | — | — | — | — | — | — | — |  |
 | 2 | 150 | 75 | 3d | B | 85 | drone | (268,7.5,-14) → (252,8.7,-8) | boat | 8 / 90 / 0 |  |  |
 | 3 | 225 | 36 | 3d | B | 100 | detail | (9,4.6,-3) → (8.8,4.6,-3) | eoir | 8 / 90 / 0 | eoir_az 0→35 |  |
 | 4 | 261 | 30 | 3d | B | 135 | static | (2.5,3,85) → (-1.5,3,85) | boat | 8 / 90 / 0 |  |  |
@@ -24,15 +24,15 @@
 | 18 | 798 | 27 | 3d | A | 50 | chase | (-15,0.65,2.2) → (-14.6,0.7,1.5) | stern | 35 / 0 / 4 |  | İki su jetiyle, |
 | 19 | 825 | 24 | 3d | A | 200 | detail | (55,0.8,-6) → (55,0.8,-6) | flag | 35 / 45 / 1.5 |  |  |
 | 20 | 849 | 36 | 3d | A | 50 | chase | (8,2,12) → (8,2,12) | boat | 35 / 0 / 6→-1 |  | uzaktan ya da tamamen otonom. |
-| 21 | 885 | 24 | 3d | A | 35 | waterline | (2.5,0.5,-3) → (2.5,0.5,-3) | (2.5,0.2,-1.7) | 35 / 0 / 4 |  |  |
+| 21 | 885 | 24 | 3d | A | 24 | waterline | (8.5,0.7,-3.6) → (7.9,0.7,-3.4) | (1.5,0.6,-1.6) | 35 / 0 / 4 |  |  |
 | 22 | 909 | 27 | 3d | A | 24 | detail | (-6,3.9,0.5) → (-6,3.9,0.5) | eoir | 35 / 0 / 4 | radar_spin 0→360 |  |
 | 23 | 936 | 36 | 3d | A | 28 | orbit | (-11,25,-19.05) → (-4.57,25,-21.52) | boat | 35 / 0 / 4 |  |  |
 | 24 | 972 | 60 | 3d | W | 50 | static | (1,2,-22) → (1,2,-21.4) | boat | 0 / 0 / 0 |  | Yirmi insansız deniz aracı incelendi, |
 | 25 | 1032 | 45 | 3d | W | 35 | orbit | (-17.32,5,-10) → (-10,5,-17.32) | boat | 0 / 0 / 0 |  | her ölçü hesapla doğrulandı. |
-| 26 | 1077 | 36 | 3d | C | 85 | detail | (8,1.3,-2.7) → (7.7,1.35,-2.6) | gun | 0 / 0 / 0 | gun_az 0→40, gun_el 0→10 | Burnunda ASELSAN STAMP, |
+| 26 | 1077 | 36 | 3d | C | 85 | detail | (7.6,3.2,-2.9) → (7.3,3.25,-2.8) | gun | 0 / 0 / 0 | gun_az 0→40, gun_el 0→10 | Burnunda ASELSAN STAMP, |
 | 27 | 1113 | 27 | 3d | A | 28 | detail | (-1,3.55,0.5) → (-0.7,3.55,0.4) | (10.5,2.3,-0.2) | 35 / 225 / 4 |  |  |
 | 28 | 1140 | 24 | 3d | C | 135 | detail | (10,2.3,-3.6) → (10,2.3,-3.5) | (6.4,2.2,0) | 0 / 0 / 0 |  | on iki koma yedi milimetre |
-| 29 | 1164 | 27 | 3d | A | 85 | chase | (5.5,2,-10) → (5.5,2,-10) | gun | 35 / 0 / 4 | gun_az 0→-75 | uzaktan komutalı silah. |
+| 29 | 1164 | 27 | 3d | A | 85 | chase | (4.5,3.6,-8) → (4.1,3.65,-8) | gun | 35 / 0 / 4 | gun_az 0→-75 | uzaktan komutalı silah. |
 | 30 | 1191 | 45 | 3d | C | 50 | orbit | (-13.86,4,-8) → (-9.74,4,-12.69) | launcher | 0 / 0 / 0 | launcher_el 0→25 | Kıçında dört L-UMTAS füzesi. |
 | 31 | 1236 | 30 | 3d | C | 100 | detail | (3.5,3.9,-1.5) → (3.5,3.9,-1.5) | (-3.6,3.2,0) | 0 / 0 / 0 | launcher_el 25→25 |  |
 | 32 | 1266 | 30 | 3d | A | 85 | chase | (1,2.2,-28) → (1,2.2,-28) | boat | 35 / 0 / 4 |  |  |
@@ -68,7 +68,7 @@
 
 | Bölüm | Kareler | Süre | Çekimler |
 |---|---|---|---|
-| Açılış (HyperFrames opening.mp4) | 0–149 | 5.00 sn | #1–#1 |
+| Açılış, yazısız çizgi profil (HyperFrames opening.mp4) | 0–149 | 5.00 sn | #1–#1 |
 | Liman, gün batımı (B) | 150–512 | 12.10 sn | #2–#10 |
 | Açık deniz, gün batımı (A) | 513–971 | 15.30 sn | #11–#23 |
 | Tel kafes ara (W) | 972–1076 | 3.50 sn | #24–#25 |
@@ -87,7 +87,7 @@ Teslim: 1920×1080, resim 2.39:1 (1920×804, y=138). Açılış `tomris-overlays
 
 | Klip | Kare | Çekim | Klip içi (sn) | Metin |
 |---|---|---|---|---|
-| vo_1.mp3 | 15 | #1 | 0–son | (eksik: yuva sessiz kalır) |
+| vo_1.mp3 | 15 | #1 | 0–son | (boş yuva: dosya yok, sessiz) |
 | vo_2_liman_gemide.mp3 | 315 | #6 | 0–2.4 | Liman komutanlığından tek bir emir çıktı. |
 | vo_2_liman_gemide.mp3 | 390 | #8 | 2.6–son | Gemide tek bir asker yok. |
 | vo_3_olcu.mp3 | 513 | #11 | 0–0.95 | On üç metre. |
@@ -100,6 +100,7 @@ Teslim: 1920×1080, resim 2.39:1 (1920×804, y=138). Açılış `tomris-overlays
 | vo_6_hedef.mp3 | 1448 | #39 | 0–son | Hedef tespit edildi. Görüntü, şifreli bağlantıyla anında komuta merkezinde. (AÇIK SORU: resimle artık örtüşmüyor) |
 | vo_7_tomris.mp3 | 1755 | #57 | 0–son | TOMRİS, İstanbul Teknik Üniversitesi'nde tasarlandı. TOMRİS. Denizde, nöbette. (ikinci cümle #58'de, son kartın ilk 1,4 sn'sine taşar) |
 | music.mp3 (mus, -6 dB, 70.0 sn) | 0 | — | — | müzik, VO altında ~9 dB ducking |
+| sfx_swell.mp3 (sfx, -18 dB, 5.0 sn) | 0 | — | — | açılış altında alçak swell (#1) |
 | sfx_waves.mp3 (sfx, -15 dB, 12.1 sn) | 150 | — | — | liman bölümü (#2–#10) altında dalga |
 | sfx_waterjet.mp3 (sfx, -10 dB) | 426 | — | — | #9 jetler devreye girer |
 | sfx_wind.mp3 (sfx, -18 dB, 15.3 sn) | 513 | — | — | açık deniz A (#11–#23) |
@@ -114,6 +115,7 @@ Teslim: 1920×1080, resim 2.39:1 (1920×804, y=138). Açılış `tomris-overlays
 
 ## Yorumlanan satırlar
 
+- **Açılış (#1):** eski radar/HUD açılışı (yazı ve hedef çerçevesiyle) çıktı, `tomris-overlays/opening_old/` ve `renders/opening_old.mp4` olarak saklandı. Yeni açılış yazısız; tekne profili `tomris-overlays/opening/profile_lines.py` ile tomris.blend'den (ortografik iskele görünüşü, siluet + kenar çizgileri, ışın izlemeyle gizli çizgi temizliği) üretilir. Açılışta radar sesi yok; altında yalnız `sfx_swell.mp3` yuvası.
 - **Yönetmen kararı (tasarım vitrini):** sensör/hedef bölümü tamamen çıktı. Kurulum E ve görünümü yok; #40, #43, #51 ve #55'in kilit kısmı güzellik çekimi: #40 direk tepesinden iz, #43 200 mm'de tekne + liman vinçleri sıkıştırması, #51 göğe karşı dönen radar, #55 ters ışıkta bayrağın kadrajı süpürdüğü drone geçişi. #41/#42 EO/IR ve silah yalnız mekanik detay olarak küçük yay çizer.
 - **Lançer:** denizde her zaman yatık (#32, #34, #44, #45, #53, #55, #57 animasyonsuz); yalnız stüdyoda (#30 0→25°, #31, #33) kalkar; #37 turntable'da yatık.
 - **Zamanlama:** açılış 150 kare (opening.mp4) → #2 kare 150'de 75 kare; son kart 210 kare (endcard.mp4) → #57 75, #58 60 kare. Toplam 2100 değişmedi.

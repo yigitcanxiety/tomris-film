@@ -1,7 +1,7 @@
 # Export the TOMRIS boat (only) to a clean GLB for the three.js engine, with a baked AO atlas.
 #   python3 export_glb.py [out.glb] [ao.jpg] [ao_size] [samples]          (bpy module; opens tomris.blend)
 #   blender -b tomris.blend -P export_glb.py -- [out.glb] [ao.jpg] [ao_size] [samples]
-# Defaults: ../tomris-three/assets/tomris.glb, ../tomris-three/assets/boat/ao.jpg, 4096 px, 96 samples.
+# Defaults: ../tomris-three/assets/tomris.glb, ../tomris-three/assets/boat/ao.jpg, 2048 px, 128 samples (~10 min, 4 CPU cores).
 # Full rebuild from scratch:   python3 build.py && python3 export_glb.py
 # 1. keeps only the TOMRIS hierarchy (pivot names intact), applies modifiers
 # 2. merges meshes that share a parent pivot + material (draw calls: ~450 -> ~60); nav lenses, screens and the
@@ -17,8 +17,8 @@ out = os.path.abspath(argv[0] if argv else os.path.join(HERE, '..', 'tomris-thre
 if not bpy.data.filepath:                                   # run as `python3 export_glb.py` (bpy module)
     bpy.ops.wm.open_mainfile(filepath=os.path.join(HERE, 'tomris.blend'))
 ao_path = os.path.abspath(argv[1] if len(argv) > 1 else os.path.join(os.path.dirname(out), 'boat', 'ao.jpg'))
-AO_SIZE = int(argv[2]) if len(argv) > 2 else 4096
-SAMPLES = int(argv[3]) if len(argv) > 3 else 96
+AO_SIZE = int(argv[2]) if len(argv) > 2 else 2048
+SAMPLES = int(argv[3]) if len(argv) > 3 else 128
 T0 = time.time()
 def log(*a): print('[export %6.1fs]' % (time.time() - T0), *a, flush=True)
 

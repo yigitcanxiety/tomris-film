@@ -247,17 +247,19 @@ void main(){
     float churn = clamp((0.5 * f1 + 0.25 * f2 + 0.45 * mix(f1, streak, wk.w) - 0.32) / 0.5, 0.0, 1.0);
     // bubble rafts with round holes (worley F1 on warped coordinates, two scales): holes shrink as the foam
     // gets denser; sparse foam breaks into separate patches instead of a thin cracked-ice network
-    vec2 hw = fw + (n1.rg - 0.47) * 0.7;
+    vec2 hw = fw + (n1.rg - 0.47) * 1.4 + (vec2(f2, n1.a) - 0.47) * 0.5;
     vec4 cA = cT(hw * 0.32 + uTime * 0.01), cB = cT(hw * 0.85 - uTime * 0.017 + 0.3);
     float dens = max(old, fresh * 0.8);
-    float rA = mix(0.5, 0.1, dens), rB = mix(0.45, 0.05, dens);
-    float holes = smoothstep(rA - 0.06, rA + 0.08, cA.r) * mix(1.0, smoothstep(rB - 0.05, rB + 0.08, cB.b), 0.75);
+    float jit = (f2 - 0.47) * 0.5;                                                 // hole size varies hole to hole
+    float rA = mix(0.5, 0.1, dens) + jit, rB = mix(0.42, 0.04, dens) - jit * 0.6;
+    float mA = cA.r - 0.25 * cA.g, mB = cB.b - 0.25 * cB.a;                        // F1 - F2 mix: rounded-polygonal, not discs
+    float holes = smoothstep(rA - 0.1, rA + 0.1, mA) * mix(1.0, smoothstep(rB - 0.08, rB + 0.1, mB), 0.7);
     float Df = smoothstep(1.0 - fresh - 0.08, 1.0 - fresh + 0.14, churn);
-    Df = max(Df, smoothstep(0.7, 1.0, fresh) * (0.8 + 0.2 * f2)) * mix(1.0, holes, 0.35 * (1.0 - smoothstep(0.75, 1.0, fresh)));
+    Df = max(Df, smoothstep(0.7, 1.0, fresh) * (0.75 + 0.25 * f2)) * mix(1.0, holes, 0.45 * (1.0 - smoothstep(0.8, 1.0, fresh)));
     float patchK = smoothstep(0.62 - 0.55 * old, 0.8 - 0.55 * old, f1 * 0.55 + churn * 0.45 + 0.1);
     float Do = holes * patchK * smoothstep(0.02, 0.25, old);
-    float capS = cap * smoothstep(0.2, 0.7, n1.a + cap * 0.4);                    // whitecaps: ragged, not polygonal
-    float Dc = smoothstep(0.15, 0.45, capS * (0.55 + 0.6 * churn)) * mix(0.6, 1.0, holes);
+    float capS = cap * smoothstep(0.35, 0.75, n1.a * 0.7 + f2 * 0.5 + cap * 0.25 - 0.1);   // whitecaps: ragged, streaky
+    float Dc = smoothstep(0.1, 0.55, capS * (0.4 + 0.8 * churn)) * mix(0.35, 1.0, holes) * 0.85;
     float D = clamp(max(max(Df, Do * 0.9), Dc * 0.9), 0.0, 1.0);
     float cov = clamp(max(max(fresh * 0.85, old * 0.35), cap * 0.3), 0.0, 1.0);   // what D averages to from far away
     D = mix(D, cov, smoothstep(0.06, 0.4, fp));
@@ -279,7 +281,7 @@ void main(){
     vec3 skyF = mix(uSkyRad, skyN, 0.5);
     // foam: sun (wrapped) + sky, plus light that went through the bubbly layer toward a low sun behind it
     foamCol = 0.86 * (uSunIrr * (wrap * 0.34 + 0.06 * back) + skyF * 1.12 * (0.7 + 0.3 * Nf.y)) * bub;
-    foamCol *= mix(1.0, ao, 0.7) * mix(0.8, 1.0, smoothstep(0.2, 0.9, D));          // thin foam is greyer
+    foamCol *= mix(1.0, ao, 0.7) * mix(0.72, 1.0, smoothstep(0.2, 0.9, D)) * (0.86 + 0.28 * churn);   // thin foam is greyer
     // under thin foam you see aerated, blue-green water
     float aerK = smoothstep(0.0, 0.6, max(fresh, old * 0.8));
     col = mix(col, body + vec3(0.03, 0.12, 0.12) * (skyN + uSunIrr * 0.08), 0.55 * aerK * (1.0 - F));

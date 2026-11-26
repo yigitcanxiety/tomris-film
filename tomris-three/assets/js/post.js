@@ -111,11 +111,11 @@ export function createPost(renderer, W, H, skyShared = null) {
       uFlare: { value: 0.5 }, uFlareTint: { value: new THREE.Vector3(0.55, 0.75, 1.0) }, uHal: { value: 0.35 },
       uExposure: { value: 1 }, uBloom: { value: 0.06 }, uFrame: { value: 0 }, uRes: { value: new THREE.Vector2(W, H) },
       uGrain: { value: 0.035 }, uVignette: { value: 0.35 }, uTeal: { value: new THREE.Vector3(-0.012, 0.004, 0.018) }, uOrange: { value: new THREE.Vector3(0.03, 0.008, -0.03) },
-      uSat: { value: 1.0 }, uContrast: { value: 1.05 }, uLift: { value: 0.0 }, uWB: { value: new THREE.Vector3(1, 1, 1) },
+      uSat: { value: 1.0 }, uContrast: { value: 1.05 }, uLift: { value: 0.0 }, uWB: { value: new THREE.Vector3(1, 1, 1) }, uDemag: { value: 0.5 },
     },
     vertexShader: FS_VERT,
     fragmentShader: /* glsl */ `
-      uniform sampler2D tSrc, tB1, tB2, tB3, tFlare; uniform float uExposure, uBloom, uFrame, uGrain, uVignette, uSat, uContrast, uLift, uFlare, uHal; uniform vec2 uRes;
+      uniform sampler2D tSrc, tB1, tB2, tB3, tFlare; uniform float uExposure, uBloom, uFrame, uGrain, uVignette, uSat, uContrast, uLift, uFlare, uHal, uDemag; uniform vec2 uRes;
       uniform vec3 uTeal, uOrange, uWB, uFlareTint; varying vec2 vUv;
       vec3 aces(vec3 v){
         const mat3 I = mat3(vec3(0.59719, 0.07600, 0.02840), vec3(0.35458, 0.90834, 0.13383), vec3(0.04823, 0.01566, 0.83777));
@@ -134,6 +134,8 @@ export function createPost(renderer, W, H, skyShared = null) {
         c = aces(c);
         // grade in display space
         c = pow(c, vec3(1.0 / 2.2));
+        // no magenta/purple cast (twilight skies, HDRI clouds): green is lifted toward the lower of red/blue
+        c.g += max(min(c.r, c.b) - c.g, 0.0) * uDemag;
         float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
         float mx = max(max(c.r, c.g), c.b), sat = (mx - min(min(c.r, c.g), c.b)) / max(mx, 1e-3);
         float keep = smoothstep(0.04, 0.2, sat);                                   // neutral greys (the hull) stay neutral
@@ -193,7 +195,7 @@ export function createPost(renderer, W, H, skyShared = null) {
     streakMat.uniforms.tSrc.value = fB.texture; streakMat.uniforms.uStep.value = 30 / (W >> 2); pass(streakMat, fA);
     const f = finalMat.uniforms;
     f.tSrc.value = dofRT.texture; f.uExposure.value = look.exposure; f.uBloom.value = look.bloom ?? 0.06; f.uFrame.value = frame;
-    f.uFlare.value = look.flare ?? 0.5; f.uHal.value = look.halation ?? 0.35;
+    f.uFlare.value = look.flare ?? 0.5; f.uHal.value = look.halation ?? 0.35; f.uDemag.value = look.demag ?? 0.5;
     for (const k of ["grain", "vignette", "sat", "contrast", "lift"]) if (look[k] !== undefined) f["u" + k[0].toUpperCase() + k.slice(1)].value = look[k];
     f.uWB.value.set(...(look.wb || [1, 1, 1])); if (look.teal) f.uTeal.value.set(...look.teal); if (look.orange) f.uOrange.value.set(...look.orange);
     pass(finalMat, null);

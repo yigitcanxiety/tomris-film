@@ -19,7 +19,7 @@ def O(n,kind,vo=None,sfx=(),note=""):
     shots.append(dict(n=n,kind=kind,setup=None,lensMm=None,ctype=None,frm=None,to=None,look=None,ease=None,hh=0,kn=0,hdg=0,trim=0,anim=[],vo=vo,sfx=list(sfx),note=note,cx={}))
 A=lambda t,f,to:dict(target=t,fromDeg=f,toDeg=to)
 LP={"x":-4.4,"y":1.0,"z":-1.8}; TXT_P=P(-4.4,1.0,-1.8)
-O(1,"overlay",vo="Son dakika. Ege'de kimliği belirsiz bir su üstü teması tespit edildi.",sfx=["alçak drone müzik"],note="HyperFrames açılış (tomris-overlays/renders/opening.mp4, 150 kare, kare 0–149); vo_1 yuvası kare 15'te, dosya yok (sessiz)")
+O(1,"overlay",vo=None,sfx=["alçak swell (sfx_swell.mp3)"],note="HyperFrames açılış (tomris-overlays/opening → renders/opening.mp4, 150 kare, kare 0–149), yazısız: karanlıkta ılık ince ufuk çizgisi büyür; modelden üretilmiş gerçek iskele profili çizgi olarak pruvadan kıça çizilir; çizgiler boyunca yumuşak ışık süpürmesi; ufuk ılık bir flaşa açılıp #2'ye (gün batımı limanı) devreder. vo_1 kare 15'te sessiz, adlandırılmış boş yuva.")
 S(2,"B",85,"drone",P(268,7.5,-14),P(252,8.7,-8),"boat","linear",0.1,8,90,0,note="İlk 3B kare 150; güneş iki vinç arasında; tekne sağ 1/3'te (screenOffset); VO1 sürer",sfx=["radyo paraziti"],screenOffset=P(0.33,0,0))
 S(3,"B",100,"detail",P(9,4.6,-3),P(8.8,4.6,-3),"eoir","linear",0,8,90,0,[A("eoir_az",0,35)],sfx=["servo vızıltısı"],note="Lense güneş parlaması; küre uyanır")
 S(4,"B",135,"static",P(2.5,3,85),P(-1.5,3,85),"boat","linear",0,8,90,0,note="Dünyada sabit kamera, tekne soldan sağa geçer; f/1,8 DOF, ön planda vinç ışığı bokeh",fStop=1.8)
@@ -39,17 +39,17 @@ S(17,"A",35,"drone",P(7,30,-5),P(-7,30,5),"boat","linear",0.05,35,0,4,note="Tepe
 S(18,"A",50,"chase",P(-15,0.65,2.2),P(-14.6,0.7,1.5),"stern","linear",0.05,35,0,4,vo="İki su jetiyle,",note="İki jet wash")
 S(19,"A",200,"detail",P(55,0.8,-6),P(55,0.8,-6),"flag","linear",0.05,35,45,1.5,note="HERO hızlı bake; bayrak güneş diskinin önünde",flagBake="fast")
 S(20,"A",50,"chase",P(8,2,12),P(8,2,12),"boat","linear",0.05,35,0,6,vo="uzaktan ya da tamamen otonom.",sfx=["slam darbesi"],note="Dalgaya biner; pitch +6°→−1° / 0,5 sn; sancak 3/4 ön",trimToDeg=-1)
-S(21,"A",35,"waterline",P(2.5,0.5,-3.0),P(2.5,0.5,-3.0),P(2.5,0.2,-1.7),"linear",0.05,35,0,4,note="Chine ve usturmaça; su gövdeye girmemeli (maske)")
+S(21,"A",24,"waterline",P(8.5,0.7,-3.6),P(7.9,0.7,-3.4),P(1.5,0.6,-1.6),"linear",0.05,35,0,4,note="Alçak, pruva önünden-iskeleden: pruva ve iskele bordası boyunca açılan pruva dalgası, chine ve usturmaça")
 S(22,"A",24,"detail",P(-6,3.9,0.5),P(-6,3.9,0.5),"eoir","linear",0.25,35,0,4,[A("radar_spin",0,360)],note="Güverte arkasından köşk üstü, EO/IR + direk silüeti, ufuk")
 a,b=orb(22,25,-120,15,36)
 S(23,"A",28,"orbit",a,b,"boat","linear",0,35,0,4,sfx=["motor gürlemesi","müzik nefes alır"],note="Orbit 15°/sn (6°/sn önizlemede ölü görünüyordu)",orbitDegPerSec=15)
 S(24,"W",50,"static",P(1,2,-22),P(1,2,-21.4),"boat","linear",0,0,0,0,vo="Yirmi insansız deniz aracı incelendi,",sfx=["elektronik tik"],note="Camgöbeği tel kafes pruvadan kıça çizilir (maske anim.); dolly 0,3 m/s")
 a,b=orb(20,5,-150,20,45)
 S(25,"W",35,"orbit",a,b,"boat","linear",0,0,0,0,vo="her ölçü hesapla doğrulandı.",note="Tel kafesten mat griye geçiş, turntable 20°/sn",orbitDegPerSec=20,flagBake="slow")
-S(26,"C",85,"detail",P(8.0,1.3,-2.7),P(7.7,1.35,-2.6),"gun","linear",0,0,0,0,[A("gun_az",0,40),A("gun_el",0,10)],vo="Burnunda ASELSAN STAMP,",sfx=["servo"],note="STAMP alttan; 40° traverse + 10° yükselme")
+S(26,"C",85,"detail",P(7.6,3.2,-2.9),P(7.3,3.25,-2.8),"gun","linear",0,0,0,0,[A("gun_az",0,40),A("gun_el",0,10)],vo="Burnunda ASELSAN STAMP,",sfx=["servo"],note="STAMP iskele-pruvadan, anahtar ışık tarafından (ışık iskele pruvadan yüksek); 40° traverse + 10° yükselme")
 S(27,"A",28,"detail",P(-1.0,3.55,0.5),P(-0.7,3.55,0.4),P(10.5,2.3,-0.2),"linear",0.05,35,225,4,note="Silahın arkasından ileri, namlu ön planda, güneşe doğru")
 S(28,"C",135,"detail",P(10,2.3,-3.6),P(10,2.3,-3.5),P(6.4,2.2,0),"linear",0,0,0,0,vo="on iki koma yedi milimetre",note="Namlu ucu makro, rim ışığı")
-S(29,"A",85,"chase",P(5.5,2,-10),P(5.5,2,-10),"gun","linear",0.05,35,0,4,[A("gun_az",0,-75)],vo="uzaktan komutalı silah.",note="Silah yana döner")
+S(29,"A",85,"chase",P(4.5,3.6,-8),P(4.1,3.65,-8),"gun","linear",0.05,35,0,4,[A("gun_az",0,-75)],vo="uzaktan komutalı silah.",note="Silah yana döner")
 a,b=orb(16,4,-150,15,45)
 S(30,"C",50,"orbit",a,b,"launcher","linear",0,0,0,0,[A("launcher_el",0,25)],vo="Kıçında dört L-UMTAS füzesi.",sfx=["hidrolik"],note="Lançer 0→25°; 3/4 kıç; DÖRT füze (karar)",orbitDegPerSec=15)
 S(31,"C",100,"detail",P(3.5,3.9,-1.5),P(3.5,3.9,-1.5),P(-3.6,3.2,0),"linear",0,0,0,0,[A("launcher_el",25,25)],note="Dört füze burnu; rack focus ön sıra→arka sıra",rackFocus=["front_row","rear_row"])
@@ -102,7 +102,7 @@ for s,fr in zip(shots,FR):
     out.append(d)
 # ---- structure: beats with frame ranges (inclusive) ----
 def rng(a,b): return dict(start=next(d["startFrame"] for d in out if d["n"]==a), end=next(d["startFrame"]+d["frames"]-1 for d in out if d["n"]==b))
-BEATS=[("Açılış (HyperFrames opening.mp4)",1,1),("Liman, gün batımı (B)",2,10),("Açık deniz, gün batımı (A)",11,23),("Tel kafes ara (W)",24,25),
+BEATS=[("Açılış, yazısız çizgi profil (HyperFrames opening.mp4)",1,1),("Liman, gün batımı (B)",2,10),("Açık deniz, gün batımı (A)",11,23),("Tel kafes ara (W)",24,25),
        ("Karanlık stüdyo / deniz kesmeleri (C+A)",26,37),("Siyah flaş",38,38),("Mavi saat (A′)",39,53),("Siyah flaş",54,54),("Doruk süpürme (A′)",55,55),
        ("Siyah flaş",56,56),("Kapanış (A′)",57,58),("Son kart (HyperFrames endcard.mp4)",59,59)]
 beats=[dict(name=n,shots=[a,b],**{"from":rng(a,b)["start"],"to":rng(a,b)["end"]}) for n,a,b in BEATS]
@@ -110,7 +110,7 @@ beats=[dict(name=n,shots=[a,b],**{"from":rng(a,b)["start"],"to":rng(a,b)["end"]}
 #      each line lands on the shot shots[].vo names; mix.sh places them and refuses overlaps. ----
 V=lambda clip,frame,shot,i=0,o=None,text="":dict(clip=clip,frame=frame,shot=shot,**{"in":i,"out":o},text=text)
 AUDIO=dict(
- vo=[V("vo_1.mp3",15,1,text="(eksik: yuva sessiz kalır)"),
+ vo=[V("vo_1.mp3",15,1,text="(boş yuva: dosya yok, sessiz)"),
      V("vo_2_liman_gemide.mp3",315,6,0,2.40,"Liman komutanlığından tek bir emir çıktı."),
      V("vo_2_liman_gemide.mp3",390,8,2.60,None,"Gemide tek bir asker yok."),
      V("vo_3_olcu.mp3",513,11,0,0.95,"On üç metre."),
@@ -123,6 +123,7 @@ AUDIO=dict(
      V("vo_6_hedef.mp3",1448,39,0,None,"Hedef tespit edildi. Görüntü, şifreli bağlantıyla anında komuta merkezinde. (AÇIK SORU: resimle artık örtüşmüyor)"),
      V("vo_7_tomris.mp3",1755,57,0,None,"TOMRİS, İstanbul Teknik Üniversitesi'nde tasarlandı. TOMRİS. Denizde, nöbette. (ikinci cümle #58'de, son kartın ilk 1,4 sn'sine taşar)")],
  beds=[dict(bus="mus",clip="music.mp3",frame=0,gainDb=-6,lengthS=70.0,note="müzik, VO altında ~9 dB ducking"),
+       dict(bus="sfx",clip="sfx_swell.mp3",frame=0,gainDb=-18,lengthS=5.0,note="açılış altında alçak swell (#1)"),
        dict(bus="sfx",clip="sfx_waves.mp3",frame=150,gainDb=-15,lengthS=round((513-150)/30,3),note="liman bölümü (#2–#10) altında dalga"),
        dict(bus="sfx",clip="sfx_waterjet.mp3",frame=426,gainDb=-10,lengthS=0,note="#9 jetler devreye girer"),
        dict(bus="sfx",clip="sfx_wind.mp3",frame=513,gainDb=-18,lengthS=round((972-513)/30,3),note="açık deniz A (#11–#23)"),
@@ -160,6 +161,7 @@ L+=["","Teslim: 1920×1080, resim 2.39:1 (1920×804, y=138). Açılış `tomris-
 for c in AUDIO["vo"]: L.append(f"| {c['clip']} | {c['frame']} | #{c['shot']} | {c['in']}–{c['out'] if c['out'] is not None else 'son'} | {c['text']} |")
 for c in AUDIO["beds"]: L.append(f"| {c['clip']} ({c['bus']}, {c['gainDb']} dB{', '+str(c['lengthS'])+' sn' if c['lengthS'] else ''}) | {c['frame']} | — | — | {c['note']} |")
 L+=["","## Yorumlanan satırlar","",
+"- **Açılış (#1):** eski radar/HUD açılışı (yazı ve hedef çerçevesiyle) çıktı, `tomris-overlays/opening_old/` ve `renders/opening_old.mp4` olarak saklandı. Yeni açılış yazısız; tekne profili `tomris-overlays/opening/profile_lines.py` ile tomris.blend'den (ortografik iskele görünüşü, siluet + kenar çizgileri, ışın izlemeyle gizli çizgi temizliği) üretilir. Açılışta radar sesi yok; altında yalnız `sfx_swell.mp3` yuvası.",
 "- **Yönetmen kararı (tasarım vitrini):** sensör/hedef bölümü tamamen çıktı. Kurulum E ve görünümü yok; #40, #43, #51 ve #55'in kilit kısmı güzellik çekimi: #40 direk tepesinden iz, #43 200 mm'de tekne + liman vinçleri sıkıştırması, #51 göğe karşı dönen radar, #55 ters ışıkta bayrağın kadrajı süpürdüğü drone geçişi. #41/#42 EO/IR ve silah yalnız mekanik detay olarak küçük yay çizer.",
 "- **Lançer:** denizde her zaman yatık (#32, #34, #44, #45, #53, #55, #57 animasyonsuz); yalnız stüdyoda (#30 0→25°, #31, #33) kalkar; #37 turntable'da yatık.",
 "- **Zamanlama:** açılış 150 kare (opening.mp4) → #2 kare 150'de 75 kare; son kart 210 kare (endcard.mp4) → #57 75, #58 60 kare. Toplam 2100 değişmedi.",

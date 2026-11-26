@@ -5,6 +5,8 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { boatPose } from "./boat.js";
+import { LOOKS } from "./looks.js";
+export { LOOKS };
 
 const D2R = Math.PI / 180, KN = 0.514444;
 export const FPS = 30, TOTAL_FRAMES = 2100, DURATION = TOTAL_FRAMES / FPS;
@@ -56,20 +58,6 @@ const EDIT = {
   58: { startFrame: 1830, frames: 60 },
 };
 
-// ---- looks (engine + post parameters) ----
-export const LOOKS = {
-  sunset: { sky: "sunset", exposure: 0.42, skyGain: 1, sunGain: 9, sunColor: [1.0, 0.62, 0.36], envGain: 1.4, keyGain: 1, fogDist: 2200, glitter: 1, bloom: 0.08, bloomThresh: 1.5,
-    navEmissive: 2, navLight: 0.2, navGlow: 0.15, grain: 0.03, vignette: 0.32, sat: 1.0, contrast: 1.06,
-    teal: [-0.014, 0.006, 0.02], orange: [0.035, 0.01, -0.03], lampGain: 0.25, fogDensity: 2.6e-4, fogTint: [1.0, 0.85, 0.75] },
-  bluehour: { sky: "dusk", exposure: 0.36, wb: [0.7, 0.9, 1.35], skyGain: 1, sunGain: 0.0, envGain: 1, keyGain: 1, fogDist: 1800, glitter: 0, bloom: 0.14, bloomThresh: 1.0,
-    navEmissive: 60, navLight: 0.6, navGlow: 1.0, grain: 0.04, vignette: 0.38, sat: 1.0, contrast: 1.06,
-    teal: [-0.01, 0.006, 0.03], orange: [0.02, 0.005, -0.02], lampGain: 1.2, fogDensity: 2.2e-4, fogTint: [0.8, 0.9, 1.1] },
-  studio: { sky: "sunset", exposure: 0.55, skyGain: 1, sunGain: 7, sunColor: [1.0, 0.95, 0.9], envGain: 0.05, keyGain: 1, fogDist: 2000, glitter: 0, bloom: 0.06, bloomThresh: 1.6,
-    navEmissive: 0, navLight: 0, navGlow: 0, grain: 0.035, vignette: 0.5, sat: 0.95, contrast: 1.1,
-    teal: [-0.01, 0.004, 0.016], orange: [0.02, 0.006, -0.016] },
-  wireframe: { sky: "dusk", exposure: 1.0, skyGain: 1, sunGain: 6, sunColor: [1, 1, 1], envGain: 0.05, keyGain: 1, fogDist: 2000, glitter: 0, bloom: 0.3, bloomThresh: 0.55,
-    navEmissive: 0, navLight: 0, navGlow: 0, grain: 0.03, vignette: 0.5, sat: 1.0, contrast: 1.05, teal: [0, 0, 0], orange: [0, 0, 0] },
-};
 const SETUP_LOOK = { B: "sunset", A: "sunset", Ap: "bluehour", C: "studio", W: "wireframe" };
 const SEA_K = { B: 0.25, A: 1.0, Ap: 0.75, C: 0, W: 0 };     // multiplies the engine sea (built for Hs 0.8 m)
 const STUDIO = new Set(["C", "W"]);

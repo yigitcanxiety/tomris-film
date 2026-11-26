@@ -5,3 +5,4 @@ node_modules/
 tomris-three/renders/snap/
 __pycache__/
 .render.lock/
+tomris-three/renders/preview/

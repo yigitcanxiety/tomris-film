@@ -37,6 +37,7 @@ import { createFilm, FPS } from "./assets/js/film.js";
 
 const q = new URLSearchParams(location.search);
 const SUB = +(q.get("sub") || 8);
+const SCALE = +(q.get("scale") || 1), WARM = q.get("warm") !== "0";   // preview: ?sub=1&scale=0.5&warm=0
 window.__hf = window.__hf || {}; window.__hf.buildReady = window.__hf.buildReady || {};
 let engine = null, film = null;
 function renderAt(t) {
@@ -49,12 +50,13 @@ function renderAt(t) {
 }
 window.__hf.buildReady["tomris-3d"] = (async () => {
   engine = await createEngine(document.getElementById("gl"), {
+    width: Math.round(1920 * SCALE), height: Math.round(804 * SCALE),
     skies: { sunset: "hdri/belfast_sunset_puresky_2k.hdr", dusk: "hdri/qwantani_dusk_2_puresky_2k.hdr" },
   });
   const shots = await (await fetch("assets/shots.json")).json();
   film = await createFilm(engine, shots);
   window.__tomris = { engine, film, renderAt };
-  for (const t of film.warmTimes) renderAt(t);   // compiles every program used by every setup
+  if (WARM) for (const t of film.warmTimes) renderAt(t);   // compiles every program used by every setup
   renderAt(window.__hfThreeTime || 0);
 })();
 window.addEventListener("hf-seek", (e) => renderAt(e.detail.time));

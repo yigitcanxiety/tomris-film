@@ -3,7 +3,7 @@
 //   boat   = { x, z, heading, speed, yawRate, s }      (s = odometer, metres along the track)
 //   trail  = (tau) => boat state tau seconds ago        (film: analytic track; realtime: recorded history)
 //   camera = { pos: Vector3, target: Vector3, lensMm, fstop, roll, focus? }
-//   look   = { sky, sunAz, exposure, ... }              (see film.js LOOKS)
+//   look   = { sky, sunAz, exposure, ... }              (see looks.js LOOKS)
 // Film mode calls it from hf-seek with 5 sub-frames; a realtime loop calls it once per rAF with subframes = 1.
 import * as THREE from "three";
 import { createSea } from "./waves.js";

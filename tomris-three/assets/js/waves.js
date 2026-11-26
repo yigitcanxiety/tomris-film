@@ -7,8 +7,12 @@ import * as THREE from "three";
 const G = 9.81;
 
 export const QUALITY_PRESETS = {
-  film:     { name: "film",     nFine: 48, nCap: 24, oceanSeg: 768, oceanRatio: 1.012, sprayScale: 1.0,  foamDetail: 1, msaa: 4, bg4k: true },
-  realtime: { name: "realtime", nFine: 20, nCap: 8,  oceanSeg: 384, oceanRatio: 1.026, sprayScale: 0.3, foamDetail: 0, msaa: 2, bg4k: false },
+  // gridU/V: projected ocean grid (vertices across the frame / down it); tileA/B: fine-wave tile resolution;
+  // shadow: sun shadow map size; refl: planar reflection scale; subframes: cap on motion-blur sub-frames
+  film:     { name: "film",     nFine: 48, nCap: 24, gridU: 360, gridV: 240, tileA: 512, tileB: 256, sprayScale: 1.0,  foamDetail: 1, msaa: 0, bg4k: true,
+              shadow: 2048, refl: 0.5, maxSub: 64 },
+  realtime: { name: "realtime", nFine: 32, nCap: 16, gridU: 240, gridV: 160, tileA: 256, tileB: 128, sprayScale: 0.35, foamDetail: 0, msaa: 2, bg4k: false,
+              shadow: 1024, refl: 0.33, maxSub: 1 },
 };
 export const QUALITY = { ...QUALITY_PRESETS.film };
 export function setQuality(name) { Object.assign(QUALITY, QUALITY_PRESETS[name] || QUALITY_PRESETS.film); return QUALITY; }

@@ -6,3 +6,5 @@ tomris-three/renders/snap/
 __pycache__/
 .render.lock/
 tomris-three/renders/preview/
+tomris-film/chunks/
+tomris-film/preview/

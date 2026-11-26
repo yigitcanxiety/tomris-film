@@ -16,52 +16,30 @@ const MID = 6.5;
 // named points on the boat, GLB frame (node positions in tomris.glb)
 const ANCHOR = {
   boat: [6.3, 1.3, 0], eoir: [4.37, 3.5, 0], flag: [2.6, 4.2, 0], stern: [0, 0.7, 0], bow: [12.6, 1.5, 0],
-  gun: [9.8, 2.55, 0], launcher: [1.6, 2.1, 0], radar: [4.17, 4.25, 0], mast: [3.35, 4.5, 0], muzzle: [10.95, 2.7, -0.07],
+  gun: [9.9, 2.45, 0], launcher: [1.6, 2.1, 0], radar: [4.17, 4.25, 0], mast: [3.35, 4.5, 0], muzzle: [11.0, 2.41, -0.07],
   noses: [2.35, 2.75, 0], wheelhouse_glass: [5.3, 2.45, -1.2], hull_text: [1.41, 0.52, -1.7],
 };
 
 // ---------------------------------------------------------------------------------------------------------
-// THE EDIT: director's changes on top of the validated shots.json (frame counts of the film stay 2100).
-//  - opening overlay is 150 frames (0-150): #2 starts at 150; endcard is 210 frames (1890-2100): #57/#58 shortened
-//  - no target beat: #40 #43 #51 become blue-hour beauty shots, #55 loses the lock, launcher stays stowed at sea
-//  - explicit look-at points from the plan are re-aimed at the real geometry of tomris.glb (abs = GLB frame)
+// shots.json (tomris-shots/gen.py) is the source of truth for timing, setups, lenses, camera paths, boat speed,
+// pivots and flag. EDIT only holds re-aims that need the exact GLB geometry (abs = GLB frame, origin at the
+// transom) or a camera distance; it never changes timing, setup, speed or animation.
 // ---------------------------------------------------------------------------------------------------------
-const STOWED = [{ target: "launcher_el", fromDeg: 0, toDeg: 0 }];
 const EDIT = {
-  2: { startFrame: 150, frames: 75 },
-  5: { target: "mast" },
-  6: { target: "wheelhouse_glass" },
   8: { dist: 6.5 },
-  13: { target: "hull_text" },
-  16: { target: "radar" },
-  28: { from: [13.1, 2.95, -2.3], to: [12.9, 2.95, -2.15], abs: true, target: "muzzle" },
+  28: { from: [15.2, 3.1, -3.0], to: [15.0, 3.1, -2.8], abs: true, target: [10.5, 2.48, -0.05] },   // barrel + muzzle brake, 135 mm
   31: { from: [3.45, 3.65, -1.75], to: [3.4, 3.65, -1.65], abs: true, target: "noses",
         rack: [[2.45, 2.75, -0.23], [2.45, 2.75, 0.23]] },
-  32: { anim: STOWED }, 34: { anim: STOWED }, 45: { anim: STOWED }, 53: { anim: STOWED, target: [2.0, 2.15, 0] },
-  // #40 replaced: the wake from the masthead, flag and mast in the foreground
-  40: { setup: "Ap", type: "detail", lens: 24, from: [2.2, 6.1, 0.7], to: [2.0, 6.15, 0.75], abs: true, target: [-40, 0, -2],
-        ease: "easeOut", handheld: 0.05, speedKn: 35, headingDeg: 0, anim: [], flag: true, fstop: 0 },
-  // #41/#42: turret and gun move as mechanical details only (no target), small arcs
-  42: { anim: [{ target: "gun_az", fromDeg: 0, toDeg: -20 }] },
-  // #43 replaced: 200 mm compression, the boat against the harbour cranes and coast lights astern
-  43: { setup: "Ap", type: "drone", lens: 200, from: [175, 3.2, -16], to: [175, 3.4, -19], abs: true, target: [6.3, 2.2, 0],
-        ease: "linear", handheld: 0.06, speedKn: 35, headingDeg: 0, anim: [], flag: true, fstop: 4 },
-  // #44: stern chase, launcher stays down (it only rises in the studio)
-  44: { anim: STOWED },
-  // #51 replaced: radar array turning against the afterglow, from the wheelhouse roof
-  51: { setup: "Ap", type: "detail", lens: 40, from: [6.6, 3.45, -1.05], to: [6.5, 3.42, -1.1], abs: true, target: "radar",
-        ease: "linear", handheld: 0, speedKn: 35, headingDeg: 0, anim: [], flag: true, fstop: 2.8 },
   46: { dist: 6.5 },
-  52: { target: "hull_text" },
-  55: { anim: [{ target: "launcher_el", fromDeg: 0, toDeg: 0 }, { target: "gun_az", fromDeg: 0, toDeg: 0 }] },
-  57: { frames: 75, anim: STOWED },
-  58: { startFrame: 1830, frames: 60 },
 };
+const ALLOWED_EDIT = new Set(["from", "to", "abs", "target", "dist", "rack"]);
+for (const [n, e] of Object.entries(EDIT)) for (const k of Object.keys(e)) if (!ALLOWED_EDIT.has(k)) throw new Error(`film.js EDIT #${n}: '${k}' belongs in shots.json`);
 
 const SETUP_LOOK = { B: "sunset", A: "sunset", Ap: "bluehour", C: "studio", W: "wireframe" };
 const SEA_K = { B: 0.25, A: 1.0, Ap: 0.75, C: 0, W: 0 };     // multiplies the engine sea (built for Hs 0.8 m)
 const STUDIO = new Set(["C", "W"]);
 const STUDIO_KEY = { az: 315, elev: 38 };                  // single hard key from the port bow, high
+const LAMP_B = 8;                                          // sunset (B) lamp boost over looks.js lampGain, so the quay lamps bloom
 
 // ---- small helpers ----
 const clamp01 = (x) => Math.min(1, Math.max(0, x));
@@ -77,20 +55,20 @@ function normalise(s, setups) {
   const e = EDIT[s.n] || {};
   const c = s.camera || {}, b = s.boat || {};
   const abs = !!e.abs, mid = (p) => (abs ? p : [p.x + MID, p.y, p.z]);
-  const f0 = e.startFrame ?? s.startFrame, frames = e.frames ?? s.frames;
-  const setup = e.setup ?? s.setup;
+  const f0 = s.startFrame, frames = s.frames;
+  const setup = s.setup;
   let target = e.target ?? c.lookAt;
   if (target && typeof target === "object" && !Array.isArray(target)) target = [target.x + MID, target.y, target.z];
   const sh = {
     n: s.n, kind: s.kind, f0, f1: f0 + frames, setup,
-    type: e.type ?? c.type, lens: e.lens ?? s.lensMm,
+    type: c.type, lens: s.lensMm,
     from: e.from ?? (c.from && mid(c.from)), to: e.to ?? (c.to && mid(c.to)), target,
-    ease: EASE[e.ease ?? c.ease] || EASE.linear, hh: e.handheld ?? c.handheld ?? 0,
-    fstop: e.fstop ?? c.fStop, focusOn: c.focusOn, rack: e.rack, rollDps: c.rollDegPerSec || 0,
-    orbit: (e.type ?? c.type) === "orbit" && !e.from, screenOffset: c.screenOffset, dist: e.dist,
-    v0: (e.speedKn ?? b.speedKn ?? 0) * KN, v1: (e.speedKn ?? b.speedToKn ?? b.speedKn ?? 0) * KN,
-    heading: -(e.headingDeg ?? b.headingDeg ?? 0) * D2R,
-    anim: e.anim ?? s.anim ?? [], flag: e.flag ?? s.flagVisible, look: SETUP_LOOK[setup], sea: SEA_K[setup],
+    ease: EASE[c.ease] || EASE.linear, hh: c.handheld ?? 0,
+    fstop: c.fStop, focusOn: c.focusOn, rack: e.rack, rollDps: c.rollDegPerSec || 0,
+    orbit: c.type === "orbit" && !e.from, screenOffset: c.screenOffset, dist: e.dist,
+    v0: (b.speedKn ?? 0) * KN, v1: (b.speedToKn ?? b.speedKn ?? 0) * KN,
+    heading: -(b.headingDeg ?? 0) * D2R,
+    anim: s.anim ?? [], flag: s.flagVisible, look: SETUP_LOOK[setup], sea: SEA_K[setup],
     sun: STUDIO.has(setup) ? STUDIO_KEY : setups[setup] ? { az: setups[setup].sunAzimuthDeg, elev: setups[setup].sunElevationDeg } : null,
   };
   if (sh.kind === "3d" && sh.type !== "orbit") {
@@ -145,6 +123,7 @@ export async function createFilm(engine, shotsJson, { base = "assets/" } = {}) {
     if (!o.isMesh) return;
     o.castShadow = false; o.receiveShadow = false;
     for (const m of [].concat(o.material)) {
+      m.fog = true;                                                // props always take the scene haze
       if (/^light_/.test(m.name) && !lampMats.includes(m)) { m.userData.e0 = m.emissiveIntensity; lampMats.push(m); }
       if (/^light_buoy/.test(m.name)) buoyLamps.push(m);
     }
@@ -246,16 +225,18 @@ export async function createFilm(engine, shotsJson, { base = "assets/" } = {}) {
       fog.color.setRGB(sky.skyRad.x * k * tint[0], sky.skyRad.y * k * tint[1], sky.skyRad.z * k * tint[2], THREE.LinearSRGBColorSpace);
       fog.density = look.fogDensity ?? 2.5e-4;
     } else fog.density = 0;
-    for (const m of lampMats) m.emissiveIntensity = m.userData.e0 * (look.lampGain ?? 0);
+    // harbour/coast lamps: small glowing points; at sunset (B) they are already on and pushed so they bloom
+    const lampK = (look.lampGain ?? 0) * (sh.section === "B" ? LAMP_B : 1);
+    for (const m of lampMats) m.emissiveIntensity = m.userData.e0 * lampK;
     for (const m of buoyLamps) {                                   // Fl R 3 s / Fl G 4 s
       const per = /red/.test(m.name) ? 3 : 4, ph = (t % per) / per;
-      m.emissiveIntensity = m.userData.e0 * (look.lampGain ?? 0) * 3 * (ph < 0.17 ? 1 : 0.04);
+      m.emissiveIntensity = m.userData.e0 * lampK * 3 * (ph < 0.17 ? 1 : 0.04);
     }
     // wireframe / solid / ghost
     let X = 1e6, Xw = 1e6, showLines = false, showGhost = false;
     if (wire) {
       showLines = true; showGhost = true;
-      if (sh.n === 24) { X = -100; Xw = 13.6 - 15 * smooth(u / 0.8); }                 // drawn bow to stern
+      if (sh.n === 24) { X = -100; Xw = 11.5 - 13 * smooth(u / 0.8); }                 // drawn bow to stern (bow already drawn at the cut)
       else { Xw = -100; X = -1 + 15 * smooth((u - 0.3) / 0.62); }                       // solid sweeps in under the lines
     }
     solidClip.constant = X; ghostClip.constant = -X; lineClip.constant = -Xw;

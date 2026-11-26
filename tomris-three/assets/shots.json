@@ -1,6 +1,332 @@
 {
  "fps": 30,
  "totalFrames": 2100,
+ "structure": {
+  "opening": {
+   "file": "tomris-overlays/renders/opening.mp4",
+   "start": 0,
+   "frames": 150
+  },
+  "picture3d": {
+   "start": 150,
+   "end": 1889,
+   "note": "3B render tam zaman çizgisi; siyah flaşlar 1444–1447, 1715–1720, 1751–1754 kurguda siyah"
+  },
+  "endcard": {
+   "file": "tomris-overlays/renders/endcard.mp4",
+   "start": 1890,
+   "frames": 210
+  },
+  "picture": "2.39:1, 1920x804 @ y=138 içinde 1920x1080"
+ },
+ "beats": [
+  {
+   "name": "Açılış (HyperFrames opening.mp4)",
+   "shots": [
+    1,
+    1
+   ],
+   "from": 0,
+   "to": 149
+  },
+  {
+   "name": "Liman, gün batımı (B)",
+   "shots": [
+    2,
+    10
+   ],
+   "from": 150,
+   "to": 512
+  },
+  {
+   "name": "Açık deniz, gün batımı (A)",
+   "shots": [
+    11,
+    23
+   ],
+   "from": 513,
+   "to": 971
+  },
+  {
+   "name": "Tel kafes ara (W)",
+   "shots": [
+    24,
+    25
+   ],
+   "from": 972,
+   "to": 1076
+  },
+  {
+   "name": "Karanlık stüdyo / deniz kesmeleri (C+A)",
+   "shots": [
+    26,
+    37
+   ],
+   "from": 1077,
+   "to": 1443
+  },
+  {
+   "name": "Siyah flaş",
+   "shots": [
+    38,
+    38
+   ],
+   "from": 1444,
+   "to": 1447
+  },
+  {
+   "name": "Mavi saat (A′)",
+   "shots": [
+    39,
+    53
+   ],
+   "from": 1448,
+   "to": 1714
+  },
+  {
+   "name": "Siyah flaş",
+   "shots": [
+    54,
+    54
+   ],
+   "from": 1715,
+   "to": 1720
+  },
+  {
+   "name": "Doruk süpürme (A′)",
+   "shots": [
+    55,
+    55
+   ],
+   "from": 1721,
+   "to": 1750
+  },
+  {
+   "name": "Siyah flaş",
+   "shots": [
+    56,
+    56
+   ],
+   "from": 1751,
+   "to": 1754
+  },
+  {
+   "name": "Kapanış (A′)",
+   "shots": [
+    57,
+    58
+   ],
+   "from": 1755,
+   "to": 1889
+  },
+  {
+   "name": "Son kart (HyperFrames endcard.mp4)",
+   "shots": [
+    59,
+    59
+   ],
+   "from": 1890,
+   "to": 2099
+  }
+ ],
+ "audio": {
+  "vo": [
+   {
+    "clip": "vo_1.mp3",
+    "frame": 15,
+    "shot": 1,
+    "in": 0,
+    "out": null,
+    "text": "(eksik: yuva sessiz kalır)"
+   },
+   {
+    "clip": "vo_2_liman_gemide.mp3",
+    "frame": 315,
+    "shot": 6,
+    "in": 0,
+    "out": 2.4,
+    "text": "Liman komutanlığından tek bir emir çıktı."
+   },
+   {
+    "clip": "vo_2_liman_gemide.mp3",
+    "frame": 390,
+    "shot": 8,
+    "in": 2.6,
+    "out": null,
+    "text": "Gemide tek bir asker yok."
+   },
+   {
+    "clip": "vo_3_olcu.mp3",
+    "frame": 513,
+    "shot": 11,
+    "in": 0,
+    "out": 0.95,
+    "text": "On üç metre."
+   },
+   {
+    "clip": "vo_3_olcu.mp3",
+    "frame": 618,
+    "shot": 12,
+    "in": 1.05,
+    "out": 1.78,
+    "text": "On ton."
+   },
+   {
+    "clip": "vo_3_olcu.mp3",
+    "frame": 681,
+    "shot": 14,
+    "in": 1.8,
+    "out": 3.8,
+    "text": "Saatte otuz beş knot."
+   },
+   {
+    "clip": "vo_3_olcu.mp3",
+    "frame": 798,
+    "shot": 18,
+    "in": 3.95,
+    "out": 5.25,
+    "text": "İki su jetiyle,"
+   },
+   {
+    "clip": "vo_3_olcu.mp3",
+    "frame": 849,
+    "shot": 20,
+    "in": 5.3,
+    "out": null,
+    "text": "uzaktan ya da tamamen otonom."
+   },
+   {
+    "clip": "vo_4_yirmi_arac.mp3",
+    "frame": 938,
+    "shot": 23,
+    "in": 0,
+    "out": null,
+    "text": "Yirmi insansız deniz aracı incelendi, her ölçü hesapla doğrulandı. (J-cut: #23'ün 3. karesinde başlar; 4,5 sn'lik cümle #24–25'e (3,5 sn) sığmaz)"
+   },
+   {
+    "clip": "vo_5_stamp_umtas.mp3",
+    "frame": 1082,
+    "shot": 26,
+    "in": 0,
+    "out": null,
+    "text": "Burnunda ASELSAN STAMP on iki koma yedi milimetre uzaktan komutalı silah. Kıçında dört L-UMTAS füzesi. ('Kıçında' #31'de)"
+   },
+   {
+    "clip": "vo_6_hedef.mp3",
+    "frame": 1448,
+    "shot": 39,
+    "in": 0,
+    "out": null,
+    "text": "Hedef tespit edildi. Görüntü, şifreli bağlantıyla anında komuta merkezinde. (AÇIK SORU: resimle artık örtüşmüyor)"
+   },
+   {
+    "clip": "vo_7_tomris.mp3",
+    "frame": 1755,
+    "shot": 57,
+    "in": 0,
+    "out": null,
+    "text": "TOMRİS, İstanbul Teknik Üniversitesi'nde tasarlandı. TOMRİS. Denizde, nöbette. (ikinci cümle #58'de, son kartın ilk 1,4 sn'sine taşar)"
+   }
+  ],
+  "beds": [
+   {
+    "bus": "mus",
+    "clip": "music.mp3",
+    "frame": 0,
+    "gainDb": -6,
+    "lengthS": 70.0,
+    "note": "müzik, VO altında ~9 dB ducking"
+   },
+   {
+    "bus": "sfx",
+    "clip": "sfx_waves.mp3",
+    "frame": 150,
+    "gainDb": -15,
+    "lengthS": 12.1,
+    "note": "liman bölümü (#2–#10) altında dalga"
+   },
+   {
+    "bus": "sfx",
+    "clip": "sfx_waterjet.mp3",
+    "frame": 426,
+    "gainDb": -10,
+    "lengthS": 0,
+    "note": "#9 jetler devreye girer"
+   },
+   {
+    "bus": "sfx",
+    "clip": "sfx_wind.mp3",
+    "frame": 513,
+    "gainDb": -18,
+    "lengthS": 15.3,
+    "note": "açık deniz A (#11–#23)"
+   },
+   {
+    "bus": "sfx",
+    "clip": "sfx_wind.mp3",
+    "frame": 1448,
+    "gainDb": -18,
+    "lengthS": 14.733,
+    "note": "mavi saat A′ (#39–#58)"
+   },
+   {
+    "bus": "sfx",
+    "clip": "sfx_radar.mp3",
+    "frame": 741,
+    "gainDb": -16,
+    "lengthS": 0,
+    "note": "#16 radar"
+   },
+   {
+    "bus": "sfx",
+    "clip": "sfx_radar.mp3",
+    "frame": 1667,
+    "gainDb": -16,
+    "lengthS": 0,
+    "note": "#51 radar"
+   },
+   {
+    "bus": "sfx",
+    "clip": "sfx_impact.mp3",
+    "frame": 849,
+    "gainDb": -10,
+    "lengthS": 0,
+    "note": "#20 slam"
+   },
+   {
+    "bus": "sfx",
+    "clip": "sfx_impact.mp3",
+    "frame": 1444,
+    "gainDb": -6,
+    "lengthS": 0,
+    "note": "#38 siyah flaş / drop"
+   },
+   {
+    "bus": "sfx",
+    "clip": "sfx_impact.mp3",
+    "frame": 1715,
+    "gainDb": -6,
+    "lengthS": 0,
+    "note": "#54 siyah flaş"
+   },
+   {
+    "bus": "sfx",
+    "clip": "sfx_impact.mp3",
+    "frame": 1751,
+    "gainDb": -6,
+    "lengthS": 0,
+    "note": "#56 siyah flaş"
+   },
+   {
+    "bus": "sfx",
+    "clip": "sfx_impact.mp3",
+    "frame": 1890,
+    "gainDb": -8,
+    "lengthS": 0,
+    "note": "son kart"
+   }
+  ]
+ },
  "setups": {
   "B": {
    "sunElevationDeg": 1,
@@ -32,16 +358,6 @@
     "choppiness": 0.9
    }
   },
-  "E": {
-   "sunElevationDeg": -4,
-   "sunAzimuthDeg": 235,
-   "look": "eoir",
-   "sea": {
-    "windSpeed": 8,
-    "waveHeightM": 0.6,
-    "choppiness": 0.9
-   }
-  },
   "C": {
    "sunElevationDeg": 45,
    "sunAzimuthDeg": 0,
@@ -67,7 +383,7 @@
   {
    "n": 1,
    "startFrame": 0,
-   "frames": 105,
+   "frames": 150,
    "kind": "overlay",
    "setup": null,
    "lensMm": null,
@@ -77,16 +393,14 @@
    "flagVisible": false,
    "vo": "Son dakika. Ege'de kimliği belirsiz bir su üstü teması tespit edildi.",
    "sfx": [
-    "radyo paraziti",
-    "radar bip",
     "alçak drone müzik"
    ],
-   "note": "HyperFrames: radar açılışı, isimsiz Ege kıyı çizgisi, kırmızı temas; küçük 'SON DAKİKA' künyesi; VO 0,5 sn'de (kare 15) başlar"
+   "note": "HyperFrames açılış (tomris-overlays/renders/opening.mp4, 150 kare, kare 0–149); vo_1 yuvası kare 15'te, dosya yok (sessiz)"
   },
   {
    "n": 2,
-   "startFrame": 105,
-   "frames": 120,
+   "startFrame": 150,
+   "frames": 75,
    "kind": "3d",
    "setup": "B",
    "lensMm": 85,
@@ -94,12 +408,12 @@
     "type": "drone",
     "from": {
      "x": 268,
-     "y": 25,
+     "y": 7.5,
      "z": -14
     },
     "to": {
      "x": 252,
-     "y": 26.2,
+     "y": 8.7,
      "z": -8
     },
     "lookAt": "boat",
@@ -122,7 +436,7 @@
    "sfx": [
     "radyo paraziti"
    ],
-   "note": "Güneş iki vinç arasında; tekne sağ 1/3'te (screenOffset); VO1 sürer"
+   "note": "İlk 3B kare 150; güneş iki vinç arasında; tekne sağ 1/3'te (screenOffset); VO1 sürer"
   },
   {
    "n": 3,
@@ -220,11 +534,7 @@
      "y": 6.2,
      "z": -4
     },
-    "lookAt": {
-     "x": -0.5,
-     "y": 5.2,
-     "z": 0
-    },
+    "lookAt": "mast",
     "ease": "linear",
     "handheld": 0
    },
@@ -260,11 +570,7 @@
      "y": 1.8,
      "z": -3.2
     },
-    "lookAt": {
-     "x": -0.6,
-     "y": 1.9,
-     "z": -1.4
-    },
+    "lookAt": "wheelhouse_glass",
     "ease": "linear",
     "handheld": 0
    },
@@ -397,14 +703,14 @@
    "camera": {
     "type": "static",
     "from": {
-     "x": 9.5,
-     "y": 2.5,
-     "z": 30
+     "x": 24.3,
+     "y": 1.2,
+     "z": 12
     },
     "to": {
-     "x": -9.5,
-     "y": 2.5,
-     "z": 30
+     "x": 5,
+     "y": 1.2,
+     "z": 12
     },
     "lookAt": "boat",
     "ease": "linear",
@@ -419,7 +725,7 @@
    "flagVisible": true,
    "vo": null,
    "sfx": [],
-   "note": "Mendirek feneri ön planda, silüet; pan ~20°/sn"
+   "note": "Dünyada sabit alçak kamera, tekne önden-yandan geçer; güneş arkada, silüet; pan"
   },
   {
    "n": 11,
@@ -467,14 +773,14 @@
    "camera": {
     "type": "chase",
     "from": {
-     "x": -1,
-     "y": 1.2,
-     "z": -15
+     "x": -1.2,
+     "y": 2.8,
+     "z": -21
     },
     "to": {
-     "x": -0.4,
-     "y": 1.2,
-     "z": -15
+     "x": 0.2,
+     "y": 2.8,
+     "z": -21
     },
     "lookAt": "boat",
     "ease": "linear",
@@ -489,7 +795,7 @@
    "flagVisible": true,
    "vo": "On ton.",
    "sfx": [],
-   "note": "MASTER referans açısı; bob 0,3°"
+   "note": "MASTER referans açısı (master_varA): iskele yan, pruva solda, tekne tam kadrajda; bob 0,3°"
   },
   {
    "n": 13,
@@ -510,11 +816,7 @@
      "y": 1.2,
      "z": -6.2
     },
-    "lookAt": {
-     "x": -4.4,
-     "y": 1.0,
-     "z": -1.8
-    },
+    "lookAt": "hull_text",
     "ease": "linear",
     "handheld": 0.05,
     "focusOn": "hull_text"
@@ -619,11 +921,7 @@
      "y": 6,
      "z": -3.5
     },
-    "lookAt": {
-     "x": -0.8,
-     "y": 5.4,
-     "z": 0
-    },
+    "lookAt": "radar",
     "ease": "linear",
     "handheld": 0
    },
@@ -689,14 +987,14 @@
    "camera": {
     "type": "chase",
     "from": {
-     "x": -14.5,
-     "y": 0.8,
-     "z": 0
+     "x": -15,
+     "y": 0.65,
+     "z": 2.2
     },
     "to": {
-     "x": -14.5,
-     "y": 0.8,
-     "z": 0
+     "x": -14.6,
+     "y": 0.7,
+     "z": 1.5
     },
     "lookAt": "stern",
     "ease": "linear",
@@ -878,14 +1176,14 @@
      "z": -19.05
     },
     "to": {
-     "x": -8.53,
+     "x": -4.57,
      "y": 25,
-     "z": -20.28
+     "z": -21.52
     },
     "lookAt": "boat",
     "ease": "linear",
     "handheld": 0,
-    "orbitDegPerSec": 6
+    "orbitDegPerSec": 15
    },
    "boat": {
     "speedKn": 35,
@@ -899,7 +1197,7 @@
     "motor gürlemesi",
     "müzik nefes alır"
    ],
-   "note": "Orbit 6°/sn"
+   "note": "Orbit 15°/sn (6°/sn önizlemede ölü görünüyordu)"
   },
   {
    "n": 24,
@@ -983,14 +1281,14 @@
    "camera": {
     "type": "detail",
     "from": {
-     "x": 11.5,
-     "y": 0.4,
-     "z": -3.5
+     "x": 8.0,
+     "y": 1.3,
+     "z": -2.7
     },
     "to": {
-     "x": 11.3,
-     "y": 0.4,
-     "z": -3.5
+     "x": 7.7,
+     "y": 1.35,
+     "z": -2.6
     },
     "lookAt": "gun",
     "ease": "linear",
@@ -1026,23 +1324,23 @@
    "frames": 27,
    "kind": "3d",
    "setup": "A",
-   "lensMm": 50,
+   "lensMm": 28,
    "camera": {
     "type": "detail",
     "from": {
-     "x": 2.6,
-     "y": 3.8,
-     "z": 0.4
+     "x": -1.0,
+     "y": 3.55,
+     "z": 0.5
     },
     "to": {
-     "x": 2.6,
-     "y": 3.8,
+     "x": -0.7,
+     "y": 3.55,
      "z": 0.4
     },
     "lookAt": {
-     "x": 20,
-     "y": 2.2,
-     "z": 0
+     "x": 10.5,
+     "y": 2.3,
+     "z": -0.2
     },
     "ease": "linear",
     "handheld": 0.05
@@ -1255,17 +1553,11 @@
     "headingDeg": 0,
     "trimDeg": 4
    },
-   "anim": [
-    {
-     "target": "launcher_el",
-     "fromDeg": 25,
-     "toDeg": 25
-    }
-   ],
+   "anim": [],
    "flagVisible": true,
    "vo": null,
    "sfx": [],
-   "note": "Silah + lançer yan profil, gün batımı"
+   "note": "Uzun lens yan profil, gün batımı; lançer yatık (denizde hep yatık)"
   },
   {
    "n": 33,
@@ -1336,13 +1628,7 @@
     "headingDeg": 225,
     "trimDeg": 4
    },
-   "anim": [
-    {
-     "target": "launcher_el",
-     "fromDeg": 25,
-     "toDeg": 25
-    }
-   ],
+   "anim": [],
    "flagVisible": true,
    "vo": null,
    "sfx": [],
@@ -1517,46 +1803,45 @@
    "sfx": [
     "müzik drop"
    ],
-   "note": "Whip pan 60°/sn→0; fenerler yanık"
+   "note": "Mavi saat girişi; whip pan 60°/sn→0; fenerler yanık"
   },
   {
    "n": 40,
    "startFrame": 1472,
    "frames": 21,
    "kind": "3d",
-   "setup": "E",
-   "lensMm": 200,
-   "overlay": "eoir_reticle",
+   "setup": "Ap",
+   "lensMm": 24,
    "camera": {
     "type": "detail",
     "from": {
-     "x": 0,
-     "y": 4.6,
-     "z": 0
+     "x": -4.3,
+     "y": 6.1,
+     "z": 0.6
     },
     "to": {
-     "x": 0,
-     "y": 4.6,
-     "z": 0
+     "x": -4.6,
+     "y": 6.2,
+     "z": 0.9
     },
     "lookAt": {
-     "x": 900,
-     "y": 6,
-     "z": -120
+     "x": -46.5,
+     "y": 0,
+     "z": -2
     },
-    "ease": "easeIn",
-    "handheld": 0,
-    "digitalZoom": {
-     "fromX": 2,
-     "toX": 6
-    }
+    "ease": "easeOut",
+    "handheld": 0.05
    },
-   "boat": null,
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
    "anim": [],
-   "flagVisible": false,
+   "flagVisible": true,
    "vo": null,
    "sfx": [],
-   "note": "EO/IR beyaz-sıcak; ufukta bayraksız, adsız genel hedef; crash zoom 1→3×"
+   "note": "Güzellik: direk tepesinden kıça, uzayan mavi-beyaz iz; bayrak ve direk ön planda"
   },
   {
    "n": 41,
@@ -1596,7 +1881,7 @@
    "flagVisible": true,
    "vo": null,
    "sfx": [],
-   "note": "EO/IR küresi hedefe döner"
+   "note": "EO/IR küresi döner (mekanik detay, hedef yok)"
   },
   {
    "n": 42,
@@ -1630,7 +1915,7 @@
     {
      "target": "gun_az",
      "fromDeg": 0,
-     "toDeg": -35
+     "toDeg": -20
     }
    ],
    "flagVisible": true,
@@ -1638,48 +1923,46 @@
    "sfx": [
     "servo"
    ],
-   "note": "Silah döner, alttan"
+   "note": "Silah küçük yay çizer, alttan (mekanik detay)"
   },
   {
    "n": 43,
    "startFrame": 1529,
    "frames": 18,
    "kind": "3d",
-   "setup": "E",
+   "setup": "Ap",
    "lensMm": 200,
-   "overlay": "eoir_reticle_lock",
    "camera": {
-    "type": "detail",
+    "type": "drone",
     "from": {
-     "x": 0,
-     "y": 4.6,
-     "z": 0
+     "x": 168.5,
+     "y": 3.2,
+     "z": -16
     },
     "to": {
-     "x": 0,
-     "y": 4.6,
-     "z": 0
+     "x": 168.5,
+     "y": 3.4,
+     "z": -19
     },
     "lookAt": {
-     "x": 900,
-     "y": 6,
-     "z": -120
+     "x": -0.2,
+     "y": 2.2,
+     "z": 0
     },
     "ease": "linear",
-    "handheld": 0,
-    "digitalZoom": {
-     "fromX": 2,
-     "toX": 2
-    }
+    "handheld": 0.06,
+    "fStop": 4
    },
-   "boat": null,
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
    "anim": [],
-   "flagVisible": false,
+   "flagVisible": true,
    "vo": null,
-   "sfx": [
-    "kilit tonu"
-   ],
-   "note": "Kilit: retikül daralır (HF, yazısız)"
+   "sfx": [],
+   "note": "Güzellik: 200 mm sıkıştırma; tekne arkasında liman vinçleri ve rıhtım ışıkları, alacakaranlık"
   },
   {
    "n": 44,
@@ -1709,17 +1992,11 @@
     "headingDeg": 0,
     "trimDeg": 4
    },
-   "anim": [
-    {
-     "target": "launcher_el",
-     "fromDeg": 0,
-     "toDeg": 25
-    }
-   ],
+   "anim": [],
    "flagVisible": true,
    "vo": "Görüntü, şifreli bağlantıyla",
    "sfx": [],
-   "note": "Lançer kalkar, denizde"
+   "note": "Kıç takip; lançer yatık (yalnız stüdyoda kalkar)"
   },
   {
    "n": 45,
@@ -1749,13 +2026,7 @@
     "headingDeg": 0,
     "trimDeg": 4
    },
-   "anim": [
-    {
-     "target": "launcher_el",
-     "fromDeg": 25,
-     "toDeg": 25
-    }
-   ],
+   "anim": [],
    "flagVisible": true,
    "vo": null,
    "sfx": [],
@@ -1849,11 +2120,7 @@
      "y": 1.8,
      "z": -3.2
     },
-    "lookAt": {
-     "x": -0.6,
-     "y": 1.9,
-     "z": -1.4
-    },
+    "lookAt": "wheelhouse_glass",
     "ease": "linear",
     "handheld": 0
    },
@@ -1878,14 +2145,14 @@
    "camera": {
     "type": "chase",
     "from": {
-     "x": -11,
-     "y": 0.9,
-     "z": 0
+     "x": -15,
+     "y": 1.0,
+     "z": -5
     },
     "to": {
-     "x": -11,
-     "y": 0.9,
-     "z": 0
+     "x": -14.4,
+     "y": 1.0,
+     "z": -4.6
     },
     "lookAt": "stern",
     "ease": "linear",
@@ -1900,7 +2167,7 @@
    "flagVisible": true,
    "vo": null,
    "sfx": [],
-   "note": "Jet wash"
+   "note": "Jet wash, kıç 3/4 iskele"
   },
   {
    "n": 50,
@@ -1941,41 +2208,40 @@
    "startFrame": 1667,
    "frames": 15,
    "kind": "3d",
-   "setup": "E",
-   "lensMm": 200,
-   "overlay": "eoir_reticle_lock",
+   "setup": "Ap",
+   "lensMm": 35,
    "camera": {
     "type": "detail",
     "from": {
-     "x": 0,
-     "y": 4.6,
-     "z": 0
+     "x": -0.5,
+     "y": 3.6,
+     "z": -2.6
     },
     "to": {
-     "x": 0,
-     "y": 4.6,
-     "z": 0
+     "x": -1.2,
+     "y": 3.65,
+     "z": -2.4
     },
-    "lookAt": {
-     "x": 900,
-     "y": 6,
-     "z": -120
-    },
+    "lookAt": "radar",
     "ease": "linear",
-    "handheld": 0,
-    "digitalZoom": {
-     "fromX": 2,
-     "toX": 2
-    }
+    "handheld": 0
    },
-   "boat": null,
-   "anim": [],
-   "flagVisible": false,
-   "vo": null,
-   "sfx": [
-    "kilit tonu sürekli"
+   "boat": {
+    "speedKn": 35,
+    "headingDeg": 0,
+    "trimDeg": 4
+   },
+   "anim": [
+    {
+     "target": "radar_spin",
+     "fromDeg": 0,
+     "toDeg": 720
+    }
    ],
-   "note": "Hedef ortada, kilitli"
+   "flagVisible": true,
+   "vo": null,
+   "sfx": [],
+   "note": "Güzellik: dönen radar çubuğu, arkasında akşam göğü; alttan"
   },
   {
    "n": 52,
@@ -1996,11 +2262,7 @@
      "y": 1.2,
      "z": 6.2
     },
-    "lookAt": {
-     "x": -4.4,
-     "y": 1.0,
-     "z": 1.8
-    },
+    "lookAt": "hull_text",
     "ease": "linear",
     "handheld": 0.05,
     "focusOn": "hull_text"
@@ -2036,8 +2298,8 @@
      "z": -6
     },
     "lookAt": {
-     "x": -3.8,
-     "y": 3.2,
+     "x": -4.5,
+     "y": 2.15,
      "z": 0
     },
     "ease": "linear",
@@ -2048,17 +2310,11 @@
     "headingDeg": 0,
     "trimDeg": 4
    },
-   "anim": [
-    {
-     "target": "launcher_el",
-     "fromDeg": 25,
-     "toDeg": 25
-    }
-   ],
+   "anim": [],
    "flagVisible": true,
    "vo": null,
    "sfx": [],
-   "note": "Füze burunları yandan"
+   "note": "Yatık lançerde füze burunları yandan"
   },
   {
    "n": 54,
@@ -2083,20 +2339,20 @@
    "frames": 30,
    "kind": "3d",
    "setup": "Ap",
-   "lensMm": 24,
+   "lensMm": 50,
    "camera": {
-    "type": "drone",
+    "type": "detail",
     "from": {
-     "x": -10,
-     "y": 5.2,
-     "z": -2.6
+     "x": -1.6,
+     "y": 3.6,
+     "z": 5.2
     },
     "to": {
-     "x": 12,
-     "y": 4.5,
-     "z": -3
+     "x": 1.0,
+     "y": 3.7,
+     "z": 4.4
     },
-    "lookAt": "boat",
+    "lookAt": "flag",
     "ease": "easeInOut",
     "handheld": 0.1
    },
@@ -2105,24 +2361,13 @@
     "headingDeg": 0,
     "trimDeg": 4
    },
-   "anim": [
-    {
-     "target": "launcher_el",
-     "fromDeg": 25,
-     "toDeg": 25
-    },
-    {
-     "target": "gun_az",
-     "fromDeg": -35,
-     "toDeg": -35
-    }
-   ],
+   "anim": [],
    "flagVisible": true,
    "vo": null,
    "sfx": [
     "müzik zirvesi"
    ],
-   "note": "Kıçtan direk yanından pruva önüne; bayrak kadrajı süpürür; ateşleme YOK, yalnız kilit/lançer"
+   "note": "Güzellik: ters ışıkta bayrak; kamera pruva-sancaktan kıç-iskeleye (akşam ışığına) bakarak direğin önünde kayar; ateşleme/kilit yok"
   },
   {
    "n": 56,
@@ -2142,21 +2387,21 @@
   {
    "n": 57,
    "startFrame": 1755,
-   "frames": 120,
+   "frames": 75,
    "kind": "3d",
    "setup": "Ap",
    "lensMm": 35,
    "camera": {
     "type": "drone",
     "from": {
-     "x": -12,
-     "y": 5,
-     "z": -5
+     "x": -30,
+     "y": 10,
+     "z": 8
     },
     "to": {
-     "x": -100,
-     "y": 40,
-     "z": -5
+     "x": -80,
+     "y": 30,
+     "z": 6
     },
     "lookAt": "boat",
     "ease": "easeOut",
@@ -2167,13 +2412,7 @@
     "headingDeg": 0,
     "trimDeg": 4
    },
-   "anim": [
-    {
-     "target": "launcher_el",
-     "fromDeg": 25,
-     "toDeg": 25
-    }
-   ],
+   "anim": [],
    "flagVisible": true,
    "vo": "TOMRİS, İstanbul Teknik Üniversitesi'nde tasarlandı.",
    "sfx": [],
@@ -2181,8 +2420,8 @@
   },
   {
    "n": 58,
-   "startFrame": 1875,
-   "frames": 105,
+   "startFrame": 1830,
+   "frames": 60,
    "kind": "3d",
    "setup": "Ap",
    "lensMm": 85,
@@ -2222,8 +2461,8 @@
   },
   {
    "n": 59,
-   "startFrame": 1980,
-   "frames": 120,
+   "startFrame": 1890,
+   "frames": 210,
    "kind": "overlay",
    "setup": null,
    "lensMm": null,
@@ -2235,7 +2474,7 @@
    "sfx": [
     "müzik kuyruğu"
    ],
-   "note": "HyperFrames: TOMRİS · TCB-1601 logosu, ekip adları, İTÜ Gemi İnşaatı ve Deniz Bilimleri Fakültesi"
+   "note": "HyperFrames son kart (tomris-overlays/renders/endcard.mp4, 210 kare, kare 1890–2099): TOMRİS · TCB-1601 logosu, ekip adları, İTÜ Gemi İnşaatı ve Deniz Bilimleri Fakültesi; filmdeki tek yazı"
   }
  ]
 }

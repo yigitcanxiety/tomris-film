@@ -35,7 +35,7 @@ const EDIT = {
 const ALLOWED_EDIT = new Set(["from", "to", "abs", "target", "dist", "rack"]);
 for (const [n, e] of Object.entries(EDIT)) for (const k of Object.keys(e)) if (!ALLOWED_EDIT.has(k)) throw new Error(`film.js EDIT #${n}: '${k}' belongs in shots.json`);
 
-const SETUP_LOOK = { B: "sunset", A: "sunset", Ap: "bluehour", C: "studio", W: "wireframe" };
+const SETUP_LOOK = { B: "harbour", A: "sunset", Ap: "bluehour", C: "studio", W: "wireframe" };
 const SEA_K = { B: 0.25, A: 1.0, Ap: 0.75, C: 0, W: 0 };     // multiplies the engine sea (built for Hs 0.8 m)
 const STUDIO = new Set(["C", "W"]);
 const STUDIO_KEY = { az: 315, elev: 38 };                  // single hard key from the port bow, high

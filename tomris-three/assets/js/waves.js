@@ -10,7 +10,7 @@ export const QUALITY_PRESETS = {
   // gridU/V: projected ocean grid (vertices across the frame / down it); tileA/B: fine-wave tile resolution;
   // shadow: sun shadow map size; refl: planar reflection scale; subframes: cap on motion-blur sub-frames
   film:     { name: "film",     nFine: 48, nCap: 24, gridU: 360, gridV: 240, tileA: 512, tileB: 256, sprayScale: 1.0,  foamDetail: 1, msaa: 0, bg4k: true,
-              shadow: 2048, refl: 0.5, maxSub: 64 },
+              shadow: 2048, refl: 0.35, maxSub: 64 },
   realtime: { name: "realtime", nFine: 32, nCap: 16, gridU: 240, gridV: 160, tileA: 256, tileB: 128, sprayScale: 0.35, foamDetail: 0, msaa: 2, bg4k: false,
               shadow: 1024, refl: 0.33, maxSub: 1 },
 };
@@ -112,6 +112,12 @@ vec3 gerstner(vec2 p, float t, float spacing, float flatK) {
 float seaHeight(vec2 p, float t) {
   float h = 0.0;
   for (int i = 0; i < NGEO; i++) { vec4 a = uGeoA[i]; vec4 b = uGeoB[i]; h += a.w * sin(a.z * dot(a.xy, p) - b.x * t + b.y); }
+  return h;
+}
+// height of the long waves only (the first 10: lambda >= ~9 m) - cheap, for particles
+float seaHeightLong(vec2 p, float t) {
+  float h = 0.0;
+  for (int i = 0; i < 10; i++) { vec4 a = uGeoA[i]; vec4 b = uGeoB[i]; h += a.w * sin(a.z * dot(a.xy, p) - b.x * t + b.y); }
   return h;
 }
 // Jacobian of the horizontal displacement: dips toward ~0.4 on steep, breaking crests

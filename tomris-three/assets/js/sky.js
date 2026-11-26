@@ -138,16 +138,15 @@ vec2 skyUv(vec3 d) {
   return vec2(atan(d.z, d.x) * 0.15915494 + 0.5, asin(clamp(d.y, -1.0, 1.0)) * 0.31830989 + 0.5);
 }
 vec3 skyRefl(vec3 d, float lod) { d.y = max(d.y, 0.002); return textureLod(uSkyClamp, skyUv(d), lod).rgb * uSkyGain; }
-// background: Catmull-Rom (9 bilinear taps) so a magnified 4K map stays crisp instead of bilinear-soft
+// background: cubic B-spline in 4 bilinear taps (the 4K map is magnified ~3x: bilinear would show its grid)
 vec3 skyBg(vec3 d) {
   vec2 res = vec2(textureSize(uSkyFull, 0));
-  vec2 uv = skyUv(d) * res, tc = floor(uv - 0.5) + 0.5, f = uv - tc;
-  vec2 w0 = f * (-0.5 + f * (1.0 - 0.5 * f)), w1 = 1.0 + f * f * (-2.5 + 1.5 * f), w2 = f * (0.5 + f * (2.0 - 1.5 * f)), w3 = f * f * (-0.5 + 0.5 * f);
-  vec2 w12 = w1 + w2, o12 = w2 / w12;
-  vec2 t0 = (tc - 1.0) / res, t3 = (tc + 2.0) / res, t12 = (tc + o12) / res;
-  vec3 c = textureLod(uSkyFull, vec2(t0.x, t0.y), 0.0).rgb * w0.x * w0.y + textureLod(uSkyFull, vec2(t12.x, t0.y), 0.0).rgb * w12.x * w0.y + textureLod(uSkyFull, vec2(t3.x, t0.y), 0.0).rgb * w3.x * w0.y
-         + textureLod(uSkyFull, vec2(t0.x, t12.y), 0.0).rgb * w0.x * w12.y + textureLod(uSkyFull, vec2(t12.x, t12.y), 0.0).rgb * w12.x * w12.y + textureLod(uSkyFull, vec2(t3.x, t12.y), 0.0).rgb * w3.x * w12.y
-         + textureLod(uSkyFull, vec2(t0.x, t3.y), 0.0).rgb * w0.x * w3.y + textureLod(uSkyFull, vec2(t12.x, t3.y), 0.0).rgb * w12.x * w3.y + textureLod(uSkyFull, vec2(t3.x, t3.y), 0.0).rgb * w3.x * w3.y;
+  vec2 uv = skyUv(d) * res - 0.5, i = floor(uv), f = uv - i;
+  vec2 f2 = f * f, f3 = f2 * f;
+  vec2 w0 = (1.0 - 3.0 * f + 3.0 * f2 - f3) / 6.0, w1 = (4.0 - 6.0 * f2 + 3.0 * f3) / 6.0, w2 = (1.0 + 3.0 * f + 3.0 * f2 - 3.0 * f3) / 6.0, w3 = f3 / 6.0;
+  vec2 g0 = w0 + w1, g1 = w2 + w3, h0 = (w1 / g0 - 1.0 + i + 0.5) / res, h1 = (w3 / g1 + 1.0 + i + 0.5) / res;
+  vec3 c = (textureLod(uSkyFull, h0, 0.0).rgb * g0.x + textureLod(uSkyFull, vec2(h1.x, h0.y), 0.0).rgb * g1.x) * g0.y
+         + (textureLod(uSkyFull, vec2(h0.x, h1.y), 0.0).rgb * g0.x + textureLod(uSkyFull, h1, 0.0).rgb * g1.x) * g1.y;
   return max(c, vec3(0.0)) * uSkyGain;
 }
 vec3 hazeColor(vec3 d) { vec3 h = normalize(vec3(d.x, 0.0, d.z) + vec3(0.0, 0.03, 0.0)); return textureLod(uSkyClamp, skyUv(h), 5.0).rgb * uSkyGain; }

@@ -11,7 +11,7 @@ import { HULL_GLSL } from "./boat.js";
 
 // type: 0 bow sheet droplets, 1 bow sheet mist, 2 jet wash droplets, 3 wake mist, 4 jet wash mist,
 //       5 bow sheet fragments, 6 jet plume (rooster tail body)
-const COUNTS = [16000, 7000, 7000, 900, 1400, 3500, 2600];
+const COUNTS = [9000, 4500, 4500, 700, 1100, 2600, 2000];   // x8 sub-frames in film quality
 
 const vert = (sea) => /* glsl */ `
 ${wavesGLSL(sea)}
@@ -67,7 +67,7 @@ void particle(float t, out vec3 pos, out vec3 vel, out float age, out float life
   }
   vec3 bp = vec3(bs.x, 0.0, bs.y);
   vec3 wp = bp + fwd * lp.x + stb * lp.z;
-  wp.y = seaHeight(wp.xz, te) + lp.y;
+  wp.y = seaHeightLong(wp.xz, te) + lp.y;
   vec3 wv = fwd * V + fwd * lv.x + stb * lv.z + vec3(0.0, lv.y, 0.0);
   float ex = exp(-drag * age), ed = (1.0 - ex) / drag, gk = 9.81 * (type > 2.5 && type < 3.5 ? 0.05 : 1.0);
   pos = wp + wv * ed;
@@ -117,7 +117,7 @@ void main(){
   vpos.xy *= (z - pull) / z;                                       // same screen position and size
   vQ = vec2(corner.x * (hl / sizeEff + 1.0), corner.y); vLen = hl / sizeEff;
   // fade in/out, under water, low speed
-  float water = seaHeight(p1.xz, uTime);
+  float water = seaHeightLong(p1.xz, uTime);
   float fade = smoothstep(0.0, 0.06, age / life) * (1.0 - smoothstep(0.6, 1.0, age / life)) * smoothstep(water - 0.35, water + 0.0, p1.y);
   // a ligament keeps its water: thinning with length, not fading as fast as a pure motion streak
   vAlpha = a0 * fade * energy * uSpeedF * uGain / (1.0 + vLen * (sheet ? 0.25 : 0.5));

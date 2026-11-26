@@ -60,8 +60,8 @@ float wakeHeight(vec4 w){
 const vert = (sea) => /* glsl */ `
 ${wavesGLSL(sea)}
 ${OCEAN_GLSL_COMMON}
-uniform mat4 uInvVP; uniform vec3 uCamPos; uniform vec4 uGrid; uniform vec3 uGrid2; uniform vec2 uStep; uniform float uMaxR; uniform float uCapTh;
-varying vec3 vWorld; varying vec2 vP; varying float vLift; varying float vCap;
+uniform mat4 uInvVP; uniform vec3 uCamPos; uniform vec4 uGrid; uniform vec3 uGrid2; uniform vec2 uStep; uniform float uMaxR; uniform float uCapTh; uniform float uCapGain;
+varying vec3 vWorld; varying vec2 vP; varying float vLift; varying float vCap; varying vec3 vGeo;
 // uGrid = (ndc x min, x max, y min, y max); uGrid2 = (fraction of rows below the frame, how far toward the nadir, plane y)
 vec3 ndcDir(vec2 n){ vec4 a = uInvVP * vec4(n, -1.0, 1.0); return normalize(a.xyz / a.w - uCamPos); }
 vec3 gridDir(vec2 uv){
@@ -99,11 +99,22 @@ void main(){
   w.y += lift;
   // whitecaps: crests where the Gerstner Jacobian folds; the foam stays with the water and fades over ~2 s
   float cap = 0.0;
-  if (uCapTh > 0.0 && spacing < 6.0) {
-    for (int i = 0; i < 4; i++) { float lag = float(i) * 0.6;
+  if (uCapTh > 0.0 && uCapGain > 0.0 && spacing < 6.0) {
+    for (int i = 0; i < 3; i++) { float lag = float(i) * 0.75;
       cap = max(cap, smoothstep(uCapTh, uCapTh - 0.07, seaJacobian(p, uTime - lag)) * exp(-lag / 1.5)); }
   }
-  vWorld = w; vP = p; vLift = lift; vCap = cap;
+  // slope of the long (geometric) waves, per vertex: a wave is kept while the grid has >= ~6 vertices on it,
+  // otherwise its slope variance moves into the roughness (.z)
+  vec3 gs = vec3(0.0); float fk = 1.0 - 0.9 * inside;
+  for (int i = 0; i < NGEO; i++) {
+    vec4 a = uGeoA[i]; vec4 b = uGeoB[i];
+    float keep = 1.0 - smoothstep(b.w * 0.1, b.w * 0.22, spacing);
+    float ka = a.z * a.w * fk;
+    float th = a.z * dot(a.xy, p) - b.x * uTime + b.y;
+    gs.xy += keep * ka * cos(th) * a.xy;
+    gs.z += (1.0 - keep) * ka * ka * 0.5;
+  }
+  vWorld = w; vP = p; vLift = lift; vCap = cap; vGeo = gs;
   gl_Position = projectionMatrix * viewMatrix * vec4(w, 1.0);
 }`;
 
@@ -117,7 +128,7 @@ uniform vec3 uCamPos; uniform vec3 uSunDir; uniform vec3 uSunIrr; uniform vec3 u
 uniform sampler2D uRefl; uniform mat4 uReflMat; uniform vec3 uDeep; uniform vec3 uScatter; uniform float uFogDist; uniform float uFoamGain; uniform float uGlitter;
 uniform float uCapGain; uniform float uSubsurf;
 uniform sampler2D uFineTA; uniform sampler2D uFineTB; uniform float uLA; uniform float uLB; uniform sampler2D uNoise; uniform sampler2D uCells;
-varying vec3 vWorld; varying vec2 vP; varying float vLift; varying float vCap;
+varying vec3 vWorld; varying vec2 vP; varying float vLift; varying float vCap; varying vec3 vGeo;
 float D_GGX(float NoH, float a){ float a2 = a * a; float d = NoH * NoH * (a2 - 1.0) + 1.0; return a2 / (3.14159 * d * d); }
 float G1(float x, float a){ return 2.0 * x / (x + sqrt(a * a + (1.0 - a * a) * x * x)); }
 // periodic 4-channel fbm (same statistics as fbm()), 16 units per tile
@@ -149,8 +160,9 @@ void main(){
   vec3 V = uCamPos - vWorld; float dist = length(V); V /= dist;
   vec2 dp = fwidth(vP); float fp = max(max(dp.x, dp.y), 0.002);
   vec3 lp = (uBoatInv * vec4(vWorld, 1.0)).xyz;
-  float imm = immersion(lp.x, lp.y);
-  float s = abs(lp.z) - beamAt(lp.x, lp.y);
+  bool nearHull = lp.x > -12.0 && lp.x < 14.0 && abs(lp.z) < 14.0;
+  float imm = -1.0, s = 99.0;
+  if (nearHull) { imm = immersion(lp.x, lp.y); s = abs(lp.z) - beamAt(lp.x, lp.y); }
   vec4 wk = wakeSample(vP);
   float wd = max(uSnow - wk.y, 0.0), age = max(uTnow - wk.z, 0.0), wy = abs(wk.x);
   float wc = 1.5 + 0.06 * wd;
@@ -162,7 +174,7 @@ void main(){
   float gustN = nT(vP * 0.011 + uWind * uTime * 0.04 + 11.0).g;
   float ruff = mix(0.5, 1.2, smoothstep(0.36, 0.62, streakN)) * mix(0.72, 1.25, smoothstep(0.32, 0.68, gustN));
   float calm = 1.0 - 0.55 * scar * uSpeedF;
-  vec3 sl = geoSlope(vP, uTime, fp, calm);
+  vec3 sl = vec3(vGeo.xy * calm, vGeo.z * calm * calm);
   float fk = mix(1.0, calm, 0.6) * ruff;
   vec3 fa = fineTile(uFineTA, vP, uLA), fb = fineTile(uFineTB, vP, uLB);
   sl.xy += (fa.xy + fb.xy) * fk; sl.z += (fa.z + fb.z) * fk * fk;
@@ -192,11 +204,14 @@ void main(){
   vec3 R = reflect(-V, N);
   float lod = clamp(log2(alpha / 0.0031), 0.0, 9.0);
   vec3 refl = skyRefl(R, lod);
-  refl = mix(refl, body * 3.0 + hazeColor(R) * 0.12, smoothstep(0.01, -0.06, R.y));
-  vec4 rc = uReflMat * vec4(vWorld.x, uBoatWater, vWorld.z, 1.0);
-  vec4 br = texture(uRefl, rc.xy / rc.w + N.xz * 0.12);
-  float boatHit = br.a * (1.0 - smoothstep(0.25, 0.6, alpha));
-  refl = mix(refl, br.rgb / max(br.a, 1e-3), boatHit);
+  if (R.y < 0.01) refl = mix(refl, body * 3.0 + hazeColor(R) * 0.12, smoothstep(0.01, -0.06, R.y));
+  float boatHit = 0.0;
+  if (dot(lp.xz, lp.xz) < 3600.0) {                                    // the boat's mirror image only lives near it
+    vec4 rc = uReflMat * vec4(vWorld.x, uBoatWater, vWorld.z, 1.0);
+    vec4 br = texture(uRefl, rc.xy / rc.w + N.xz * 0.12);
+    boatHit = br.a * (1.0 - smoothstep(0.25, 0.6, alpha));
+    refl = mix(refl, br.rgb / max(br.a, 1e-3), boatHit);
+  }
   // sun glitter: GGX + Smith masking with the filtered (variance-carrying) roughness
   vec3 H = normalize(L + V);
   float NoL = max(dot(N, L), 0.0), NoH = max(dot(N, H), 0.0), VoH = max(dot(V, H), 0.0);
@@ -211,8 +226,8 @@ void main(){
   float sf = uSpeedF;
   // along the wetted hull: starts at the spray root (shallow immersion), widens aft, ends past the transom
   float bowBand = 0.0;
-  if (lp.x < 0.0) { imm = lp.y - keelY(0.0); s = abs(lp.z) - beamAt(0.0, lp.y); }
-  if (imm > -0.05 && lp.x > -10.0) {
+  if (nearHull && lp.x < 0.0) { imm = lp.y - keelY(0.0); s = abs(lp.z) - beamAt(0.0, lp.y); }
+  if (nearHull && imm > -0.05 && lp.x > -10.0) {
     float root = smoothstep(-0.05, 0.1, imm);
     float aft = clamp(uRootX - lp.x, 0.0, 15.0);                       // metres behind the spray root
     float wb = 0.45 + 0.3 * aft;

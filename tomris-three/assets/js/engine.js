@@ -45,11 +45,11 @@ export async function createEngine(canvas, { width = 1920, height = 804, base = 
   sun.castShadow = true; sun.shadow.mapSize.set(QUALITY.shadow, QUALITY.shadow); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03; sun.shadow.radius = 3;
   Object.assign(sun.shadow.camera, { left: -10, right: 10, top: 10, bottom: -10, near: 1, far: 200 }); sun.shadow.camera.updateProjectionMatrix();
   scene.add(sun, sun.target);
-  const post = createPost(renderer, width, height);
+  const post = createPost(renderer, width, height, skyShared);
 
   // planar reflection of the boat (layer 1) in the mean water plane, sampled by the ocean with normal distortion
   boat.root.traverse((o) => o.layers.enable(1)); sun.layers.enable(1);
-  const reflRT = new THREE.WebGLRenderTarget(Math.round(width * QUALITY.refl), Math.round(height * QUALITY.refl), { type: THREE.HalfFloatType, samples: 2 });
+  const reflRT = new THREE.WebGLRenderTarget(Math.round(width * QUALITY.refl), Math.round(height * QUALITY.refl), { type: THREE.HalfFloatType, samples: QUALITY.msaa ? 2 : 0 });
   const reflCam = new THREE.PerspectiveCamera();
   reflCam.layers.set(1);
   const reflPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
@@ -139,9 +139,20 @@ export async function createEngine(canvas, { width = 1920, height = 804, base = 
       const sub = span / Math.max(subframes, 1);
       // stratified sub-frame times with a deterministic jitter: stepping turns into fine noise
       const jit = (i) => { const x = Math.sin((frame + 1) * 12.9898 + i * 78.233) * 43758.5453; return x - Math.floor(x) - 0.5; };
+      // film quality has no MSAA (software GL shades every sample): the sub-frames carry a sub-pixel camera jitter
+      // instead, so 4-8 sub-frames are also 4-8x supersampling (edges, glitter and foam), at no extra cost
+      const aaJit = subframes > 1 && !QUALITY.msaa;
+      const halton = (i, b) => { let f = 1, r = 0; while (i > 0) { f /= b; r += f * (i % b); i = Math.floor(i / b); } return r; };
+      const rot = [halton(frame + 1, 5), halton(frame + 1, 7)];
       post.render((off, i) => {
         const ts = t + (subframes > 1 ? off + jit(i) / subframes : 0) * span;
-        return setup(stateAt(ts, t), sub, stateAt(ts - sub, t), t);
+        const res = setup(stateAt(ts, t), sub, stateAt(ts - sub, t), t);
+        if (aaJit) {
+          const jx = ((halton(i + 1, 2) + rot[0]) % 1) - 0.5, jy = ((halton(i + 1, 3) + rot[1]) % 1) - 0.5;
+          const e = camera.projectionMatrix.elements; e[8] += (jx * 2.2) / width; e[9] += (jy * 2.2) / height;
+          camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+        }
+        return res;
       }, subframes, frame);
     },
   };

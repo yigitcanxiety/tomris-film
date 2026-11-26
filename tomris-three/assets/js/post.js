@@ -4,10 +4,15 @@
 // Deterministic (grain seeded by frame index).
 import * as THREE from "three";
 import { QUALITY } from "./waves.js";
+import { SKY_GLSL } from "./sky.js";
 
 const FS_VERT = /* glsl */ `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`;
 
-export function createPost(renderer, W, H) {
+// skyShared: the sky uniforms (equirect maps + rotation) so the aerial haze takes the horizon colour of the
+// direction it looks in. Haze is applied per sub-frame in the accumulation pass, from that sub-frame's depth, to
+// everything opaque that does not haze itself (the ocean writes alpha 0; sky = depth 1). Height falloff: the haze
+// thins with altitude (scale height look.hazeH), so distant hill tops keep more contrast than their feet.
+export function createPost(renderer, W, H, skyShared = null) {
   const rtOpts = { type: THREE.HalfFloatType, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, generateMipmaps: false };
   const sceneRT = new THREE.WebGLRenderTarget(W, H, { ...rtOpts, samples: QUALITY.msaa, depthBuffer: true });
   sceneRT.depthTexture = new THREE.DepthTexture(W, H, THREE.FloatType);
@@ -23,9 +28,29 @@ export function createPost(renderer, W, H) {
   const qs = new THREE.Scene(); qs.add(quad); const qc = new THREE.Camera();
   const pass = (mat, target) => { quad.material = mat; renderer.setRenderTarget(target); renderer.render(qs, qc); };
 
+  const sky = skyShared || { uSkyFull: { value: null }, uSkyClamp: { value: null }, uSkyRot: { value: 0 }, uSkyGain: { value: 1 } };
   const accumMat = new THREE.ShaderMaterial({
-    uniforms: { tSrc: { value: null }, uW: { value: 1 } }, vertexShader: FS_VERT,
-    fragmentShader: `uniform sampler2D tSrc; uniform float uW; varying vec2 vUv; void main(){ gl_FragColor = vec4(texture2D(tSrc, vUv).rgb * uW, uW); }`,
+    uniforms: { ...sky, tSrc: { value: null }, tDepth: { value: null }, uW: { value: 1 }, uProjInv: { value: new THREE.Matrix4() }, uCamWorld: { value: new THREE.Matrix4() },
+      uCamPos: { value: new THREE.Vector3() }, uHazeDist: { value: 2500 }, uHazeH: { value: 400 }, uHazeOn: { value: 0 } },
+    vertexShader: FS_VERT,
+    fragmentShader: /* glsl */ `${SKY_GLSL}
+      uniform sampler2D tSrc; uniform sampler2D tDepth; uniform float uW; uniform mat4 uProjInv; uniform mat4 uCamWorld; uniform vec3 uCamPos;
+      uniform float uHazeDist, uHazeH, uHazeOn; varying vec2 vUv;
+      void main(){
+        vec4 s = texture2D(tSrc, vUv); vec3 c = s.rgb;
+        if (uHazeOn > 0.5 && s.a > 0.002) {
+          float d = texture2D(tDepth, vUv).r;
+          if (d < 0.999999) {
+            vec4 vp = uProjInv * vec4(vUv * 2.0 - 1.0, d * 2.0 - 1.0, 1.0); vp.xyz /= vp.w;
+            vec3 wp = (uCamWorld * vec4(vp.xyz, 1.0)).xyz; vec3 rd = wp - uCamPos; float dist = length(rd); rd /= max(dist, 1e-4);
+            float y0 = max(uCamPos.y, 0.0), y1 = max(wp.y, 0.0), dy = y1 - y0;
+            float hk = abs(dy) < 1.0 ? exp(-0.5 * (y0 + y1) / uHazeH) : uHazeH * (exp(-y0 / uHazeH) - exp(-y1 / uHazeH)) / dy;
+            float fog = (1.0 - exp(-dist / uHazeDist * hk)) * min(s.a, 1.0);
+            c = mix(c, hazeColor(rd), fog);
+          }
+        }
+        gl_FragColor = vec4(c * uW, uW);
+      }`,
     blending: THREE.CustomBlending, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor, depthTest: false, depthWrite: false,
   });
   const dofMat = new THREE.ShaderMaterial({
@@ -143,7 +168,10 @@ export function createPost(renderer, W, H) {
       cam = drawScene(n > 1 ? (i + 0.5) / n - 0.5 : 0, i);
       renderer.setRenderTarget(sceneRT); renderer.clear(true, true, false);
       renderer.render(cam.scene, cam.camera);
-      accumMat.uniforms.tSrc.value = sceneRT.texture; accumMat.uniforms.uW.value = 1 / n;
+      const au = accumMat.uniforms, lk = cam.look;
+      au.tSrc.value = sceneRT.texture; au.tDepth.value = sceneRT.depthTexture; au.uW.value = 1 / n;
+      au.uProjInv.value.copy(cam.camera.projectionMatrixInverse); au.uCamWorld.value.copy(cam.camera.matrixWorld); au.uCamPos.value.copy(cam.camera.position);
+      au.uHazeOn.value = lk.haze === false || !skyShared ? 0 : 1; au.uHazeDist.value = lk.hazeDist ?? lk.fogDist ?? 2500; au.uHazeH.value = lk.hazeH ?? 400;
       pass(accumMat, accumRT);
     }
     const look = cam.look, du = dofMat.uniforms;

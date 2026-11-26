@@ -116,12 +116,14 @@ ${NOISE_GLSL}
 uniform vec3 uCamPos; uniform vec3 uSunDir; uniform vec3 uSunIrr; uniform vec3 uSkyRad; uniform vec2 uWind;
 uniform sampler2D uRefl; uniform mat4 uReflMat; uniform vec3 uDeep; uniform vec3 uScatter; uniform float uFogDist; uniform float uFoamGain; uniform float uGlitter;
 uniform float uCapGain; uniform float uSubsurf;
-uniform sampler2D uFineTA; uniform sampler2D uFineTB; uniform float uLA; uniform float uLB; uniform sampler2D uNoise;
+uniform sampler2D uFineTA; uniform sampler2D uFineTB; uniform float uLA; uniform float uLB; uniform sampler2D uNoise; uniform sampler2D uCells;
 varying vec3 vWorld; varying vec2 vP; varying float vLift; varying float vCap;
 float D_GGX(float NoH, float a){ float a2 = a * a; float d = NoH * NoH * (a2 - 1.0) + 1.0; return a2 / (3.14159 * d * d); }
 float G1(float x, float a){ return 2.0 * x / (x + sqrt(a * a + (1.0 - a * a) * x * x)); }
 // periodic 4-channel fbm (same statistics as fbm()), 16 units per tile
 vec4 nT(vec2 p){ return texture(uNoise, p * 0.0625); }
+// periodic worley: .r F1 / .g F2-F1 at 8 cells per unit-8 tile, .b / .a the same at 16 cells
+vec4 cT(vec2 p){ return texture(uCells, p * 0.125); }
 // long (geometric) waves: analytic slope, footprint filtered; removed variance in .z
 vec3 geoSlope(vec2 p, float t, float fp, float flatK) {
   vec3 s = vec3(0.0);
@@ -243,25 +245,28 @@ void main(){
     float f2 = nT(wq * 7.5 - f1 * 2.0).a;
     float streak = nT(vec2(wk.y * 0.11, wk.x * 0.9) + f1 * 0.9).r;                // rooster-tail: streaks along the track
     float churn = clamp((0.5 * f1 + 0.25 * f2 + 0.45 * mix(f1, streak, wk.w) - 0.32) / 0.5, 0.0, 1.0);
+    // bubble rafts with round holes (worley F1 on warped coordinates, two scales): holes shrink as the foam
+    // gets denser; sparse foam breaks into separate patches instead of a thin cracked-ice network
+    vec2 hw = fw + (n1.rg - 0.47) * 0.7;
+    vec4 cA = cT(hw * 0.32 + uTime * 0.01), cB = cT(hw * 0.85 - uTime * 0.017 + 0.3);
+    float dens = max(old, fresh * 0.8);
+    float rA = mix(0.5, 0.1, dens), rB = mix(0.45, 0.05, dens);
+    float holes = smoothstep(rA - 0.06, rA + 0.08, cA.r) * mix(1.0, smoothstep(rB - 0.05, rB + 0.08, cB.b), 0.75);
     float Df = smoothstep(1.0 - fresh - 0.08, 1.0 - fresh + 0.14, churn);
-    Df = max(Df, smoothstep(0.7, 1.0, fresh) * (0.8 + 0.2 * f2));
-    float lw = 0.03 + 0.24 * old;                                                  // lace lines thicken with density
-    float lace1 = 1.0, lace2 = 0.0;
-    if (fp < 1.5 && (old > 0.01 || cap > 0.01)) {
-      lace1 = 1.0 - smoothstep(lw * 0.5, lw, lace(wq * 2.6, uTime * 0.25));
-      lace2 = 1.0 - smoothstep(lw * 0.35, lw * 0.85, lace(fw * 3.1 + f1 * 1.5, uTime * 0.4 + 2.0));
-    }
-    float Do = max(lace1, lace2 * 0.8) * smoothstep(0.02, 0.3, old) * smoothstep(0.3, 0.6, f1 + old * 0.35);
-    float Dc = smoothstep(1.0 - cap, 1.0 - cap + 0.25, churn * 0.65 + lace1 * 0.45);
-    float D = clamp(max(max(Df, Do * 0.85), Dc * 0.9), 0.0, 1.0);
-    float cov = clamp(max(max(fresh * 0.85, old * 0.3), cap * 0.35), 0.0, 1.0);   // what D averages to from far away
+    Df = max(Df, smoothstep(0.7, 1.0, fresh) * (0.8 + 0.2 * f2)) * mix(1.0, holes, 0.35 * (1.0 - smoothstep(0.75, 1.0, fresh)));
+    float patchK = smoothstep(0.62 - 0.55 * old, 0.8 - 0.55 * old, f1 * 0.55 + churn * 0.45 + 0.1);
+    float Do = holes * patchK * smoothstep(0.02, 0.25, old);
+    float capS = cap * smoothstep(0.2, 0.7, n1.a + cap * 0.4);                    // whitecaps: ragged, not polygonal
+    float Dc = smoothstep(0.15, 0.45, capS * (0.55 + 0.6 * churn)) * mix(0.6, 1.0, holes);
+    float D = clamp(max(max(Df, Do * 0.9), Dc * 0.9), 0.0, 1.0);
+    float cov = clamp(max(max(fresh * 0.85, old * 0.35), cap * 0.3), 0.0, 1.0);   // what D averages to from far away
     D = mix(D, cov, smoothstep(0.06, 0.4, fp));
     // close up: bubbles (bright cells, dark rims) and thickness (foam as a height field -> bump normal)
     float bub = 1.0;
 #if FOAM_DETAIL
     float bk = 1.0 - smoothstep(0.006, 0.025, fp);
     if (bk > 0.0 && D > 0.02) {
-      float b1 = cellF1(fw * 13.0), b2 = cellF1(fw * 34.0 + 5.3);
+      float b1 = cT(fw * 13.0).r, b2 = cT(fw * 17.0 + 5.3).b;
       bub = mix(1.0, 0.7 + 0.22 * smoothstep(0.1, 0.6, b1) + 0.16 * smoothstep(0.1, 0.55, b2), bk);
     }
 #endif
@@ -285,7 +290,7 @@ void main(){
   // horizon haze / aerial perspective
   float fog = 1.0 - exp(-dist / uFogDist);
   col = mix(col, hazeColor(-V), fog);
-  gl_FragColor = vec4(col, 1.0);
+  gl_FragColor = vec4(col, 0.0);                     // alpha 0: the post haze leaves the (self-hazed) sea alone
 }`;
 
 // ---- fine-wave tiles: periodic (wave vectors snapped to the tile lattice), baked from the shared wave table ----
@@ -336,6 +341,31 @@ function makeNoiseTexture(N = 512, cells = 16) {
   return tex;
 }
 
+// periodic worley cells: (F1, F2-F1) for 8 and 16 cells per tile
+function makeCellTexture(N = 256) {
+  const hash = (x, y, s) => { let h = Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(s, 1442695041) | 0;
+    h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16; return (h >>> 0) / 4294967296; };
+  const data = new Uint16Array(N * N * 4);
+  [[8, 3], [16, 9]].forEach(([C, seed], layer) => {
+    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+      const x = (i + 0.5) / N * C, y = (j + 0.5) / N * C, cx = Math.floor(x), cy = Math.floor(y);
+      let d1 = 9, d2 = 9;
+      for (let b = -1; b <= 1; b++) for (let a = -1; a <= 1; a++) {
+        const gx = cx + a, gy = cy + b, wx = ((gx % C) + C) % C, wy = ((gy % C) + C) % C;
+        const px = gx + 0.1 + 0.8 * hash(wx, wy, seed), py = gy + 0.1 + 0.8 * hash(wx, wy, seed + 1);
+        const d = Math.hypot(px - x, py - y);
+        if (d < d1) { d2 = d1; d1 = d; } else if (d < d2) d2 = d;
+      }
+      const k = (j * N + i) * 4 + layer * 2;
+      data[k] = THREE.DataUtils.toHalfFloat(d1); data[k + 1] = THREE.DataUtils.toHalfFloat(d2 - d1);
+    }
+  });
+  const tex = new THREE.DataTexture(data, N, N, THREE.RGBAFormat, THREE.HalfFloatType);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.minFilter = THREE.LinearMipmapLinearFilter; tex.magFilter = THREE.LinearFilter;
+  tex.generateMipmaps = true; tex.needsUpdate = true;
+  return tex;
+}
+
 function gridGeometry(nu, nv) {
   const pos = new Float32Array(nu * nv * 3);
   for (let j = 0; j < nv; j++) for (let i = 0; i < nu; i++) { const k = (j * nu + i) * 3; pos[k] = i / (nu - 1); pos[k + 1] = j / (nv - 1); }
@@ -363,7 +393,7 @@ export function createOcean(sea, skyShared, { renderer = null, maxR = 9000 } = {
     uSnow: { value: 0 }, uTnow: { value: 0 }, uWind: { value: sea.wind.clone() },
     uRefl: { value: null }, uReflMat: { value: new THREE.Matrix4() }, uDeep: { value: new THREE.Vector3(0.006, 0.018, 0.042) }, uScatter: { value: new THREE.Vector3(0.05, 0.2, 0.17) },
     uFogDist: { value: 2500 }, uFoamGain: { value: 1 }, uGlitter: { value: 1 }, uCapTh: { value: 0.855 }, uCapGain: { value: 1 }, uSubsurf: { value: 1 },
-    uFineTA: { value: null }, uFineTB: { value: null }, uLA: { value: LA }, uLB: { value: LB }, uNoise: { value: makeNoiseTexture() },
+    uFineTA: { value: null }, uFineTB: { value: null }, uLA: { value: LA }, uLB: { value: LB }, uNoise: { value: makeNoiseTexture() }, uCells: { value: makeCellTexture() },
   };
   for (const k of ["uSunDir", "uSunIrr", "uSkyRad"]) if (!uniforms[k]) uniforms[k] = { value: new THREE.Vector3() };
   const mat = new THREE.ShaderMaterial({ uniforms, vertexShader: vert(sea), fragmentShader: frag(sea) });

@@ -96,6 +96,8 @@ M['seeker'] = glass_mat(); M['seeker'].name = 'seeker_glass'
 M['seeker'].node_tree.nodes['Transparent BSDF'].inputs['Color'].default_value = (0.05, 0.06, 0.07, 1)
 M['interior'] = paint('interior_grey', (0.07, 0.075, 0.08), rough=(0.6, 0.7))
 M['beacon'] = principled('beacon_amber', (0.55, 0.32, 0.06), rough=0.25)
+M['led_g'] = principled('led_green', (0.02, 0.2, 0.05), rough=0.3, emit=(0.1, 1.0, 0.3), emit_str=3)
+M['led_a'] = principled('led_amber', (0.2, 0.1, 0.01), rough=0.3, emit=(1.0, 0.5, 0.05), emit_str=3)
 M['screen'] = principled('screen_dim', (0.01, 0.012, 0.015), rough=0.15, emit=(0.25, 0.45, 0.6), emit_str=0.35)
 
 # ----------------------------------------------------------------------------- mesh helpers
@@ -231,7 +233,7 @@ def inset_poly(pts, d):
     return out, n
 
 CUTS = []   # window opening prisms cut out of the wheelhouse shell
-def window(name, pts, d_frame=0.025, d_glass=0.055, outward=None, cut=True):
+def window(name, pts, d_frame=0.025, d_glass=0.055, outward=None, cut=True, bolt_step=0.0):
     """Black rubber frame ring on the face + recessed tinted glass in a real opening."""
     fr, n = inset_poly(pts, d_frame); gl, _ = inset_poly(pts, d_glass)
     if outward is not None and n.dot(Vector(outward)) < 0: n = -n
@@ -242,6 +244,12 @@ def window(name, pts, d_frame=0.025, d_glass=0.055, outward=None, cut=True):
     bm = bmesh.new(); bm.from_mesh(gk.data); bmesh.ops.recalc_face_normals(bm, faces=bm.faces); bm.to_mesh(gk.data); bm.free()
     plane_poly(name + '_glass', gl, M['glass'], -0.015 if cut else 0.006, n)
     if cut: CUTS.append((gl, n))
+    if bolt_step:                              # clamp-ring screws around the rubber frame
+        bp, _ = inset_poly(pts, (d_frame + d_glass) / 2); bl = []
+        for a, b in zip(bp, bp[1:] + bp[:1]):
+            m = max(1, int((b - a).length / bolt_step))
+            bl += [a.lerp(b, (i + 0.5) / m) + n * 0.014 for i in range(m)]
+        bolts(name + '_screw', bl, n, r=0.0055, h=0.004, mat=M['gun'])
     return gl, n
 
 # ----------------------------------------------------------------------------- hull lines
@@ -372,17 +380,27 @@ def build_deckhouse():
     for s in (1, -1):
         m = lambda p: (p[0], s * p[1], p[2])
         # windshield: two centre panes split by a mullion, plus raked corner panes
-        window('WS_c%d' % s, [m((W2[0], 0.02, 2.2)), m(W2), m(T2), m((T2[0], 0.02, 2.8))], outward=(1, 0, 1))
-        window('WS_k%d' % s, [m(W2), m(W3), m(T3), m(T2)], outward=(1, s, 1))
+        window('WS_c%d' % s, [m((W2[0], 0.02, 2.2)), m(W2), m(T2), m((T2[0], 0.02, 2.8))], outward=(1, 0, 1), bolt_step=0.16)
+        window('WS_k%d' % s, [m(W2), m(W3), m(T3), m(T2)], outward=(1, s, 1), bolt_step=0.16)
         # side window: one large tinted pane (master_varA) with a thin black mullion
         pts = [(px, s * up_y(pz), pz) for px, pz in ((6.72, 2.06), (4.40, 2.06), (4.12, 2.62), (6.13, 2.62))]
-        window('Side_%d' % s, pts, outward=(0, s, 0.3))
+        window('Side_%d' % s, pts, outward=(0, s, 0.3), bolt_step=0.17)
+        # drip rail (eyebrow) over the side window
+        tube('DripRail_%d' % s, [(px, s * (up_y(2.69) + 0.012), 2.69) for px in (6.32, 5.2, 4.0)], 0.011, M['super'], res=2)
+        # louvred ventilation grille on the lower house side + deck drain scupper below it
+        vx, vz = 3.55, 1.70
+        box('Louvre_frame_%d' % s, (vx, s * (HW_LO + 0.012), vz), (0.34, 0.024, 0.22), M['super'], bevel=0.008, seg=2)
+        box('Louvre_back_%d' % s, (vx, s * (HW_LO + 0.019), vz), (0.29, 0.012, 0.17), M['dark'])
+        for k in range(5):
+            box('Louvre_slat_%d' % s, (vx, s * (HW_LO + 0.03), vz - 0.068 + k * 0.034), (0.29, 0.03, 0.006), M['super'],
+                rot=(s * D2R(40), 0, 0), bevel=0.0015)
+        bolts('Louvre_screw_%d' % s, [(vx + dx, s * (HW_LO + 0.024), vz + dz) for dx in (-0.15, 0.15) for dz in (-0.09, 0.09)], (0, s, 0), r=0.005, h=0.004)
         mul = [(px, s * (up_y(pz) + 0.006), pz) for px, pz in ((5.575, 2.07), (5.535, 2.07), (5.535, 2.61), (5.575, 2.61))]
         plane_poly('Side_mullion_%d' % s, mul if s > 0 else mul[::-1], M['rubber'])
         # aft wall windows
         for y0, y1 in ((0.55, 1.0),):
             pts = [(aft_x(z), s * y, z) for y, z in ((y0, 1.95), (y1, 1.95), (y1, 2.55), (y0, 2.55))]
-            window('Aft_%d' % s, pts, outward=(-1, 0, 0))
+            window('Aft_%d' % s, pts, outward=(-1, 0, 0), bolt_step=0.16)
         # grab rail under the side windows
         z = 1.985; y = s * (up_y(z) + 0.06)
         cyl('GrabRail_%d' % s, (4.3, y, z), (6.55, y, z), 0.016, M['steel'], seg=10)
@@ -432,6 +450,14 @@ def build_deckhouse():
         q = [a.lerp(b, 0.15) + Vector((0, yc - 0.22, 0)), a.lerp(b, 0.15) + Vector((0, yc + 0.22, 0)),
              a.lerp(b, 0.85) + Vector((0, yc + 0.22, 0)), a.lerp(b, 0.85) + Vector((0, yc - 0.22, 0))]
         plane_poly('WH_screen', q, M['screen'], 0.004, nrm)
+    # uncrewed: no seats; an equipment rack island behind the console with faint status LEDs, cable tray overhead
+    box('WH_rack', (4.75, 0, 1.86), (0.55, 0.80, 0.74), M['interior'], bevel=0.01)
+    for s in (1, -1):
+        for j in range(3):
+            box('WH_rackunit', (4.75, s * 0.402, 1.62 + j * 0.2), (0.50, 0.006, 0.16), M['interior'], bevel=0.003)
+            for k in range(4):
+                box('WH_led', (4.58 + k * 0.035, s * 0.406, 1.67 + j * 0.2), (0.012, 0.003, 0.008), M['led_g' if (j + k) % 3 else 'led_a'])
+    box('WH_tray', (5.0, 0, Z_ROOF - 0.10), (2.6, 0.18, 0.04), M['interior'])
     # wipers (one per windshield pane)
     for s in (1, -1):
         for base, top in (((7.16, s * 0.27, 2.25), (6.82, s * 0.20, 2.64)), ((6.98, s * 0.95, 2.25), (6.62, s * 0.80, 2.66))):
@@ -453,35 +479,94 @@ def build_deckhouse():
 
 # ----------------------------------------------------------------------------- mast & roof sensors
 def build_mast():
+    # mast: tapered plated tower, bevelled edges, welded foot flange bolted to the roof
     hull_obj('Mast', [(3.30, 0.17, Z_ROOF - 0.02), (4.05, 0.17, Z_ROOF - 0.02), (3.36, 0.09, 4.32), (3.58, 0.09, 4.32)],
-             M['super'], bevel=0.012, mirror_y=True)
+             M['super'], bevel=0.024, mirror_y=True, seg=3)
+    box('Mast_flange', (3.675, 0, Z_ROOF + 0.01), (0.86, 0.43, 0.02), M['super'], bevel=0.007, seg=2)
+    tube('Mast_weld', [(3.30, 0.172, Z_ROOF + 0.022), (4.05, 0.172, Z_ROOF + 0.022)], 0.006, M['super'], res=2)
+    tube('Mast_weld', [(3.30, -0.172, Z_ROOF + 0.022), (4.05, -0.172, Z_ROOF + 0.022)], 0.006, M['super'], res=2)
+    for s in (1, -1):
+        bolts('Mast_flangebolt', [(x, s * 0.195, Z_ROOF + 0.02) for x in np.linspace(3.29, 4.06, 7)], (0, 0, 1), r=0.008, h=0.007)
+    def mface(z, s):                          # mast side plane at height z: (y, x_aft, x_fwd)
+        f = (z - (Z_ROOF - 0.02)) / (4.32 - Z_ROOF + 0.02)
+        return s * (0.17 - 0.08 * f), 3.30 + 0.06 * f, 4.05 - 0.47 * f
+    # step rungs (starboard flank) and a clamped cable run (port flank) with a junction box
+    for z in (3.17, 3.42, 3.67, 3.92, 4.17):
+        y, xa, xf = mface(z, -1); xc = xa + 0.13
+        tube('Mast_rung', [(xc - 0.085, y + 0.01, z), (xc - 0.08, y - 0.09, z), (xc, y - 0.105, z), (xc + 0.08, y - 0.09, z), (xc + 0.085, y + 0.01, z)], 0.0105, M['steel'], res=4)
+        for xx in (xc - 0.085, xc + 0.085):
+            cyl('Mast_rungpad', (xx, y + 0.004, z), (xx, y - 0.012, z), 0.022, M['steel'], seg=12)
+    cab = []
+    for z in np.linspace(Z_ROOF + 0.03, 4.28, 7):
+        y, xa, xf = mface(z, 1); cab.append((xa + 0.045, y + 0.028, z))
+        box('Mast_cableclamp', (xa + 0.045, y + 0.02, z), (0.05, 0.03, 0.018), M['steel'], bevel=0.004)
+    tube('Mast_cable', cab, 0.013, M['rubber'], res=3)
+    y, xa, xf = mface(3.55, 1)
+    box('Mast_jbox', ((xa + xf) / 2 + 0.05, y + 0.035, 3.55), (0.16, 0.07, 0.20), M['super'], bevel=0.012, seg=2)
+    bolts('Mast_jboxbolt', [((xa + xf) / 2 + 0.05 + dx, y + 0.07, 3.55 + dz) for dx in (-0.06, 0.06) for dz in (-0.08, 0.08)], (0, 1, 0), r=0.006, h=0.005)
+    gland('Mast_jgland', ((xa + xf) / 2 + 0.05, y + 0.035, 3.445), (0, 0, -1), r=0.009)
+    # mast post + masthead light: ribbed Fresnel lens between a base and a cap, cable up the post
     lathe('MastPost', [(0, 0), (0, 0.085), (0.04, 0.085), (0.07, 0.062), (0.30, 0.062), (0.30, 0)], (3.45, 0, 4.32), (0, 0, 1), M['super'])
-    lathe('Masthead', [(0, 0), (0, 0.10), (0.06, 0.10), (0.06, 0.085), (0.22, 0.085), (0.22, 0.10), (0.30, 0.10), (0.32, 0.06), (0.33, 0)],
-          (3.45, 0, 4.62), (0, 0, 1), M['super'])
-    lathe('MastheadLens', [(0, 0.0), (0, 0.075), (0.14, 0.075), (0.14, 0)], (3.45, 0, 4.69), (0, 0, 1), M['white'])
-    # radar arm, brace, pedestal, array
-    box('RadarArm', (4.08, 0, 3.74), (0.76, 0.14, 0.08), M['super'], bevel=0.006)
-    hull_obj('RadarBrace', [(3.90, 0.05, 3.30), (3.98, 0.05, 3.30), (4.30, 0.05, 3.70), (4.20, 0.05, 3.70)], M['super'], mirror_y=True)
-    cyl('RadarPed', (4.28, 0, 3.78), (4.28, 0, 3.97), 0.10, M['super'])
+    bolt_ring('MastPost_bolt', (3.45, 0, 4.36), 0.075, 8, (0, 0, 1), r=0.006, h=0.005)
+    lathe('Masthead', [(0, 0), (0, 0.10), (0.06, 0.10), (0.06, 0.085), (0.07, 0.085), (0.07, 0)], (3.45, 0, 4.62), (0, 0, 1), M['super'])
+    rib = lambda h, r0, n: [(0, 0), (0, r0 - 0.004)] + [p for k in range(n) for p in ((h * k / n, r0), (h * (k + 0.5) / n, r0 - 0.0045))] + [(h, r0 - 0.004), (h, 0)]
+    lathe('MastheadLens', rib(0.13, 0.072, 12), (3.45, 0, 4.69), (0, 0, 1), M['white'], seg=32)
+    lathe('Masthead_cap', [(0, 0), (0, 0.085), (0.02, 0.088), (0.045, 0.06), (0.06, 0.0)], (3.45, 0, 4.82), (0, 0, 1), M['super'])
+    for a in range(3):                        # cage bars around the lens
+        aa = 2 * math.pi * a / 3 + 0.5
+        cyl('Masthead_bar', (3.45 + 0.083 * math.cos(aa), 0.083 * math.sin(aa), 4.69), (3.45 + 0.083 * math.cos(aa), 0.083 * math.sin(aa), 4.82), 0.006, M['super'], seg=8)
+    # radar: bolted gearbox pedestal (blank rating plate, cable gland) + open-array scanner on a rotary joint
+    box('RadarArm', (4.08, 0, 3.74), (0.76, 0.14, 0.08), M['super'], bevel=0.012, seg=2)
+    hull_obj('RadarBrace', [(3.90, 0.05, 3.30), (3.98, 0.05, 3.30), (4.30, 0.05, 3.70), (4.20, 0.05, 3.70)], M['super'], mirror_y=True, bevel=0.008)
+    box('RadarGearbox_flange', (4.28, 0, 3.79), (0.30, 0.20, 0.02), M['super'], bevel=0.005)
+    bolts('RadarGearbox_fbolt', [(4.28 + dx, dy, 3.80) for dx in (-0.13, 0.13) for dy in (-0.08, 0.08)], (0, 0, 1), r=0.008, h=0.007)
+    box('RadarGearbox', (4.28, 0, 3.875), (0.30, 0.22, 0.15), M['super'], bevel=0.035, seg=3)
+    box('RadarGearbox_lid', (4.28, 0, 3.955), (0.27, 0.19, 0.015), M['super'], bevel=0.006, seg=2)
+    bolts('RadarGearbox_lidbolt', [(4.28 + dx, dy, 3.962) for dx in (-0.115, 0, 0.115) for dy in (-0.08, 0.08)], (0, 0, 1), r=0.006, h=0.005)
+    box('RadarGearbox_plate', (4.432, 0.0, 3.875), (0.003, 0.10, 0.06), M['steel'], bevel=0.0015)
+    bolts('RadarGearbox_rivet', [(4.434, dy, 3.875 + dz) for dy in (-0.042, 0.042) for dz in (-0.022, 0.022)], (1, 0, 0), r=0.004, h=0.002)
+    gland('RadarGearbox_gland', (4.13, 0.0, 3.86), (-1, 0, 0), r=0.011)
+    tube('RadarGearbox_cable', [(4.105, 0, 3.86), (4.06, 0, 3.83), (4.02, 0.0, 3.785)], 0.01, M['rubber'], res=4)
     PARENT.append(pivot('radar_spin', (4.28, 0, 3.97)))
-    lathe('RadarGear', [(0, 0), (0, 0.13), (0.07, 0.14), (0.10, 0.12), (0.115, 0.06), (0.115, 0)], (4.28, 0, 3.97), (0, 0, 1), M['super'])
-    box('RadarArray', (4.28, 0, 4.15), (1.15, 0.12, 0.13), M['super'], bevel=0.052, seg=5, ang=20)
-    box('RadarFace', (4.28, -0.058, 4.15), (0.98, 0.006, 0.085), M['dark'], bevel=0.003)
-    for k in (-1, 1): cyl('RadarEndCap', (4.28 + k * 0.50, -0.065, 4.15), (4.28 + k * 0.50, 0.065, 4.15), 0.008, M['dark'], seg=8)
+    lathe('RadarJoint', [(0, 0), (0, 0.075), (0.02, 0.075), (0.025, 0.06), (0.07, 0.06), (0.075, 0.07), (0.10, 0.07), (0.10, 0)], (4.28, 0, 3.97), (0, 0, 1), M['super'], seg=28)
+    bolt_ring('RadarJoint_bolt', (4.28, 0, 4.07), 0.055, 6, (0, 0, 1), r=0.006, h=0.005)
+    pts = []                                  # tapered bar: rounded-rect sections, deeper in the middle
+    for xx in np.linspace(-0.55, 0.55, 9):
+        k = 1 - (abs(xx) / 0.55) ** 2; hh = 0.050 + 0.026 * k; ww = 0.058; rc = 0.033
+        for cy, cz, a0 in ((ww - rc, hh - rc, 0), (-ww + rc, hh - rc, 90), (-ww + rc, -hh + rc, 180), (ww - rc, -hh + rc, 270)):
+            for j in range(5):
+                a = D2R(a0 + 90 * j / 4); pts.append((4.28 + xx, cy + rc * math.cos(a), 4.15 + cz + rc * math.sin(a)))
+    ob = hull_obj('RadarArray', pts, M['super'], dissolve=False)
+    for p in ob.data.polygons: p.use_smooth = True
+    ob.data.set_sharp_from_angle(angle=D2R(35))
+    for k in (-1, 1):
+        lathe('RadarEndCap', [(0, 0), (0, 0.05), (0.012, 0.05), (0.03, 0.035), (0.04, 0)], (4.28 + k * 0.545, 0, 4.15), (k, 0, 0), M['wgrey'], seg=20)
+    box('RadarFace', (4.28, -0.0605, 4.15), (0.96, 0.004, 0.07), M['dark'], bevel=0.0018)
+    box('RadarSeam', (4.28, 0.0, 4.15 + 0.0755), (1.08, 0.004, 0.003), M['dark'])
+    box('RadarSeam', (4.28, 0.064, 4.15), (1.0, 0.003, 0.004), M['dark'])
     PARENT.pop().rotation_euler = (0, 0, D2R(40))
-    # nav light shelves + lights
-    box('NavShelfTop', (3.48, 0, 4.335), (0.16, 0.42, 0.025), M['super'])
-    # sidelights: dark housing + inboard screen, cylindrical Fresnel lens outboard (red port, green starboard)
+    # nav light shelf (bevelled plate on two gussets) + COLREG sidelight fixtures:
+    # bracket plate, dark housing with an inboard screen board, ribbed coloured Fresnel lens, cap, gland + cable
+    box('NavShelfTop', (3.48, 0, 4.335), (0.16, 0.42, 0.022), M['super'], bevel=0.006, seg=2)
+    for s in (1, -1):
+        hull_obj('NavShelfGusset', [(3.40, s * 0.088, 4.324), (3.555, s * 0.088, 4.324), (3.40, s * 0.088, 4.20),
+                                    (3.40, s * 0.098, 4.324), (3.555, s * 0.098, 4.324), (3.40, s * 0.098, 4.20)], M['super'], dissolve=False)
     for s, nm, mat in ((1, 'NavRed', M['red']), (-1, 'NavGreen', M['green'])):
-        box(nm + '_housing', (3.49, s * 0.135, 4.39), (0.10, 0.05, 0.095), M['dark'], bevel=0.008)
-        box(nm + '_screen', (3.47, s * 0.108, 4.39), (0.16, 0.008, 0.11), M['dark'])
-        cyl(nm, (3.515, s * 0.168, 4.355), (3.515, s * 0.168, 4.425), 0.033, mat, seg=20)
-        cyl(nm + '_cap', (3.515, s * 0.168, 4.425), (3.515, s * 0.168, 4.437), 0.038, M['dark'], seg=20)
+        y0 = s * 0.15
+        box(nm + '_bracket', (3.50, y0, 4.349), (0.13, 0.085, 0.006), M['steel'], bevel=0.002)
+        bolts(nm + '_bolt', [(3.50 + dx, y0 + dy, 4.352) for dx in (-0.05, 0.05) for dy in (-0.03, 0.03)], (0, 0, 1), r=0.005, h=0.004)
+        box(nm + '_housing', (3.475, s * 0.135, 4.392), (0.085, 0.045, 0.078), M['dark'], bevel=0.012, seg=3)
+        box(nm + '_screen', (3.50, s * 0.112, 4.392), (0.17, 0.006, 0.10), M['dark'], bevel=0.002)
+        lathe(nm, rib(0.066, 0.034, 9), (3.515, s * 0.160, 4.358), (0, 0, 1), mat, seg=24)
+        lathe(nm + '_base', [(0, 0), (0, 0.040), (0.008, 0.040), (0.008, 0)], (3.515, s * 0.160, 4.35), (0, 0, 1), M['dark'], seg=24)
+        lathe(nm + '_cap', [(0, 0), (0, 0.041), (0.006, 0.041), (0.016, 0.03), (0.018, 0)], (3.515, s * 0.160, 4.424), (0, 0, 1), M['dark'], seg=24)
+        gland(nm + '_gland', (3.432, s * 0.135, 4.38), (-1, 0, 0), r=0.007)
+        tube(nm + '_cable', [(3.418, s * 0.135, 4.38), (3.40, s * 0.12, 4.36), (3.405, s * 0.10, 4.33), (3.43, s * 0.09, 4.28)], 0.0065, M['rubber'], res=4)
     navlight('NavRed_light', (3.50, 0.20, 4.385), (1, 0.05, 0.03)); navlight('NavGreen_light', (3.50, -0.20, 4.385), (0.05, 1, 0.3))
     navlight('Masthead_light', (3.45, 0, 4.73), (1, 0.93, 0.8))
-    box('NavShelfLow', (3.42, 0, 3.775), (0.28, 0.30, 0.025), M['super'])
+    box('NavShelfLow', (3.42, 0, 3.775), (0.28, 0.30, 0.025), M['super'], bevel=0.006, seg=2)
     lathe('Horn', [(0, 0), (0, 0.025), (0.12, 0.03), (0.20, 0.055), (0.21, 0.055), (0.21, 0)], (3.36, 0.0, 3.83), (1, 0, 0), M['super'], seg=20)
-    box('HornBracket', (3.36, 0, 3.80), (0.05, 0.05, 0.05), M['super'])
+    box('HornBracket', (3.36, 0, 3.80), (0.05, 0.05, 0.05), M['super'], bevel=0.008)
     # yard + flag halyard + whips
     box('Yard', (3.20, 0, 4.555), (0.36, 0.05, 0.04), M['super'])
     cyl('Halyard1', (3.03, 0.0, 4.54), (3.27, 0.0, 2.99), 0.005, M['rope'], seg=6)
@@ -566,6 +651,13 @@ def build_flag():
             a = j * (nu + 1) + i; faces.append((a, a + 1, a + nu + 2, a + nu + 1))
     PARENT.append(pivot('flag_hoist', (hx, 0.0, z0), 0.15))
     ob = mesh_obj('Flag', verts, faces, m, smooth=180)
+    # hoist: white bolt rope sewn along the hoist edge, two snap clips onto the halyard
+    cyl('Flag_boltrope', (hx + 0.006, 0, z0 - 0.02), (hx + 0.006, 0, z0 + Hh + 0.02), 0.0075, M['letter'], seg=8)
+    hal = lambda z: 3.03 + 0.24 * (4.54 - z) / 1.55
+    for zc in (z0 - 0.02, z0 + Hh + 0.02):
+        tube('Flag_rope', [(hx + 0.006, 0, zc), ((hx + hal(zc)) / 2, 0, zc - 0.012), (hal(zc) - 0.02, 0, zc)], 0.004, M['letter'], res=4)
+        tube('Flag_clip', [(hal(zc) - 0.022, 0.0, zc - 0.012), (hal(zc) - 0.005, 0.009, zc - 0.018), (hal(zc) + 0.008, 0.0, zc),
+                           (hal(zc) - 0.005, -0.009, zc + 0.018), (hal(zc) - 0.022, 0.0, zc + 0.012)], 0.0035, M['steel'], res=4)
     PARENT.pop()
     uv = ob.data.uv_layers.new(name='UVMap')
     for poly in ob.data.polygons:
@@ -690,19 +782,30 @@ def build_launcher():
             c = P + n * off
             rear, mouth = c - d * 1.38, c + d * 0.85
             cyl('Tube_%d_%d' % (s, k), rear, mouth, 0.11, M['missile'], seg=32)
-            for tpos in (-1.25, -0.35, 0.55, 0.80):
-                cyl('TubeRing', c + d * (tpos - 0.025), c + d * (tpos + 0.025), 0.122, M['wgrey'], seg=32)
+            for tpos in (-1.25, -0.35, 0.55):     # band clamps: strap + bolted lug
+                cyl('TubeRing', c + d * (tpos - 0.022), c + d * (tpos + 0.022), 0.118, M['wgrey'], seg=40)
+                o = (n * 0.6 + Vector((0, s, 0)) * 0.8).normalized() if k == 0 else (-n * 0.6 + Vector((0, s, 0)) * 0.8).normalized()
+                box('TubeClampLug', c + d * tpos + o * 0.128, (0.036, 0.03, 0.03), M['wgrey'], bevel=0.005,
+                    rot=(math.atan2(o.z, o.y) - math.pi / 2, 0, 0))
+                cyl('TubeClampBolt', c + d * (tpos - 0.028) + o * 0.13, c + d * (tpos + 0.028) + o * 0.13, 0.006, M['steel'], seg=6)
+            lathe('TubeMouth', [(0, 0.098), (0, 0.124), (0.035, 0.124), (0.04, 0.118), (0.04, 0.098)], mouth - d * 0.04, d, M['wgrey'], seg=40)
             cyl('TubeCapRear', rear - d * 0.01, rear, 0.095, M['dark'], seg=24)
-            # missile: body visible at mouth, ogive nose, small seeker tip
-            prof = [(0, 0.0), (0, 0.082), (0.08, 0.082)] + [(0.08 + 0.42 * t, 0.082 * math.sqrt(max(1 - t ** 1.6, 0)) ** 1.1 + 0.0) for t in np.linspace(0.05, 0.92, 12)]
-            prof += [(0.08 + 0.42 * 0.96, 0.012), (0.50, 0.0)]
-            lathe('Missile_%d_%d' % (s, k), prof, mouth - d * 0.06, d, M['missile'])
-            lathe('Seeker_%d_%d' % (s, k), [(0, 0), (0, 0.030), (0.045, 0.016), (0.07, 0.0)], mouth - d * 0.06 + d * 0.43, d, M['seeker'])
-            for f in range(4):               # cruciform canards just ahead of the tube mouth
+            # missile: body with seam rings, ogive, bezel, glass seeker dome over a dark seeker head
+            prof = [(0, 0.0), (0, 0.082), (0.03, 0.082), (0.03, 0.0795), (0.034, 0.0795), (0.034, 0.082), (0.075, 0.082),
+                    (0.075, 0.0795), (0.079, 0.0795), (0.079, 0.082)]
+            prof += [(0.08 + 0.32 * t, 0.043 + 0.039 * (1 - t ** 1.8) ** 0.6) for t in np.linspace(0.04, 1.0, 14)]
+            prof += [(0.40, 0.0)]
+            lathe('Missile_%d_%d' % (s, k), prof, mouth - d * 0.06, d, M['missile'], seg=40)
+            nb = mouth - d * 0.06 + d * 0.40
+            lathe('Seeker_bezel_%d_%d' % (s, k), [(0, 0), (0, 0.0445), (0.012, 0.0445), (0.014, 0.041), (0.014, 0)], nb, d, M['gun'], seg=40)
+            lathe('Seeker_head_%d_%d' % (s, k), [(0, 0), (0, 0.03)] + [(0.014 + 0.024 * math.sin(a), 0.03 * math.cos(a)) for a in np.linspace(0.2, math.pi / 2, 6)], nb, d, M['dark'], seg=24)
+            lathe('Seeker_%d_%d' % (s, k), [(0, 0), (0, 0.041)] + [(0.014 + 0.041 * math.sin(a), 0.041 * math.cos(a)) for a in np.linspace(0.15, math.pi / 2, 9)], nb, d, M['seeker'], seg=40)
+            for f in range(4):               # cruciform canards just ahead of the tube mouth: thin, swept, bevelled
                 a = math.pi / 4 + f * math.pi / 2; o = Vector((0, math.cos(a), math.sin(a)))
                 base = mouth + d * 0.06
-                t = o.cross(d) * 0.004; tri = [base + d * 0.11 + o * 0.08, base + o * 0.08, base + d * 0.015 + o * 0.15]
-                hull_obj('Canard', [p + t for p in tri] + [p - t for p in tri], M['missile'], dissolve=False)
+                t = o.cross(d) * 0.0022
+                quad = [base + d * 0.12 + o * 0.078, base + o * 0.078, base + d * 0.012 + o * 0.142, base + d * 0.05 + o * 0.142]
+                hull_obj('Canard', [p + t for p in quad] + [p - t for p in quad], M['missile'], dissolve=False, bevel=0.0012, seg=1)
         # pod frame (side plate + brackets)
         for tpos in (-0.9, 0.2):
             q = P + d * tpos
@@ -753,15 +856,17 @@ def build_fittings():
     tube('BowEye', [(xs, 0, zs - 0.035), (xs + 0.07, 0, zs - 0.04), (xs + 0.10, 0, zs), (xs + 0.07, 0, zs + 0.04), (xs, 0, zs + 0.035)], 0.011, M['steel'])
     # foredeck hatch (aerial view) + glacis hatch with grab-rail frame
     x = 11.15; z = deck_z(x, 0)
-    box('Hatch_fwd', (x, 0, z + 0.012), (0.60, 0.60, 0.03), M['super'], bevel=0.012)
-    box('Hatch_fwd_gasket', (x, 0, z + 0.002), (0.63, 0.63, 0.012), M['rubber'], bevel=0.004)
-    for yy in (-0.2, 0.2): box('Hatch_dog', (x + 0.31, yy, z + 0.025), (0.03, 0.06, 0.02), M['steel'], bevel=0.005)
-    box('Hatch_fwd_hinge', (x - 0.31, 0, z + 0.02), (0.03, 0.40, 0.03), M['steel'])
+    box('Hatch_fwd_coaming', (x, 0, z + 0.005), (0.70, 0.70, 0.05), M['super'], bevel=0.008, seg=2)
+    box('Hatch_fwd_gasket', (x, 0, z + 0.032), (0.64, 0.64, 0.008), M['rubber'], bevel=0.003)
+    box('Hatch_fwd', (x, 0, z + 0.045), (0.62, 0.62, 0.025), M['super'], bevel=0.01, seg=2)
+    for yy in (-0.2, 0.2): box('Hatch_dog', (x + 0.33, yy, z + 0.05), (0.03, 0.06, 0.02), M['steel'], bevel=0.005)
+    box('Hatch_fwd_hinge', (x - 0.33, 0, z + 0.05), (0.03, 0.40, 0.03), M['steel'], bevel=0.005)
     # glacis plane: through W2, W2' and (9.9,0.45,1.375)-ish -> z = 2.2 - k(x-7.15)
     k = (2.20 - 1.375) / (9.9 - W2[0])
     def gz(xx): return 2.20 - k * (xx - W2[0])
     ang = math.atan(k); xm = 8.15
-    box('Hatch_glacis', (xm, 0, gz(xm) + 0.02), (0.72, 0.62, 0.03), M['super'], rot=(0, ang, 0), bevel=0.012)
+    box('Hatch_glacis_coaming', (xm, 0, gz(xm) + 0.005), (0.80, 0.70, 0.05), M['super'], rot=(0, ang, 0), bevel=0.008, seg=2)
+    box('Hatch_glacis', (xm, 0, gz(xm) + 0.04), (0.72, 0.62, 0.03), M['super'], rot=(0, ang, 0), bevel=0.012, seg=2)
     for s in (1, -1):
         for xx in (7.85, 8.45):
             cyl('HatchRailPost', (xx, s * 0.36, gz(xx)), (xx, s * 0.36, gz(xx) + 0.07), 0.012, M['steel'], seg=8)
@@ -773,7 +878,9 @@ def build_fittings():
     for zz in (zc + 0.20, sheer_z(0.06) - 0.01):
         cyl('SternRail', (0.06, -1.62, zz), (0.06, 1.62, zz), 0.022, M['steel'], seg=10)
     for y in (-0.85, 0.85):
-        box('CockpitHatch', (0.75, y, cock_z(0.75) + 0.008), (0.55, 0.55, 0.02), M['deck'], bevel=0.008)
+        box('CockpitHatch_coaming', (0.75, y, cock_z(0.75) + 0.012), (0.62, 0.62, 0.03), M['hull'], bevel=0.006, seg=2)
+        box('CockpitHatch', (0.75, y, cock_z(0.75) + 0.03), (0.55, 0.55, 0.02), M['deck'], bevel=0.006)
+        box('CockpitHatch_handle', (0.75 + 0.2, y, cock_z(0.75) + 0.042), (0.03, 0.12, 0.008), M['steel'], bevel=0.003)
     # side access panel on the aft bulwark (master) + exhaust outlet
     for s in (1, -1):
         y = s * (hb_sheer(2.0) + 0.004)

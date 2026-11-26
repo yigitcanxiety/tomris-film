@@ -26,7 +26,7 @@ vec4 trailAt(float tau){ float f = clamp(tau / uTrailDt, 0.0, uTrailN - 1.001); 
   vec4 a = texelFetch(uTrail, ivec2(int(i), 0), 0), b = texelFetch(uTrail, ivec2(int(i) + 1, 0), 0); return mix(a, b, f - i); }
 ${HULL_GLSL}
 // position of this particle at absolute time t (emitted in the cycle that contains t)
-void particle(float t, out vec3 pos, out float age, out float life, out float sizeM, out float a0, out float g) {
+void particle(float t, out vec3 pos, out vec3 vel, out float age, out float life, out float sizeM, out float a0, out float g) {
   float type = aSeed.x;
   life = type < 0.5 ? mix(0.35, 1.0, aSeed.y) : type < 1.5 ? mix(0.6, 1.4, aSeed.y) : type < 2.5 ? mix(0.45, 1.2, aSeed.y)
        : type < 3.5 ? mix(2.2, 3.8, aSeed.y) : type < 4.5 ? mix(1.2, 2.4, aSeed.y) : type < 5.5 ? mix(0.22, 0.5, aSeed.y) : mix(0.35, 0.8, aSeed.y);
@@ -69,14 +69,15 @@ void particle(float t, out vec3 pos, out float age, out float life, out float si
   vec3 wp = bp + fwd * lp.x + stb * lp.z;
   wp.y = seaHeight(wp.xz, te) + lp.y;
   vec3 wv = fwd * V + fwd * lv.x + stb * lv.z + vec3(0.0, lv.y, 0.0);
-  float ed = (1.0 - exp(-drag * age)) / drag;
+  float ex = exp(-drag * age), ed = (1.0 - ex) / drag, gk = 9.81 * (type > 2.5 && type < 3.5 ? 0.05 : 1.0);
   pos = wp + wv * ed;
-  pos.y -= 9.81 * (age / drag - ed / drag) * (type > 2.5 && type < 3.5 ? 0.05 : 1.0);
+  pos.y -= gk * (age - ed) / drag;
+  vel = wv * ex; vel.y -= gk * (1.0 - ex) / drag;                 // analytic velocity: streak / ligament tails
   g = type < 0.5 || (type > 1.5 && type < 2.5) ? 0.75 : type > 4.5 ? 0.6 : 0.5;
 }
 void main(){
-  vec3 p1, p0, pl; float age, life, sizeM, a0, g, age0, l0, s0, a00, g0;
-  particle(uTime, p1, age, life, sizeM, a0, g);
+  vec3 p1, vel; float age, life, sizeM, a0, g;
+  particle(uTime, p1, vel, age, life, sizeM, a0, g);
   float type = aSeed.x;
   bool mist = type > 0.5 && type < 1.5 || (type > 2.5 && type < 4.5);
   bool sheet = type > 4.5;
@@ -84,8 +85,7 @@ void main(){
   float lig = mist ? 0.0 : (sheet ? 0.07 : 0.045) * exp(-age / (sheet ? 0.25 : 0.12));
   lig = min(lig, age * 0.95);
   float st = min(uStreak, age * 0.95);
-  particle(uTime - st, p0, age0, l0, s0, a00, g0);
-  particle(uTime - lig, pl, age0, l0, s0, a00, g0);
+  vec3 p0 = p1 - vel * st, pl = p1 - vel * lig;
   if (mist) sizeM *= mix(0.6, 1.8, age / life);
   if (sheet) sizeM *= mix(1.0, 0.45, age / life);                // fragments tear apart
   vec4 v1 = viewMatrix * vec4(p1, 1.0);

@@ -329,10 +329,19 @@ def find_still(vid, cfg):
 def endcard_comp(vid, still, ec, out, look):
     """210-frame end card: darkened still with a slow push-in, the end-card overlay screened on top"""
     dim, band, zoom = look.get("dim", 0.42), look.get("band", 0.55), look.get("zoom", 0.06)
-    # soft horizontal band behind the boat/title/names (y 0.2-0.8), darker in the middle
-    mask = f"geq=r='255*(1-{band}*exp(-pow((Y/H-0.52)/0.2\\,2)))':g='255*(1-{band}*exp(-pow((Y/H-0.52)/0.2\\,2)))':b='255*(1-{band}*exp(-pow((Y/H-0.52)/0.2\\,2)))'"
-    fc = (f"[0:v]scale=3840:2160:force_original_aspect_ratio=increase:flags=lanczos,crop=3840:2160,setsar=1,"
-          f"zoompan=z='1+{zoom}*on/209':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=210:s=1920x1080:fps=30,"
+    by, bw = look.get("band_y", 0.52), look.get("band_w", 0.2)
+    z0, sx = look.get("zoom0", 1.0), look.get("shift_x", 0.0)   # start zoom; horizontal view shift (fraction of width, <0 moves the picture right)
+    # soft horizontal band behind the boat/title/names (y 0.2-0.8), darker at band_y
+    g = f"255*(1-{band}*exp(-pow((Y/H-{by})/{bw}\\,2)))"
+    mask = f"geq=r='{g}':g='{g}':b='{g}'"
+    if look.get("fit"):        # wide still: keep all of it inside the film's 2.39 band (1920x804 at y 138), bars as in the picture
+        geo = (f"[0:v]scale=3840:1630:force_original_aspect_ratio=increase:flags=lanczos,crop=3840:1630,setsar=1,"
+               f"zoompan=z='{z0}+{zoom}*on/209':x='iw/2-(iw/zoom/2)+({sx})*iw':y='ih/2-(ih/zoom/2)':d=210:s=1920x816:fps=30,"
+               f"crop=1920:804:0:6,pad=1920:1080:0:138:black,")
+    else:
+        geo = (f"[0:v]scale=3840:2160:force_original_aspect_ratio=increase:flags=lanczos,crop=3840:2160,setsar=1,"
+               f"zoompan=z='{z0}+{zoom}*on/209':x='iw/2-(iw/zoom/2)+({sx})*iw':y='ih/2-(ih/zoom/2)':d=210:s=1920x1080:fps=30,")
+    fc = (geo +
           f"format=yuv420p,vignette=PI/4.5,fade=t=in:st=0.45:d=1.1,fade=t=out:st=6.25:d=0.7,format=gbrp,"   # vignette/fade must run on yuv: on gbrp they tint
           f"colorchannelmixer=rr={dim}:gg={dim}:bb={dim}[bg0];"
           f"color=white:s=1920x1080:r=30:d=0.034,format=gbrp,{mask},loop=loop=-1:size=1:start=0,trim=end_frame=210[m];"
@@ -387,10 +396,10 @@ def build_video(v, picture, tmp, cfg):
                 crop = f"crop={I['crop']}," if I.get("crop") else f"crop=1920:804:0:{I.get('y', 138)},"   # 2.39 band of a 16:9 clip
                 speed = float(I.get("speed", 0.8))            # 0.8 = 24 fps source frames played at 30 fps (no duplicates)
                 grade = I.get("grade", "eq=contrast=1.1:saturation=1.12")   # Kling lifts blacks, drops saturation vs our CG
-                fc.append(f"[{k}:v]setpts=(PTS-STARTPTS)*{speed},fps=30,trim=end_frame={fb - fa + 1},{crop}"
+                fc.append(f"[{k}:v]setpts=(PTS-STARTPTS)*{speed},fps=30,trim=end_frame={fb - fa + 2},{crop}"
                           f"scale={bx[2]}:{bx[3]}:force_original_aspect_ratio=increase:flags=lanczos,crop={bx[2]}:{bx[3]},setsar=1,"
                           f"{grade + ',' if grade else ''}format=yuv420p,setpts=PTS-STARTPTS+{(fa - a) / FPS:.6f}/TB[i{k}]")
-                fc.append(f"[{last}][i{k}]overlay={bx[0]}:{bx[1]}:eof_action=repeat:enable='between(n,{fa - a},{fb - a})'[o{k}]"); last = f"o{k}"; k += 1   # repeat: trim EOF reached overlay before the last frame (fb was left as picture)
+                fc.append(f"[{last}][i{k}]overlay={bx[0]}:{bx[1]}:eof_action=pass:enable='between(t,{(fa - a) / FPS - 0.004:.4f},{(fb - a) / FPS + 0.004:.4f})'[o{k}]"); last = f"o{k}"; k += 1
             if comp and a <= EC0 < b + 1 and b == NF:
                 ins += ["-i", comp]
                 fc.append(f"[{last}]trim=end_frame={EC0 - a},setpts=PTS-STARTPTS[h]")

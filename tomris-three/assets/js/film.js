@@ -4,7 +4,7 @@
 // from t on every call, so frames can be rendered in any order and chunked renders match a single pass.
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { boatPose } from "./boat.js";
+import { boatPose, HULL_GLSL } from "./boat.js";
 import { LOOKS } from "./looks.js";
 export { LOOKS };
 
@@ -27,7 +27,7 @@ const ANCHOR = {
 // ---------------------------------------------------------------------------------------------------------
 const EDIT = {
   8: { dist: 6.5 },
-  28: { from: [14.6, 3.9, -2.6], to: [14.4, 3.9, -2.45], abs: true, target: [10.5, 2.48, -0.05] },   // barrel + muzzle brake, 135 mm
+  28: { from: [14.1, 2.8, 2.3], to: [13.95, 2.84, 2.12], abs: true, target: [10.6, 2.45, -0.02] },  // barrel + muzzle brake from starboard-ahead, low (not #26's port side)
   31: { from: [3.45, 3.65, -1.75], to: [3.4, 3.65, -1.65], abs: true, target: "noses",
         rack: [[2.45, 2.75, -0.23], [2.45, 2.75, 0.23]] },
   46: { dist: 6.5 },
@@ -39,6 +39,7 @@ const SETUP_LOOK = { B: "harbour", A: "sunset", Ap: "bluehour", C: "studio", W: 
 const SEA_K = { B: 0.25, A: 1.0, Ap: 0.75, C: 0, W: 0 };     // multiplies the engine sea (built for Hs 0.8 m)
 const STUDIO = new Set(["C", "W"]);
 const STUDIO_KEY = { az: 315, elev: 38 };                  // single hard key from the port bow, high
+const STUDIO_RIM = { az: 150, elev: 28, gain: 3.2 };       // cool back/rim light, starboard quarter (opposite the key)
 const LAMP_B = 8;                                          // sunset (B) lamp boost over looks.js lampGain, so the quay lamps bloom
 
 // ---- small helpers ----
@@ -69,6 +70,8 @@ function normalise(s, setups) {
     v0: (b.speedKn ?? 0) * KN, v1: (b.speedToKn ?? b.speedKn ?? 0) * KN,
     heading: -(b.headingDeg ?? 0) * D2R,
     anim: s.anim ?? [], flag: s.flagVisible, look: SETUP_LOOK[setup], sea: SEA_K[setup],
+    // per-shot grade/light trims (shots.json camera.ev / camera.lookSet / camera.bowRollDeg): shot-local only
+    ev: c.ev || 0, lookSet: c.lookSet || null, bowRoll: (c.bowRollDeg || 0) * D2R, alignBoat: !!c.alignBoat,
     sun: STUDIO.has(setup) ? STUDIO_KEY : setups[setup] ? { az: setups[setup].sunAzimuthDeg, elev: setups[setup].sunElevationDeg } : null,
   };
   if (sh.kind === "3d" && sh.type !== "orbit") {
@@ -132,20 +135,47 @@ export async function createFilm(engine, shotsJson, { base = "assets/" } = {}) {
   const fog = new THREE.FogExp2(0x000000, 0); scene.fog = fog;
   const coastNear = coast.getObjectByName("coast_ridge_near");
 
-  // ---- studio dressing: glossy black floor that mirrors the boat (engine's planar reflection) ----
+  // ---- studio dressing: dark satin floor that mirrors the boat (engine's planar reflection, softened so the
+  //      low-resolution reflection map shows no stair-stepped edges), a light pool under the boat and a soft
+  //      contact shadow along the hull, so the boat stands on the floor instead of floating in a void ----
   const floor = new THREE.Mesh(new THREE.CircleGeometry(70, 96).rotateX(-Math.PI / 2), new THREE.ShaderMaterial({
-    uniforms: { uRefl: ocean.uniforms.uRefl, uReflMat: ocean.uniforms.uReflMat, uCtr: { value: new THREE.Vector2(6.3, 0) } },
+    uniforms: { uRefl: ocean.uniforms.uRefl, uReflMat: ocean.uniforms.uReflMat, uCtr: { value: new THREE.Vector2(6.3, 0) }, uTex: { value: new THREE.Vector2(1e-3, 1e-3) } },
     vertexShader: `varying vec3 vW; varying vec4 vR; uniform mat4 uReflMat;
       void main(){ vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vR = uReflMat * w; gl_Position = projectionMatrix * viewMatrix * w; }`,
-    fragmentShader: `uniform sampler2D uRefl; uniform vec2 uCtr; varying vec3 vW; varying vec4 vR;
+    fragmentShader: `uniform sampler2D uRefl; uniform vec2 uCtr; uniform vec2 uTex; varying vec3 vW; varying vec4 vR;
+      ${HULL_GLSL}
       void main(){
-        vec4 r = texture2DProj(uRefl, vR);
+        vec2 uv = vR.xy / vR.w;
+        vec4 r = vec4(0.0);
+        for (int j = -1; j <= 1; j++) for (int i = -1; i <= 1; i++) {
+          float w = (i == 0 ? 2.0 : 1.0) * (j == 0 ? 2.0 : 1.0);
+          r += w * texture2D(uRefl, uv + vec2(float(i), float(j)) * uTex * 1.6);
+        }
+        r /= 16.0;
         float d = length(vW.xz - uCtr);
         float pool = exp(-d * d / 180.0);
-        vec3 c = r.rgb * r.a * 0.32 * (0.35 + 0.65 * pool) + vec3(0.010, 0.011, 0.013) * pool;
+        // distance outside the hull's footprint at floor level (the floor cuts the hull at the waterline)
+        float x = vW.x, hb = beamAt(clamp(x, 0.0, 12.4), 0.0);
+        float hd = max(abs(vW.z) - hb, 0.0) + max(-x, 0.0) + max(x - 12.4, 0.0);
+        float contact = mix(0.18, 1.0, smoothstep(0.0, 2.2, hd));
+        vec3 base = vec3(0.034, 0.036, 0.040) * (0.2 + 0.8 * pool) * contact;
+        vec3 c = r.rgb * 0.3 * (0.35 + 0.65 * pool) * mix(1.0, 0.55, smoothstep(1.0, 10.0, hd)) + base;
         gl_FragColor = vec4(c, 1.0);
       }`,
   }));
+  floor.onBeforeRender = () => { const im = ocean.uniforms.uRefl.value && ocean.uniforms.uRefl.value.image; if (im && im.width) floor.material.uniforms.uTex.value.set(1 / im.width, 1 / im.height); };
+  // studio backdrop: a dim cyclorama glow along the floor horizon (C only), so close-ups do not sit in a dead void
+  const backdrop = new THREE.Mesh(new THREE.SphereGeometry(600, 48, 24), new THREE.ShaderMaterial({
+    side: THREE.BackSide, depthWrite: false, fog: false,
+    vertexShader: `varying vec3 vD; void main(){ vD = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `varying vec3 vD; void main(){
+      float h = max(vD.y, 0.0), side = 0.6 + 0.4 * max(dot(normalize(vD.xz + 1e-4), normalize(vec2(0.7, -0.7))), 0.0);
+      vec3 c = vec3(0.006, 0.0065, 0.0075) + vec3(0.034, 0.036, 0.041) * exp(-h * 5.0) * side;
+      gl_FragColor = vec4(c, 1.0); }`,
+  }));
+  backdrop.renderOrder = -2; backdrop.visible = false; backdrop.frustumCulled = false; scene.add(backdrop);
+  // studio rim: a cool back light opposite the key (no shadows), so the dark side keeps an outline; off at sea
+  const rim = new THREE.DirectionalLight(0xdce6ff, 0); rim.castShadow = false; scene.add(rim, rim.target);
   floor.position.y = 0.0; floor.visible = false; floor.renderOrder = -1; scene.add(floor);
 
   // ---- wireframe: thin cyan edges on the real meshes, hidden-line removal by a depth-only ghost of the boat ----
@@ -214,6 +244,13 @@ export async function createFilm(engine, shotsJson, { base = "assets/" } = {}) {
     setSea(sh.sea);
     ocean.mesh.visible = !studio; if (spray && spray.mesh) spray.mesh.visible = !studio; if (dome) dome.visible = !studio;
     props.visible = !studio; floor.visible = sh.setup === "C";
+    backdrop.visible = sh.setup === "C";
+    rim.intensity = sh.setup === "C" ? STUDIO_RIM.gain : 0;
+    if (rim.intensity > 0) {
+      const ra = STUDIO_RIM.az * D2R, re = STUDIO_RIM.elev * D2R;
+      rim.target.position.set(6.3, 1.5, 0); rim.position.set(6.3 + 50 * Math.cos(re) * Math.cos(ra), 1.5 + 50 * Math.sin(re), 50 * Math.cos(re) * Math.sin(ra));
+      rim.target.updateMatrixWorld(); rim.updateMatrixWorld();
+    }
     // props placement per section
     if (sh.section === "B") { props.rotation.y = -Math.PI / 2; props.position.set(0, 0, 0); coastNear.visible = true; }
     else { props.rotation.y = 0; props.position.set(0, 0, 0); coastNear.visible = true; }
@@ -236,7 +273,7 @@ export async function createFilm(engine, shotsJson, { base = "assets/" } = {}) {
     let X = 1e6, Xw = 1e6, showLines = false, showGhost = false;
     if (wire) {
       showLines = true; showGhost = true;
-      if (sh.n === 24) { X = -100; Xw = 11.5 - 13 * smooth(u / 0.8); }                 // drawn bow to stern (bow already drawn at the cut)
+      if (sh.n === 24) { X = -100; Xw = 9.0 - 10.5 * smooth(u / 0.8); }                // drawn bow to stern (fore third already drawn at the cut)
       else { Xw = -100; X = -1 + 15 * smooth((u - 0.3) / 0.62); }                       // solid sweeps in under the lines
     }
     solidClip.constant = X; ghostClip.constant = -X; lineClip.constant = -Xw;
@@ -306,13 +343,17 @@ export async function createFilm(engine, shotsJson, { base = "assets/" } = {}) {
       roll += hh * 0.5 * D2R * wob(t, 0.8, n + 4.2);
     }
     roll += sh.rollDps * D2R * (t - sh.f0 / FPS);
+    if (sh.alignBoat) {                                        // close-ups of hull lines: level with the boat, not the horizon
+      const bu = new THREE.Vector3(0, 1, 0).applyQuaternion(pose.quaternion);
+      roll += Math.atan2(-bu.dot(right), bu.dot(upv));
+    }
     // near-vertical views: keep the bow at the top of the frame (lookAt with world-up would spin)
     const f = tgt.clone().sub(pos).normalize();
     if (Math.abs(f.y) > 0.85) {
       tmpCam.position.copy(pos); tmpCam.up.set(0, 1, 0); tmpCam.lookAt(tgt); tmpCam.updateMatrixWorld();
       const xA = new THREE.Vector3().setFromMatrixColumn(tmpCam.matrixWorld, 0), yA = new THREE.Vector3().setFromMatrixColumn(tmpCam.matrixWorld, 1);
       const d = new THREE.Vector3(c, 0, -s); d.addScaledVector(f, -d.dot(f)).normalize();
-      roll += Math.atan2(-d.dot(xA), d.dot(yA));
+      roll += Math.atan2(-d.dot(xA), d.dot(yA)) + sh.bowRoll;    // bowRoll: bow toward a frame side (uses the 2.39 width)
     }
     const fstop = sh.fstop ?? ({ detail: 2.8, chase: 4, waterline: 2.8, static: 4, drone: 0, orbit: 0 }[sh.type] ?? 0);
     return { pos, target: tgt, lensMm: sh.lens, fstop, roll, focus };
@@ -329,6 +370,8 @@ export async function createFilm(engine, shotsJson, { base = "assets/" } = {}) {
       const on = sh.n > 5 ? 1 : sh.n === 5 ? (u > 0.35 ? 1 : 0) : 0;
       look.navEmissive = 2 + 14 * on; look.navGlow = 0.12 + 0.4 * on; look.navLight = 0.2 + 0.3 * on;
     }
+    if (sh.lookSet) Object.assign(look, sh.lookSet);           // shot trims win over the section defaults above
+    if (sh.ev) look.exposure *= Math.pow(2, sh.ev);
     dress(sh, t, u, look);
     const b = boatAt(sh, t);
     const pose = boatPose(b, sea, t);

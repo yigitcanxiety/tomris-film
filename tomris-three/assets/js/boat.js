@@ -363,7 +363,7 @@ export function applyBoat(boat, st, pose, t, look) {
   boatShared.uTime.value = t;
   boatShared.uWind.value = THREE.MathUtils.clamp((st.speed + 4) / 20, 0, 1);
   // grey hold only under a strong, saturated key (sunset); none at blue hour
-  boatShared.uHold.value = 0.62 * THREE.MathUtils.clamp((look.sunGain ?? 0) / 9, 0, 1);
+  boatShared.uHold.value = look.hold ?? 0.62 * THREE.MathUtils.clamp((look.sunGain ?? 0) / 9, 0, 1);   // look.hold: per-shot override
   const r = boat.pivots.radar_spin; if (r) r.obj.quaternion.copy(r.q0).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), t * 2.5));
   for (const l of boat.lamps) {
     l.emit = look.navEmissive; l.light.intensity = look.navLight * 6;

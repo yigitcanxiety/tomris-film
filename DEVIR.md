@@ -9,35 +9,32 @@ Yalnızca müzik, anlatım ve kapanış kartı farklı. Film bir tasarım tanıt
 
 ## Hazır olanlar
 
-- İlk kurgu (görüntü + eski seslendirme): `tomris-film/tomris_v1.mp4`.
-- Hızlı sürümler (ilk kurgu + müzik, eski seslendirme): `tomris-film/tomris_hizli_aksiyon.mp4`, `_milli.mp4`, `_osmanli.mp4`.
-- Üç versiyonun metinleri, kare zamanları, müzik eşlemesi: `tomris-film/versions/versions.json`, `aksiyon.md`, `milli.md`, `osmanli.md`.
-- 70 sn müzikler: `tomris-audio/music_aksiyon.mp3`, `music_izmir.mp3`, `music_mehter.mp3` (kaynaklar: `tomris-audio/MUZIK.md`).
-  `music_izmir.mp3` zayıf (tek sesli sentetik kayıt); iyi bir bando kaydı bulunursa aynı adla değiştir.
-- Yapay zekâ klipleri ve kapanış görselleri: `tomris-ai/` (tablo `tomris-ai/README.md`, önizleme `tomris-ai/contact.jpg`).
-- Kurgu hattı (yarım olabilir, önce oku): `tomris-film/versions/build_versions.sh`, `build_versions.py`, `edit.json`.
-- İlk doğrulama turunun düzeltmeleri kodda (önce/sonra: `tomris-film/fix1_contact.jpg`); bunlarla film baştan render edilmeli.
+- **Üç bitmiş versiyon (render v2 görüntüsünden, 2. doğrulama turu geçti):** `tomris-film/tomris_aksiyon.mp4`, `tomris_milli.mp4`,
+  `tomris_osmanli.mp4`. Her biri H.264 High 1920x1080, 30 fps, 2100 kare, 70.000 sn, AAC 48 kHz, ~68–69 MB, −14.2 LUFS,
+  gerçek tepe −2.2 / −2.3 / −1.3 dBFS, tam çözümlemede hata yok. Ölçümler: `tomris-film/versions/last_build.json`.
+- Görüntü (render v2, fix1 düzeltmeleriyle, SUB=6): `tomris-film/tomris_v1.mp4` (eski seslendirme miksiyle) ve parçalar
+  `tomris-film/chunks/c_00…c_13.mp4`. Render süresi ve ölçümler: `tomris-film/RENDER.md`. Önceki render: `chunks_v1/`.
+- Açılış ve son kart (`tomris-overlays/renders/opening.mp4`, `endcard.mp4`) bayrakta hilal-yıldızla yeniden render edildi.
+- Çekim başına kare (yeni görüntü): `tomris-film/contact.jpg`; AKSİYON'dan numaralı kare dizisi (2. tur): `tomris-film/contact_v2.jpg`.
+- AI eklemeleri (`tomris-film/versions/edit.json`): #14, #20, #23, #39, #57 açık; #55 kapalı (düzeltilmiş CG daha temiz).
+  #57'nin bej teknesi nötr mavi-griye çekildi. Her eklemenin ilk/son karesi shots.json'daki çekimle birebir (kontrol edildi).
+- MİLLİ son kartı: siluet bütünüyle 2.39 bandında, sağ üçte birde (`versions/endcard_layout.py` →
+  `tomris-ai/stills/endcard_b_ulusal_2_layout.jpg`); kartın ufuk çizgisi yüzden önce söner (`card_fade`).
+- Kurgu hattı ve ayarlar: `tomris-film/versions/README.md`, `build_versions.sh|py`, `edit.json`.
+- Metinler, müzikler, spiker: `versions/versions.json`, `tomris-audio/` (`MUZIK.md`, `versions/VO.md`).
+- Hızlı sürümler (eski): `tomris-film/tomris_hizli_*.mp4`.
 
-## Yapılacaklar (sırayla)
+## Yapılacaklar
 
-1. **Render (düzeltilmiş görüntü).** `tomris-film/RENDER.md` dosyasını oku, sonra:
-   `SUB=6 FORCE=1 HF_ARGS="--browser-gpu" bash tomris-film/build.sh --render-only`
-   ardından `SUB=6 bash tomris-film/build.sh --edit-only` → `tomris-film/tomris_v1.mp4` yenilenir.
-   Önce tek parça dene: `CHUNKS="7" SUB=6 FORCE=1 HF_ARGS="--browser-gpu" bash tomris-film/build.sh --render-only`.
-2. **Yapay zekâ kliplerini görüntüye yerleştir** (çekim kareleri `tomris-shots/shots.json`):
-   #14 ← `02_pruva_kopuk`, #20 ← `03_gunbatimi_alcak_yan_takip`, #23 ← `05_havadan_takip_iz`,
-   #39 ← `01_mavi_saat_yan_takip`, #55 ← `07_direk_bayrak_radar`, #57 ← `08_kapanis_kahraman_yaklasma`.
-   Klipler 24 fps: 120 kareyi 30 fps olarak oynat (`setpts=PTS*0.8`), 2.39:1 banda kırp (1920x804, y=138),
-   komşu planlara göre hafif renk eşle. Kısmi klipleri yalnızca README'deki aralıkta kullan. Toplam 2100 kare kalmalı.
-3. **Seslendirme.** `versions.json` içindeki cümleleri üç ayrı sesle üret (aksiyon: derin fragman sesi;
-   milli: sıcak, gururlu; Osmanlı: ağır, yaşlı anlatıcı). Dosyalar: `tomris-audio/versions/<versiyon>/vo_NN.mp3`.
-   Siyah karelerde (1444-1447, 1715-1720, 1751-1754) anlatım olmaz.
-4. **Kapanış kartları.** Mevcut kart `tomris-overlays/renders/endcard.mp4` (koyu zemin, açık yazı) şu görsellerin
-   üzerine "screen" ile bindirilir: aksiyon `tomris-ai/stills/endcard_a_aksiyon_2`, milli `endcard_b_ulusal_2`
-   (Atatürk silüeti; zayıf, daha iyi bir silüet görseli bulunursa değiştir), Osmanlı `endcard_c_osmanli_1`.
-5. **Miks ve çıktı.** Müzik anlatımın altında kısılır; yaklaşık -14 LUFS, tepe ≤ -1 dBFS.
-   H.264, 1920x1080, 30 fps, 2100 kare, AAC 48 kHz, her dosya < 90 MB.
-6. **Kontrol.** Her videodan kareler çıkarıp bak: tekne kesmelerde değişmemeli, yazı okunmalı, kapanış yazısı okunmalı.
+1. **İzmir Marşı** (`tomris-audio/music_izmir.mp3`) sentez tek ses; iyi bir bando kaydı aynı adla konursa
+   `bash tomris-film/versions/build_versions.sh tomris-film/tomris_v1.mp4 milli` yeter (~1 dk).
+2. **Atatürk silueti** AI üretimi; benzerlik zayıf, kalpak kutu gibi. Bilinen bir fotoğraftan elle çizilmiş siluet bulunursa
+   `endcard_layout.py`'deki kaynak/ölçek değiştirilir.
+3. 2. turdan kalan, kurguda düzeltilemeyen zayıflıklar (3D yeniden render gerektirir):
+   #7 şamandıralar düşük poligon; #13 yazı yakın planı düz gri duvar gibi; #27 tekne neredeyse yok (namlu kenarda);
+   #23 AI klipte sağda ince çapraz çizgi ve ilk karelerde bozuk "TCB-1601"; #57 AI klipte TOMRİS yazısı su çizgisine yakın.
+4. Müzik atıfları (CC BY) sunum/kaynak sayfasına yazılmalı (`tomris-audio/MUZIK.md`); `versions.json`'daki ek SFX dosyaları yok.
+5. PR: yigitcanxiety/tomris-film#1 güncel tutulmalı.
 
 ## Kurallar
 

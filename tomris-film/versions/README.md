@@ -5,7 +5,7 @@ Tek resim → üç bitmiş 70 sn film. Resim (kurgu, AI eklemeleri) üçünde ay
 | Çıktı | Müzik | Spiker | Son kart arka planı |
 |---|---|---|---|
 | `tomris-film/tomris_aksiyon.mp4` | `music_aksiyon.mp3` (Sascha Ende, CC BY 4.0) | 8 satır, Alp (erkek, fragman) | `endcard_a_aksiyon_2` (fırtınalı deniz) |
-| `tomris-film/tomris_milli.mp4` | `music_izmir.mp3` (İzmir Marşı, sentez tek ses; biraz daha alçak) | 6 satır, GİZEM (kadın, sıcak); Gençliğe Hitabe 1757–2018 | `endcard_b_ulusal_2` (gün batımında Atatürk silueti, sağda; başlık solunda) |
+| `tomris-film/tomris_milli.mp4` | `music_izmir.mp3` (İzmir Marşı, sentez tek ses; biraz daha alçak) | 6 satır, GİZEM (kadın, sıcak); Gençliğe Hitabe 1757–2018 | `endcard_b_ulusal_2_layout` (`endcard_b_ulusal_2`'den `endcard_layout.py` ile: siluet bütünüyle 2.39 bandında, sağ üçte birde; kartın ufuk çizgisi yüzden önce söner) |
 | `tomris-film/tomris_osmanli.mp4` | `music_mehter.mp3` (Ceddin Deden) | 8 satır, Seyfullah Kartal (yaşlı, ağır) | `endcard_c_osmanli_1` (bordo-altın tezhip, 2.39 bandında, siyah bantlar filmdeki gibi) |
 
 Spiker durumu ve üretim yolu: `tomris-audio/versions/VO.md`.
@@ -38,7 +38,7 @@ Versiyon başına süre bu makinede (4 çekirdek, arkada render): ~6 dk. Sonuç 
   SPS/PPS karşılaştırılır; uyuşmazsa bütün film yeniden kodlanır).
 - Son kart (1890–2099): `tomris-overlays/renders/endcard.mp4`, karartılmış, yavaşça yaklaşan duran görüntünün üstüne *screen* karışımıyla.
   Ayarlar `edit.json → endcard_look`: `dim`, `band` / `band_y` / `band_w` (yazı arkası koyu bant), `zoom`, `zoom0`, `shift_x`, `fit`
-  (geniş görseli 2.39 bandına sığdır). Görsel yoksa son kart resimdeki gibi kalır.
+  (geniş görseli 2.39 bandına sığdır), `anchor_x`/`anchor_y` (yaklaşmada sabit kalan nokta), `card_fade` (kartın ufuk çizgisini bir x aralığında söndür). Görsel yoksa son kart resimdeki gibi kalır.
 - AI eklemeleri: `edit.json → inserts` (`all` = üç versiyon). Her kayıt: `from`/`to` (dahil, shots.json'daki çekim kareleri), `clip`,
   `offset` (kaynak sn), `speed` (0.8 = 24 fps kareler 30 fps'te birer kez), `y` (2.39 kırpım bandının üst kenarı, vars. 138),
   `crop`, `box`, `grade` (ffmpeg filtresi), `enabled`. Sert kesme, kare sayısı korunur.
@@ -49,8 +49,8 @@ Versiyon başına süre bu makinede (4 çekirdek, arkada render): ~6 dk. Sonuç 
 | #20 | 849–884 | `03_gunbatimi_alcak_yan_takip` |
 | #23 | 936–971 | `05_havadan_takip_iz` |
 | #39 | 1448–1471 | `01_mavi_saat_yan_takip` |
-| #55 | 1721–1750 | `07_direk_bayrak_radar` |
-| #57 | 1755–1829 | `08_kapanis_kahraman_yaklasma` (hafif mavi grade) |
+| #55 | 1721–1750 | `07_direk_bayrak_radar` — **kapalı** (render v2'de düzeltilmiş CG daha temiz; AI klipte direk yeşil ışıkla boyanıyor) |
+| #57 | 1755–1829 | `08_kapanis_kahraman_yaklasma` (bej tekne nötr mavi-griye: `colorchannelmixer` R 0.36 / G 0.6, bayrak kırmızısı korunur) |
 
 ## Dosyalar
 
@@ -67,6 +67,5 @@ Versiyon başına süre bu makinede (4 çekirdek, arkada render): ~6 dk. Sonuç 
 ## Eksikler
 
 - MİLLİ'nin İzmir Marşı kaydı sentez tek ses; daha iyi bir bando kaydı aynı adla konursa yeniden derlemek yeter.
-- MİLLİ son kartında kartın ince ufuk çizgisi siluetin yüzünün önünden geçiyor (kartın kendi çizgisi); kalpak üstü kırpık.
 - `versions.json`'daki ek SFX (riser, kös, çan, düdük, impact) dosyaları yok; uygulanmadı.
 - Müzik atıfları (CC BY) son kartta yok; sunumda kaynak sayfasına yazılmalı (bkz. `tomris-audio/MUZIK.md`).

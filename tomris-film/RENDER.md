@@ -103,6 +103,10 @@ loses at most one chunk. The log is `chunks/c_kk.log` and the timings go to `chu
 | Estimate for the full 3D range, SUB=8 | 1740 frames × 8 × ~4.5 s ≈ 17 h + 14 × ~2 min overhead, unless the water/grade workstream's sub-frame speed-up lands (they measured ~7 s per sub-frame earlier). With SUB=4 it is about half that |
 | Edit + mix + mux + contact sheet (`--edit-only`) | 94 s with `FILL=preview` (13 chunks synthesised from stills + 1 real HyperFrames chunk); output verified: H.264 High, yuv420p, 1920×1080, 30/1, 2100 frames, 70.000 s, AAC LC 48 kHz, 17 MB |
 | Loudness of mix.wav | −14.2 LUFS integrated (ebur128; loudnorm reads −14.1), true peak −2.0 dBTP, LRA 21 LU (VO only, no music yet); in the muxed AAC: −14.1 LUFS, −2.0 dBFS |
+| **Render v2 (corrected picture, fix1), full 3D range, SUB=6, PAR=2** (`chain4.sh`: `SUB=6 PAR=2 build.sh --render-only`, other agents' ffmpeg/HyperFrames jobs on the box) | 14/14 chunks, 1740 frames, one round (no retries). Sum of `chunks/timings.txt`: **37 600 chunk-seconds = 10 h 27 min** (14.5–33.2 s/frame per chunk, mean 21.6 s/frame, i.e. ~3.6 s per sub-frame per render). Wall clock: started 2026-11-27 05:31:48 UTC, last chunk (`c_12`) done 10:46 UTC → **5 h 14 min** (18 852 s); PAR=2 halved wall time vs the chunk-second sum. Slowest chunks c_02/c_03/c_05 (harbour/open sea, 28–33 s/frame) ran while other jobs were busy |
+| Opening + end card re-render (HyperFrames, after the flag crescent/star went into `profile.js`) | `opening.mp4` 33 s, `endcard.mp4` 41 s wall (`render --workers 1 --quality looks`, niced, software GL) |
+| `--edit-only` on the 14 real chunks (render v2) | 132 s wall; tomris_v1.mp4 2100 frames, 70.000 s, 66 MB |
+| Three versions (`versions/build_versions.sh tomris_v1.mp4`, 5 AI inserts + end-card backdrops, GOP-wise re-encode) | 174 s wall for all three |
 
 ## On an Apple-silicon Mac (GPU)
 

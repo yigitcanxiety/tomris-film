@@ -7,8 +7,12 @@ import * as THREE from "three";
 const G = 9.81;
 
 export const QUALITY_PRESETS = {
-  film:     { name: "film",     nFine: 48, nCap: 24, oceanSeg: 768, oceanRatio: 1.012, sprayScale: 1.0,  foamDetail: 1, msaa: 4, bg4k: true },
-  realtime: { name: "realtime", nFine: 20, nCap: 8,  oceanSeg: 384, oceanRatio: 1.026, sprayScale: 0.3, foamDetail: 0, msaa: 2, bg4k: false },
+  // gridU/V: projected ocean grid (vertices across the frame / down it); tileA/B: fine-wave tile resolution;
+  // shadow: sun shadow map size; refl: planar reflection scale; subframes: cap on motion-blur sub-frames
+  film:     { name: "film",     nFine: 48, nCap: 24, gridU: 320, gridV: 210, tileA: 512, tileB: 256, sprayScale: 1.0,  foamDetail: 1, msaa: 0, bg4k: true,
+              shadow: 2048, refl: 0.35, maxSub: 64 },
+  realtime: { name: "realtime", nFine: 32, nCap: 16, gridU: 240, gridV: 160, tileA: 256, tileB: 128, sprayScale: 0.35, foamDetail: 0, msaa: 2, bg4k: false,
+              shadow: 1024, refl: 0.33, maxSub: 1 },
 };
 export const QUALITY = { ...QUALITY_PRESETS.film };
 export function setQuality(name) { Object.assign(QUALITY, QUALITY_PRESETS[name] || QUALITY_PRESETS.film); return QUALITY; }
@@ -49,8 +53,8 @@ export function createSea({ windDir = 0.5, hs = 0.8, seed = 7 } = {}) {
   // geometric waves (vertex displacement) — sea state 3 (Hs ~0.8 m). The two long sets are what the hull and
   // camera follow (heightLong); the short set is short-crested (wide spread, two families) so crests break up.
   const geo = [
-    ...makeSet(4, 90, 38, 0.030, 0.35, windDir, seed, amp),
-    ...makeSet(6, 30, 9, 0.045, 0.6, windDir, seed + 1, amp),
+    ...makeSet(4, 90, 38, 0.030, 0.5, windDir, seed, amp),
+    ...makeSet(6, 30, 9, 0.042, 0.95, windDir, seed + 1, amp),     // short-crested: no parallel glitter bands
     ...makeSet(6, 8, 2.6, 0.05, 1.25, windDir, seed + 2, amp, 0.5),
     ...makeSet(4, 5.5, 3.1, 0.04, 1.4, windDir + 0.5, seed + 5, amp, 0.5),
   ];
@@ -108,6 +112,12 @@ vec3 gerstner(vec2 p, float t, float spacing, float flatK) {
 float seaHeight(vec2 p, float t) {
   float h = 0.0;
   for (int i = 0; i < NGEO; i++) { vec4 a = uGeoA[i]; vec4 b = uGeoB[i]; h += a.w * sin(a.z * dot(a.xy, p) - b.x * t + b.y); }
+  return h;
+}
+// height of the long waves only (the first 10: lambda >= ~9 m) - cheap, for particles
+float seaHeightLong(vec2 p, float t) {
+  float h = 0.0;
+  for (int i = 0; i < 10; i++) { vec4 a = uGeoA[i]; vec4 b = uGeoB[i]; h += a.w * sin(a.z * dot(a.xy, p) - b.x * t + b.y); }
   return h;
 }
 // Jacobian of the horizontal displacement: dips toward ~0.4 on steep, breaking crests

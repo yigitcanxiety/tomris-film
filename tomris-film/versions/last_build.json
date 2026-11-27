@@ -1,0 +1,351 @@
+{
+ "aksiyon": {
+  "I": -14.1,
+  "TP": -2.5,
+  "LRA": 4.5,
+  "lines": [
+   {
+    "n": 1,
+    "t0": 1.5,
+    "t1": 2.88449,
+    "vo": -10.4,
+    "mus": -27.5,
+    "mus_undiucked": -17.5
+   },
+   {
+    "n": 2,
+    "t0": 10.6,
+    "t1": 12.245714,
+    "vo": -10.4,
+    "mus": -27.8,
+    "mus_undiucked": -17.8
+   },
+   {
+    "n": 3,
+    "t0": 17.1,
+    "t1": 20.156327,
+    "vo": -10.4,
+    "mus": -27.2,
+    "mus_undiucked": -17.2
+   },
+   {
+    "n": 4,
+    "t0": 28.3,
+    "t1": 30.520408,
+    "vo": -10.6,
+    "mus": -25.7,
+    "mus_undiucked": -15.7
+   },
+   {
+    "n": 5,
+    "t0": 32.4,
+    "t1": 35.952653,
+    "vo": -10.4,
+    "mus": -23.4,
+    "mus_undiucked": -13.4
+   },
+   {
+    "n": 6,
+    "t0": 48.4,
+    "t1": 50.698775999999995,
+    "vo": -10.4,
+    "mus": -23.1,
+    "mus_undiucked": -13.1
+   },
+   {
+    "n": 7,
+    "t0": 58.6,
+    "t1": 61.029388000000004,
+    "vo": -10.6,
+    "mus": -21.0,
+    "mus_undiucked": -11.0
+   },
+   {
+    "n": 8,
+    "t0": 64.66666666666667,
+    "t1": 65.31972766666667,
+    "vo": -10.4,
+    "mus": -27.5,
+    "mus_undiucked": -17.5
+   }
+  ],
+  "music": "/home/user/tomris-film/tomris-audio/music_aksiyon.mp3",
+  "warnings": [],
+  "vo": [
+   [
+    1,
+    "tomris-audio/versions/aksiyon/vo_aks_01.mp3",
+    45
+   ],
+   [
+    2,
+    "tomris-audio/versions/aksiyon/vo_aks_02.mp3",
+    318
+   ],
+   [
+    3,
+    "tomris-audio/versions/aksiyon/vo_aks_03.mp3",
+    513
+   ],
+   [
+    4,
+    "tomris-audio/versions/aksiyon/vo_aks_04.mp3",
+    849
+   ],
+   [
+    5,
+    "tomris-audio/versions/aksiyon/vo_aks_05.mp3",
+    972
+   ],
+   [
+    6,
+    "tomris-audio/versions/aksiyon/vo_aks_06.mp3",
+    1452
+   ],
+   [
+    7,
+    "tomris-audio/versions/aksiyon/vo_aks_07.mp3",
+    1758
+   ],
+   [
+    8,
+    "tomris-audio/versions/aksiyon/vo_aks_08.mp3",
+    1940
+   ]
+  ],
+  "file": "tomris-film/tomris_aksiyon.mp4",
+  "video": "h264,High,1920,1080,yuv420p,30/1,2100",
+  "audio": "aac,48000,2",
+  "duration": 70.0,
+  "size_mb": 68.6,
+  "file_I": -14.2,
+  "file_TP": -2.2,
+  "video_note": "pieces: copy 0-653, enc 654-712, copy 713-848, enc 849-907, copy 908-935, enc 936-971, copy 972-1400, enc 1401-1471, copy 1472-1754, enc 1755-1829, copy 1830-1888, enc 1889-2099; end-card backdrop: tomris-ai/stills/endcard_a_aksiyon_2.jpg; inserts: 5",
+  "decode_errors": "",
+  "picture": "tomris-film/tomris_v1.mp4"
+ },
+ "milli": {
+  "I": -14.2,
+  "TP": -2.5,
+  "LRA": 5.7,
+  "lines": [
+   {
+    "n": 1,
+    "t0": 1.0,
+    "t1": 3.324898,
+    "vo": -10.6,
+    "mus": -25.9,
+    "mus_undiucked": -16.9
+   },
+   {
+    "n": 2,
+    "t0": 5.5,
+    "t1": 9.836327,
+    "vo": -10.5,
+    "mus": -26.4,
+    "mus_undiucked": -17.4
+   },
+   {
+    "n": 3,
+    "t0": 17.333333333333332,
+    "t1": 21.330068333333333,
+    "vo": -10.5,
+    "mus": -27.1,
+    "mus_undiucked": -18.1
+   },
+   {
+    "n": 4,
+    "t0": 32.5,
+    "t1": 37.593878000000004,
+    "vo": -10.5,
+    "mus": -27.0,
+    "mus_undiucked": -18.0
+   },
+   {
+    "n": 5,
+    "t0": 48.5,
+    "t1": 51.216735,
+    "vo": -10.6,
+    "mus": -26.8,
+    "mus_undiucked": -17.8
+   },
+   {
+    "n": 6,
+    "t0": 58.56666666666667,
+    "t1": 67.26544266666667,
+    "vo": -10.6,
+    "mus": -26.7,
+    "mus_undiucked": -17.7
+   }
+  ],
+  "music": "/home/user/tomris-film/tomris-audio/music_izmir.mp3",
+  "warnings": [],
+  "vo": [
+   [
+    1,
+    "tomris-audio/versions/milli/vo_mil_01.mp3",
+    30
+   ],
+   [
+    2,
+    "tomris-audio/versions/milli/vo_mil_02.mp3",
+    165
+   ],
+   [
+    3,
+    "tomris-audio/versions/milli/vo_mil_03.mp3",
+    520
+   ],
+   [
+    4,
+    "tomris-audio/versions/milli/vo_mil_04.mp3",
+    975
+   ],
+   [
+    5,
+    "tomris-audio/versions/milli/vo_mil_05.mp3",
+    1455
+   ],
+   [
+    6,
+    "tomris-audio/versions/milli/vo_mil_06.mp3",
+    1757
+   ]
+  ],
+  "file": "tomris-film/tomris_milli.mp4",
+  "video": "h264,High,1920,1080,yuv420p,30/1,2100",
+  "audio": "aac,48000,2",
+  "duration": 70.0,
+  "size_mb": 68.1,
+  "file_I": -14.2,
+  "file_TP": -2.3,
+  "video_note": "pieces: copy 0-653, enc 654-712, copy 713-848, enc 849-907, copy 908-935, enc 936-971, copy 972-1400, enc 1401-1471, copy 1472-1754, enc 1755-1829, copy 1830-1888, enc 1889-2099; end-card backdrop: tomris-ai/stills/endcard_b_ulusal_2_layout.jpg; inserts: 5",
+  "decode_errors": "",
+  "picture": "tomris-film/tomris_v1.mp4"
+ },
+ "osmanli": {
+  "I": -14.2,
+  "TP": -2.5,
+  "LRA": 6.8,
+  "lines": [
+   {
+    "n": 1,
+    "t0": 1.3333333333333333,
+    "t1": 3.9455783333333336,
+    "vo": -10.7,
+    "mus": -28.6,
+    "mus_undiucked": -17.6
+   },
+   {
+    "n": 2,
+    "t0": 6.666666666666667,
+    "t1": 10.532788666666667,
+    "vo": -10.7,
+    "mus": -28.4,
+    "mus_undiucked": -17.4
+   },
+   {
+    "n": 3,
+    "t0": 17.333333333333332,
+    "t1": 20.833741333333332,
+    "vo": -10.7,
+    "mus": -28.9,
+    "mus_undiucked": -17.9
+   },
+   {
+    "n": 4,
+    "t0": 28.3,
+    "t1": 31.356327,
+    "vo": -10.7,
+    "mus": -28.6,
+    "mus_undiucked": -17.6
+   },
+   {
+    "n": 5,
+    "t0": 32.833333333333336,
+    "t1": 38.00557833333333,
+    "vo": -10.7,
+    "mus": -28.6,
+    "mus_undiucked": -17.6
+   },
+   {
+    "n": 6,
+    "t0": 48.5,
+    "t1": 53.280408,
+    "vo": -10.7,
+    "mus": -28.5,
+    "mus_undiucked": -17.5
+   },
+   {
+    "n": 7,
+    "t0": 58.666666666666664,
+    "t1": 61.958095666666665,
+    "vo": -10.7,
+    "mus": -29.2,
+    "mus_undiucked": -18.2
+   },
+   {
+    "n": 8,
+    "t0": 64.83333333333333,
+    "t1": 65.66925133333334,
+    "vo": -10.7,
+    "mus": -28.3,
+    "mus_undiucked": -17.3
+   }
+  ],
+  "music": "/home/user/tomris-film/tomris-audio/music_mehter.mp3",
+  "warnings": [],
+  "vo": [
+   [
+    1,
+    "tomris-audio/versions/osmanli/vo_osm_01.mp3",
+    40
+   ],
+   [
+    2,
+    "tomris-audio/versions/osmanli/vo_osm_02.mp3",
+    200
+   ],
+   [
+    3,
+    "tomris-audio/versions/osmanli/vo_osm_03.mp3",
+    520
+   ],
+   [
+    4,
+    "tomris-audio/versions/osmanli/vo_osm_04.mp3",
+    849
+   ],
+   [
+    5,
+    "tomris-audio/versions/osmanli/vo_osm_05.mp3",
+    985
+   ],
+   [
+    6,
+    "tomris-audio/versions/osmanli/vo_osm_06.mp3",
+    1455
+   ],
+   [
+    7,
+    "tomris-audio/versions/osmanli/vo_osm_07.mp3",
+    1760
+   ],
+   [
+    8,
+    "tomris-audio/versions/osmanli/vo_osm_08.mp3",
+    1945
+   ]
+  ],
+  "file": "tomris-film/tomris_osmanli.mp4",
+  "video": "h264,High,1920,1080,yuv420p,30/1,2100",
+  "audio": "aac,48000,2",
+  "duration": 70.0,
+  "size_mb": 68.9,
+  "file_I": -14.2,
+  "file_TP": -1.3,
+  "video_note": "pieces: copy 0-653, enc 654-712, copy 713-848, enc 849-907, copy 908-935, enc 936-971, copy 972-1400, enc 1401-1471, copy 1472-1754, enc 1755-1829, copy 1830-1888, enc 1889-2099; end-card backdrop: tomris-ai/stills/endcard_c_osmanli_1.jpg; inserts: 5",
+  "decode_errors": "",
+  "picture": "tomris-film/tomris_v1.mp4"
+ }
+}

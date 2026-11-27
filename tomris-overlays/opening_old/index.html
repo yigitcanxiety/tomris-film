@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>TOMRİS · açılış</title>
+<script src="assets/gsap.min.js"></script>
+<style>
+@font-face{font-family:"Inter Tight";font-weight:300;font-display:block;src:url("assets/fonts/inter-tight-latin-300-normal.woff2")format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212}
+@font-face{font-family:"Inter Tight";font-weight:300;font-display:block;src:url("assets/fonts/inter-tight-latin-ext-300-normal.woff2")format("woff2");unicode-range:U+0100-02BA,U+02BD-02FF,U+1E00-1EFF,U+20A0-20C0}
+@font-face{font-family:"JetBrains Mono";font-weight:600;font-display:block;src:url("assets/fonts/jetbrains-mono-latin-600-normal.woff2")format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+2000-206F,U+2212}
+@font-face{font-family:"JetBrains Mono";font-weight:600;font-display:block;src:url("assets/fonts/jetbrains-mono-latin-ext-600-normal.woff2")format("woff2");unicode-range:U+0100-02BA,U+02BD-02FF,U+1E00-1EFF,U+20A0-20C0}
+
+:root{--ink:#03060D;--navy:#071226;--navy2:#0C1C36;--steel:#8794A6;--silver:#D7DEE6;--white:#F3F6F9;--cyan:#46E3FF}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#000}
+#root{position:relative;width:1920px;height:1080px;overflow:hidden;background:#000;color:var(--silver);font-family:"Inter Tight",sans-serif;-webkit-font-smoothing:antialiased}
+svg{display:block;overflow:visible}
+
+/* 2.39:1 picture area, black bars above and below */
+#pic{position:absolute;left:0;top:138px;width:1920px;height:804px;overflow:hidden;background:#000}
+.bar{position:absolute;left:0;width:1920px;height:138px;background:#000;z-index:50}
+#barT{top:0}#barB{top:942px}
+
+/* beat 1: line drawing */
+#boatWrap{position:absolute;left:0;top:0;width:1920px;height:804px;transform-origin:50% 50%}
+#boat,#ghost{position:absolute;left:0;top:0;width:1920px;height:804px}
+#boat{filter:drop-shadow(0 0 3px rgba(70,227,255,.9)) drop-shadow(0 0 14px rgba(70,227,255,.35))}
+#ghost{opacity:0}
+.draw{fill:none;stroke:var(--cyan);stroke-width:2.7;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1000;stroke-dashoffset:1000}  /* pathLength 1000: GSAP rounds px, so 0..1 would pop */
+.p-rail{stroke-width:3.4}
+#ghost .draw{stroke-dasharray:none;stroke:#BFF6FF;stroke-width:2}
+
+/* beat 2: horizon */
+.hl{position:absolute;left:0;top:401px;width:1920px;height:2px;background:var(--cyan);box-shadow:0 0 8px rgba(70,227,255,.95),0 0 28px rgba(70,227,255,.4);opacity:0;transform-origin:50% 50%}
+
+/* beat 3: chart */
+#chart{position:absolute;left:0;top:0;width:1920px;height:804px;clip-path:inset(50% 0 50% 0)}
+#cam{position:absolute;left:0;top:0;width:1920px;height:804px;transform-origin:1082px 318px}
+#sea{position:absolute;left:0;top:0;width:1920px;height:804px;background:radial-gradient(70% 90% at 40% 60%,#0A1730 0%,#061024 55%,#02050B 100%)}
+#grid{position:absolute;left:0;top:0;width:1920px;height:804px;background-image:linear-gradient(rgba(135,148,166,.075) 1px,transparent 1px),linear-gradient(90deg,rgba(135,148,166,.075) 1px,transparent 1px);background-size:96px 96px;background-position:0 18px}
+#map{position:absolute;left:0;top:0;width:1920px;height:804px}
+.land,.isle{fill:#101B2C;stroke:rgba(215,222,230,.6);stroke-width:1.4;stroke-linejoin:round}
+.hatch{fill:url(#hatch);stroke:none}
+.depth{fill:none;stroke:rgba(135,148,166,.32);stroke-width:1.1;stroke-dasharray:2 7;stroke-linecap:round}
+.depth.d2{stroke:rgba(135,148,166,.2)}
+.depth.d3{stroke:rgba(135,148,166,.13)}
+.ring{fill:none;stroke:rgba(70,227,255,.16);stroke-width:1.2}
+.neat{fill:none;stroke:rgba(215,222,230,.3);stroke-width:1}
+.grad{fill:rgba(215,222,230,.28)}
+#sweep{position:absolute;left:-1040px;top:-1040px;width:3200px;height:3200px;border-radius:50%;transform-origin:50% 50%;
+  background:conic-gradient(from 0deg,rgba(70,227,255,0) 0deg,rgba(70,227,255,0) 312deg,rgba(70,227,255,.04) 336deg,rgba(70,227,255,.12) 356deg,rgba(150,240,255,.42) 359.7deg,rgba(70,227,255,0) 360deg)}
+#own{position:absolute;left:546px;top:546px;width:28px;height:28px}
+#blip{position:absolute;left:1075px;top:311px;width:14px;height:14px;border-radius:50%;background:#F3F6F9;box-shadow:0 0 10px rgba(243,246,249,.95),0 0 26px rgba(70,227,255,.6);opacity:0}
+#ping{position:absolute;left:1052px;top:288px;width:60px;height:60px;border-radius:50%;border:1.5px solid rgba(243,246,249,.8);opacity:0}
+#brk{position:absolute;left:1046px;top:282px;width:72px;height:72px;opacity:0}
+#lead{position:absolute;left:0;top:0;width:1920px;height:804px}
+#label{position:absolute;left:470px;top:188px;white-space:nowrap;font-family:"JetBrains Mono",monospace;font-weight:600;font-size:28px;line-height:34px;letter-spacing:.22em;color:var(--white)}
+#label i{font-style:normal;opacity:0}
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-width="1920" data-height="1080" data-duration="5" data-fps="30">
+  <div id="pic">
+    <!-- beat 3 underneath: the chart, revealed by the horizon opening -->
+    <div id="chart">
+      <div id="cam">
+        <div id="sea"></div>
+        <div id="grid"></div>
+        <svg id="map" viewBox="0 0 1920 804"></svg>
+        <div id="sweep"></div>
+        <svg id="own" viewBox="0 0 28 28"><circle cx="14" cy="14" r="6" fill="none" stroke="#46E3FF" stroke-width="2"/><path d="M14 0 V7 M14 21 V28 M0 14 H7 M21 14 H28" stroke="#46E3FF" stroke-width="1.5"/></svg>
+        <svg id="lead" viewBox="0 0 1920 804"><polyline id="leadLine" points="1046,282 996,232 470,232" fill="none" stroke="rgba(243,246,249,.7)" stroke-width="1.2" pathLength="1000" stroke-dasharray="1000" stroke-dashoffset="1000"/></svg>
+        <div id="ping"></div>
+        <div id="blip"></div>
+        <svg id="brk" viewBox="0 0 72 72"><path d="M0 16 V0 H16 M56 0 H72 V16 M72 56 V72 H56 M16 72 H0 V56" fill="none" stroke="#46E3FF" stroke-width="2"/></svg>
+        <div id="label"><span id="labTxt"></span></div>
+      </div>
+    </div>
+
+    <!-- beat 2: the horizon line and its two halves -->
+    <div id="hz" class="hl"></div>
+    <div id="hzT" class="hl"></div>
+    <div id="hzB" class="hl"></div>
+
+    <!-- beat 1: the boat -->
+    <div id="boatWrap">
+      <!-- the photo is shot at planing trim; -2.2° levels the keel to a near-even trim -->
+      <svg id="ghost" viewBox="-326 -85 2595 1086"><g transform="rotate(-2.2 971 458)"></g></svg>
+      <svg id="boat" viewBox="-326 -85 2595 1086"><g transform="rotate(-2.2 971 458)"></g></svg>
+    </div>
+  </div>
+  <div id="barT" class="bar"></div>
+  <div id="barB" class="bar"></div>
+</div>
+
+<script>
+// TOMRİS side profile, redrawn from tomris-ref/tekne-v3/master_varA_2K.jpg (coords in a 2000x1116 view of it). Bow left.
+const PROFILE = [
+  ["hull",   "M184 548 L1762 642 L1760 792 L336 724 C268 690 214 634 180 566 Z"],
+  ["rail",   "M178 562 L1764 680 M184 576 L1762 694"],
+  ["cabin",  "M604 572 L648 530 L822 488 L940 396 L1342 400 L1368 522 L1376 618"],
+  ["belt",   "M812 512 L1366 522"],
+  ["shield", "M838 486 L914 426 L946 424 L880 494 Z"],
+  ["window", "M986 420 L1230 438 L1196 500 L930 506 Z M1080 428 L1064 504"],
+  ["mast",   "M1228 398 L1270 300 L1294 232 L1300 194 M1310 398 L1322 300 L1336 222 L1334 194 M1304 194 L1336 194 L1336 164 L1304 164 Z M1318 164 L1314 124"],
+  ["radar",  "M1156 248 L1256 248 L1256 262 L1156 262 Z M1196 262 L1196 290 L1228 290 L1228 262 M1182 292 L1262 300"],
+  ["eoir",   "M1156 346 A22 22 0 1 0 1200 346 A22 22 0 1 0 1156 346 M1162 364 L1158 396 M1196 364 L1200 396"],
+  ["cam2",   "M1074 350 A14 14 0 1 0 1102 350 A14 14 0 1 0 1074 350 M1084 364 L1084 398 M1094 364 L1094 398 M1055 336 L1055 397"],
+  ["flag",   "M1350 226 C1372 220 1392 240 1416 234 L1412 290 C1390 296 1372 276 1350 282 Z M1346 226 L1328 398 M1350 222 L1350 140"],
+  ["gun",    "M512 567 L512 524 L498 524 L498 480 L534 470 L606 470 L616 484 L616 524 L600 524 L600 572 M542 470 L542 452 L592 452 L598 470 M404 448 L536 452"],
+  ["launch", "M1392 468 L1690 534 L1700 548 L1684 556 L1386 488 Z M1392 500 L1690 566 L1700 580 L1684 588 L1386 520 Z M1500 626 L1512 572 L1556 576 L1566 630"]
+];
+// [part, start s, duration s] : hull first, then the house, then the details fore and aft
+// all drawn by 2.0 s, so the finished boat holds for 12 frames before the signal weakens
+const ORDER = [["hull",.1,1.0],["rail",.36,.85],["cabin",.6,.75],["belt",.9,.45],["shield",1.0,.35],["window",1.06,.45],
+  ["mast",1.16,.5],["radar",1.36,.34],["eoir",1.42,.3],["cam2",1.5,.28],["flag",1.56,.4],["gun",1.42,.45],["launch",1.52,.48]];
+
+// an unnamed stretch of coast (picture px, 1920x804)
+const COAST = [[1130,-10],[1150,40],[1118,78],[1160,104],[1214,96],[1236,132],[1196,170],[1140,188],[1086,214],[1110,246],[1170,252],[1228,236],[1262,268],[1250,318],[1300,346],[1352,338],[1372,372],[1330,410],[1270,428],[1236,466],[1278,498],[1344,490],[1392,520],[1384,566],[1430,600],[1404,640],[1452,668],[1500,660],[1520,700],[1488,742],[1530,780],[1560,814]];
+const ISLES = [[985,150,30,11],[1200,368,18,7],[1336,556,34,12],[1416,716,22,8],[1052,446,12,5],[930,92,10,4]];  // cx, cy, rx, ry
+const OWN = [560, 560], CONTACT = [1082, 318];
+const LABEL = "KİMLİĞİ BELİRSİZ TEMAS";
+
+const NS = "http://www.w3.org/2000/svg", $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const el = (tag, attrs, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; };
+// catmull-rom through points -> cubic path (smooth depth contours)
+const smooth = pts => pts.reduce((d, p, i, a) => {
+  if (!i) return `M${p[0]} ${p[1]}`;
+  const p0 = a[i - 2] || a[i - 1], p1 = a[i - 1], p3 = a[i + 1] || p;
+  return d + ` C${p1[0] + (p[0] - p0[0]) / 6} ${p1[1] + (p[1] - p0[1]) / 6} ${p[0] - (p3[0] - p1[0]) / 6} ${p[1] - (p3[1] - p1[1]) / 6} ${p[0]} ${p[1]}`;
+}, "");
+
+// seeded PRNG (mulberry32): the coast gets the same detail on every render
+const rng = (a => () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; })(1601);
+// midpoint displacement: each pass splits every segment and nudges the midpoint sideways
+const fractal = (pts, passes, amt) => {
+  for (let k = 0; k < passes; k++, amt *= .5)
+    pts = pts.flatMap((p, i) => {
+      const q = pts[i + 1]; if (!q) return [p];
+      const dx = q[0] - p[0], dy = q[1] - p[1], L = Math.hypot(dx, dy) || 1, o = (rng() - .5) * 2 * amt * L / 60;
+      return [p, [(p[0] + q[0]) / 2 - dy / L * o, (p[1] + q[1]) / 2 + dx / L * o]];
+    });
+  return pts;
+};
+
+function buildDom() {
+  for (const [k, d] of PROFILE) {
+    el("path", {d, class: "draw p-" + k, pathLength: 1000}, $("#boat g"));
+    el("path", {d, class: "draw"}, $("#ghost g"));
+  }
+  const map = $("#map");
+  // depth contours: the coast pushed seaward and smoothed, every other vertex
+  [[-70, ""], [-165, " d2"], [-300, " d3"]].forEach(([dx, c]) =>
+    el("path", {class: "depth" + c, d: smooth(COAST.filter((_, i) => i % 2 === 0).map(([x, y]) => [x + dx + Math.sin(y / 61) * 14, y]))}, map));
+  for (const r of [170, 340, 510, 680]) el("circle", {class: "ring", cx: OWN[0], cy: OWN[1], r}, map);
+  const shore = fractal(COAST, 3, 16), poly = pts => "M" + pts.map(p => p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" L");
+  const defs = el("defs", {}, map), pat = el("pattern", {id: "hatch", width: 9, height: 9, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)"}, defs);
+  el("line", {x1: 0, y1: 0, x2: 0, y2: 9, stroke: "rgba(215,222,230,.07)", "stroke-width": 1.2}, pat);
+  const landD = poly(shore) + " L1940 814 L1940 -10 Z";
+  el("path", {class: "land", d: landD}, map); el("path", {class: "hatch", d: landD}, map);
+  for (const [cx, cy, rx, ry] of ISLES) {
+    const ring = Array.from({length: 9}, (_, i) => { const a = i / 8 * Math.PI * 2, r = .75 + rng() * .45; return [cx + Math.cos(a) * rx * r, cy + Math.sin(a) * ry * r]; });
+    el("path", {class: "isle", d: poly(fractal(ring, 2, 10)) + " Z"}, map);
+  }
+  // chart neatline with a graduated border, no figures
+  const I = 26, W = 1920 - 2 * I, H = 804 - 2 * I, S = 48;
+  el("rect", {class: "neat", x: I, y: I, width: W, height: H}, map);
+  el("rect", {class: "neat", x: I + 7, y: I + 7, width: W - 14, height: H - 14}, map);
+  for (let x = I + 7, n = 0; x < I + W - 7; x += S, n++) if (n % 2) {
+    const w = Math.min(S, I + W - 7 - x);
+    el("rect", {class: "grad", x, y: I, width: w, height: 7}, map);
+    el("rect", {class: "grad", x, y: I + H - 7, width: w, height: 7}, map);
+  }
+  for (let y = I + 7, n = 0; y < I + H - 7; y += S, n++) if (n % 2) {
+    const h = Math.min(S, I + H - 7 - y);
+    el("rect", {class: "grad", x: I, y, width: 7, height: h}, map);
+    el("rect", {class: "grad", x: I + W - 7, y, width: 7, height: h}, map);
+  }
+  $("#labTxt").innerHTML = [...LABEL].map(c => `<i>${c === " " ? "&nbsp;" : c}</i>`).join("");
+}
+
+function build() {
+  buildDom();
+  const tl = gsap.timeline({paused: true});
+
+  /* beat 1 · 0–2.4 s : a cyan line draws the boat stroke by stroke, then holds */
+  for (const [k, at, d] of ORDER) tl.to(".p-" + k, {strokeDashoffset: 0, duration: d, ease: "power2.inOut"}, at);
+  tl.fromTo("#boatWrap", {scale: 1.035}, {scale: 1, duration: 2.6, ease: "power2.out"}, 0);
+
+  /* 2.4–2.85 s : the signal weakens. stepped, so every frame is a decision */
+  const flick = [[2.40, 1, 0], [2.467, .3, 9], [2.5, .95, 0], [2.567, .12, -6], [2.6, .7, 4], [2.667, 1, 0], [2.733, .2, 12], [2.767, .85, 0], [2.833, 1, 0]];
+  for (const [t, o, gx] of flick) {
+    tl.set("#boat", {opacity: o}, t);
+    tl.set("#ghost", {opacity: gx ? .45 : 0, x: gx}, t);
+  }
+
+  /* 2.85–3.2 s : the drawing collapses into one line */
+  tl.to("#boatWrap", {scaleY: .003, duration: .36, ease: "power4.in"}, 2.85);
+  tl.set("#boatWrap", {opacity: 0}, 3.2);
+  tl.set("#hz", {opacity: 1, scaleX: .611}, 3.2);
+  /* 3.2–3.55 s : the line runs out to the edges of frame: a horizon */
+  tl.to("#hz", {scaleX: 1, duration: .45, ease: "expo.out"}, 3.2);
+
+  /* 3.45–4.2 s : the horizon opens like a scanner, the chart is between its halves */
+  tl.set("#hz", {opacity: 0}, 3.45);
+  tl.set(["#hzT", "#hzB"], {opacity: 1}, 3.45);
+  tl.to("#hzT", {y: -402, duration: .75, ease: "expo.inOut"}, 3.45);
+  tl.to("#hzB", {y: 402, duration: .75, ease: "expo.inOut"}, 3.45);
+  tl.to(["#hzT", "#hzB"], {opacity: 0, duration: .25, ease: "power1.in"}, 3.95);
+  tl.fromTo("#chart", {clipPath: "inset(50% 0% 50% 0%)"}, {clipPath: "inset(0% 0% 0% 0%)", duration: .75, ease: "expo.inOut"}, 3.45);
+  tl.fromTo("#cam", {scale: 1.0}, {scale: 1.045, duration: 1.55, ease: "power1.inOut"}, 3.45);
+
+  /* radar: slow sweep, its leading edge crosses the contact bearing at 4.15 s */
+  const bearing = Math.atan2(CONTACT[0] - OWN[0], OWN[1] - CONTACT[1]) * 180 / Math.PI, RATE = 58, HIT = 4.15;
+  tl.fromTo("#sweep", {rotation: bearing + (3.45 - HIT) * RATE}, {rotation: bearing + (5 - HIT) * RATE, duration: 1.55, ease: "none"}, 3.45);
+
+  /* the contact: one return, it does not go away */
+  tl.set("#blip", {opacity: 1, scale: 1.7}, HIT);
+  tl.to("#blip", {scale: 1, duration: .35, ease: "power3.out"}, HIT);
+  tl.to("#blip", {opacity: .62, duration: .7, ease: "power1.out"}, HIT + .2);
+  tl.fromTo("#ping", {opacity: .9, scale: .25}, {opacity: 0, scale: 1.9, duration: .7, ease: "power2.out"}, HIT);
+  tl.fromTo("#brk", {opacity: 0, scale: 1.8, rotation: 45}, {opacity: 1, scale: 1, rotation: 0, duration: .38, ease: "expo.out"}, HIT + .1);
+  tl.to("#leadLine", {strokeDashoffset: 0, duration: .32, ease: "power2.inOut"}, HIT + .22);
+  // the label types outward from where the leader lands
+  $$("#label i").forEach((c, i, a) => tl.set(c, {opacity: 1}, HIT + .42 + (a.length - 1 - i) * .016));
+
+  window.__timelines = window.__timelines || {};
+  window.__timelines["main"] = tl;
+}
+
+document.fonts.ready.then(build);
+</script>
+</body>
+</html>

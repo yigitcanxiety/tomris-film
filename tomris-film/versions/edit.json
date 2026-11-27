@@ -1,0 +1,94 @@
+{
+ "_doc": "build_versions.py knobs. endcards: per-version backdrop still for frames 1890-2099 (null/missing -> the end card as it is in the picture). endcard_look: dim = overall brightness of the still, band = extra darkening behind boat/title/names (0..1), zoom = push-in over 7 s. inserts: list of {from, to, clip, offset, crop, y, speed, grade, box, enabled, note} per version or 'all' - replace picture frames from..to (inclusive) with clip (offset = seconds into the SOURCE clip; speed 0.8 = 24 fps frames played at 30 fps, so a plan of N frames uses N/24 s of clip; crop w:h:x:y applied to the clip first, default 1920:804:0:y with y=138; grade = ffmpeg filter chain, default eq=contrast=1.1:saturation=1.12 (measured: Kling lifts blacks ~+12 Y and drops saturation vs our CG source frames); box x:y:w:h target, default the 2.39 picture area 0:138:1920:804). endcard_look also takes fit (true: wide still kept whole inside the 2.39 band with bars), band_y/band_w (centre/width of the dark band), zoom0/shift_x (start zoom; horizontal shift, negative moves the still right). anchor_x/anchor_y: point of the still that stays fixed during the push-in (default 0.5/0.5). card_fade {y0,y1,x0,x1}: fade the card's horizon line to zero between x0 and x1 (and right of it) in rows y0..y1 (MILLI: keeps the line off the silhouette). MILLI still endcard_b_ulusal_2_layout.jpg is made by versions/endcard_layout.py from endcard_b_ulusal_2.jpg.",
+ "endcard_overlay": "tomris-overlays/renders/endcard.mp4",
+ "endcards": {
+  "aksiyon": "tomris-ai/stills/endcard_a_aksiyon_2.jpg",
+  "milli": "tomris-ai/stills/endcard_b_ulusal_2_layout.jpg",
+  "osmanli": "tomris-ai/stills/endcard_c_osmanli_1.jpg"
+ },
+ "endcard_look": {
+  "default": {
+   "dim": 0.65,
+   "band": 0.5,
+   "zoom": 0.06
+  },
+  "aksiyon": {},
+  "milli": {
+   "dim": 0.85,
+   "band": 0.35,
+   "zoom": 0.035,
+   "anchor_x": 0.745,
+   "anchor_y": 0.5,
+   "card_fade": {
+    "y0": 432,
+    "y1": 480,
+    "x0": 1290,
+    "x1": 1390
+   }
+  },
+  "osmanli": {
+   "fit": true,
+   "dim": 0.75,
+   "band": 0.8,
+   "band_y": 0.42,
+   "band_w": 0.2
+  }
+ },
+ "inserts": {
+  "all": [
+   {
+    "from": 681,
+    "to": 710,
+    "clip": "tomris-ai/clips/02_pruva_kopuk.mp4",
+    "offset": 2.75,
+    "grade": "eq=contrast=1.1:saturation=1.12",
+    "note": "#14 pruva, sprey en yogun bolum (2.75-4.0 s)"
+   },
+   {
+    "from": 849,
+    "to": 884,
+    "clip": "tomris-ai/clips/03_gunbatimi_alcak_yan_takip.mp4",
+    "offset": 2.0,
+    "grade": "eq=contrast=1.1:saturation=1.12",
+    "note": "#20 gun batimi yan takip, horoz kuyrugu (2.0-3.5 s)"
+   },
+   {
+    "from": 936,
+    "to": 971,
+    "clip": "tomris-ai/clips/05_havadan_takip_iz.mp4",
+    "offset": 2.0,
+    "grade": "eq=contrast=1.1:saturation=1.12",
+    "note": "#23 havadan takip, iz (2.0-3.5 s)"
+   },
+   {
+    "from": 1448,
+    "to": 1471,
+    "clip": "tomris-ai/clips/01_mavi_saat_yan_takip.mp4",
+    "offset": 2.5,
+    "grade": "eq=contrast=1.1:saturation=1.12",
+    "note": "#39 mavi saat yan takip (2.5-3.5 s)"
+   },
+   {
+    "from": 1721,
+    "to": 1750,
+    "clip": "tomris-ai/clips/07_direk_bayrak_radar.mp4",
+    "offset": 0.0,
+    "grade": "eq=contrast=1.1:saturation=1.12",
+    "note": "#55 direk/bayrak (0-1.25 s; radar genis yuzu gorunur, 2-3 s'teki kenar-gorunus disarida). Round 2 (render v2): KAPALI - duzeltilmis CG #55 (fener yesil sizmasi kisik, bayrak dalgali) AI klibinden daha temiz; AI klipte direk yesil isikla boyanmis.",
+    "enabled": false
+   },
+   {
+    "from": 1755,
+    "to": 1829,
+    "clip": "tomris-ai/clips/08_kapanis_kahraman_yaklasma.mp4",
+    "offset": 1.0,
+    "crop": "1920:804:4:136",
+    "grade": "colorchannelmixer=rr=0.36:rb=0.04:gg=0.6:gb=0.08:bb=1.0,eq=gamma=1.08:contrast=1.04,huesaturation=colors=r:saturation=0.6:intensity=0.35",
+    "note": "#57 kapanis yaklasma (1.0-4.125 s); kaynak #32 alacakaranlik. Round 2: bej tekne -> notr mavi-gri (kirmizi/yesil kazanc 0.36/0.6, bayrak kirmizisi huesaturation ile korunur); govde medyan ~ (50,68,98), #50/#58 ile ayni r/b~0.5 g/b~0.7"
+   }
+  ],
+  "aksiyon": [],
+  "milli": [],
+  "osmanli": []
+ }
+}

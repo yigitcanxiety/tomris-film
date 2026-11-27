@@ -4,10 +4,15 @@
 // Deterministic (grain seeded by frame index).
 import * as THREE from "three";
 import { QUALITY } from "./waves.js";
+import { SKY_GLSL } from "./sky.js";
 
 const FS_VERT = /* glsl */ `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`;
 
-export function createPost(renderer, W, H) {
+// skyShared: the sky uniforms (equirect maps + rotation) so the aerial haze takes the horizon colour of the
+// direction it looks in. Haze is applied per sub-frame in the accumulation pass, from that sub-frame's depth, to
+// everything opaque that does not haze itself (the ocean writes alpha 0; sky = depth 1). Height falloff: the haze
+// thins with altitude (scale height look.hazeH), so distant hill tops keep more contrast than their feet.
+export function createPost(renderer, W, H, skyShared = null) {
   const rtOpts = { type: THREE.HalfFloatType, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, generateMipmaps: false };
   const sceneRT = new THREE.WebGLRenderTarget(W, H, { ...rtOpts, samples: QUALITY.msaa, depthBuffer: true });
   sceneRT.depthTexture = new THREE.DepthTexture(W, H, THREE.FloatType);
@@ -23,9 +28,29 @@ export function createPost(renderer, W, H) {
   const qs = new THREE.Scene(); qs.add(quad); const qc = new THREE.Camera();
   const pass = (mat, target) => { quad.material = mat; renderer.setRenderTarget(target); renderer.render(qs, qc); };
 
+  const sky = skyShared || { uSkyFull: { value: null }, uSkyClamp: { value: null }, uSkyRot: { value: 0 }, uSkyGain: { value: 1 } };
   const accumMat = new THREE.ShaderMaterial({
-    uniforms: { tSrc: { value: null }, uW: { value: 1 } }, vertexShader: FS_VERT,
-    fragmentShader: `uniform sampler2D tSrc; uniform float uW; varying vec2 vUv; void main(){ gl_FragColor = vec4(texture2D(tSrc, vUv).rgb * uW, uW); }`,
+    uniforms: { ...sky, tSrc: { value: null }, tDepth: { value: null }, uW: { value: 1 }, uProjInv: { value: new THREE.Matrix4() }, uCamWorld: { value: new THREE.Matrix4() },
+      uCamPos: { value: new THREE.Vector3() }, uHazeDist: { value: 2500 }, uHazeH: { value: 400 }, uHazeOn: { value: 0 } },
+    vertexShader: FS_VERT,
+    fragmentShader: /* glsl */ `${SKY_GLSL}
+      uniform sampler2D tSrc; uniform sampler2D tDepth; uniform float uW; uniform mat4 uProjInv; uniform mat4 uCamWorld; uniform vec3 uCamPos;
+      uniform float uHazeDist, uHazeH, uHazeOn; varying vec2 vUv;
+      void main(){
+        vec4 s = texture2D(tSrc, vUv); vec3 c = s.rgb;
+        if (uHazeOn > 0.5 && s.a > 0.002) {
+          float d = texture2D(tDepth, vUv).r;
+          if (d < 0.999999) {
+            vec4 vp = uProjInv * vec4(vUv * 2.0 - 1.0, d * 2.0 - 1.0, 1.0); vp.xyz /= vp.w;
+            vec3 wp = (uCamWorld * vec4(vp.xyz, 1.0)).xyz; vec3 rd = wp - uCamPos; float dist = length(rd); rd /= max(dist, 1e-4);
+            float y0 = max(uCamPos.y, 0.0), y1 = max(wp.y, 0.0), dy = y1 - y0;
+            float hk = abs(dy) < 1.0 ? exp(-0.5 * (y0 + y1) / uHazeH) : uHazeH * (exp(-y0 / uHazeH) - exp(-y1 / uHazeH)) / dy;
+            float fog = (1.0 - exp(-dist / uHazeDist * hk)) * min(s.a, 1.0);
+            c = mix(c, hazeColor(rd), fog);
+          }
+        }
+        gl_FragColor = vec4(c * uW, uW);
+      }`,
     blending: THREE.CustomBlending, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor, depthTest: false, depthWrite: false,
   });
   const dofMat = new THREE.ShaderMaterial({
@@ -86,11 +111,11 @@ export function createPost(renderer, W, H) {
       uFlare: { value: 0.5 }, uFlareTint: { value: new THREE.Vector3(0.55, 0.75, 1.0) }, uHal: { value: 0.35 },
       uExposure: { value: 1 }, uBloom: { value: 0.06 }, uFrame: { value: 0 }, uRes: { value: new THREE.Vector2(W, H) },
       uGrain: { value: 0.035 }, uVignette: { value: 0.35 }, uTeal: { value: new THREE.Vector3(-0.012, 0.004, 0.018) }, uOrange: { value: new THREE.Vector3(0.03, 0.008, -0.03) },
-      uSat: { value: 1.0 }, uContrast: { value: 1.05 }, uLift: { value: 0.0 }, uWB: { value: new THREE.Vector3(1, 1, 1) },
+      uSat: { value: 1.0 }, uContrast: { value: 1.05 }, uLift: { value: 0.0 }, uWB: { value: new THREE.Vector3(1, 1, 1) }, uDemag: { value: 0.5 },
     },
     vertexShader: FS_VERT,
     fragmentShader: /* glsl */ `
-      uniform sampler2D tSrc, tB1, tB2, tB3, tFlare; uniform float uExposure, uBloom, uFrame, uGrain, uVignette, uSat, uContrast, uLift, uFlare, uHal; uniform vec2 uRes;
+      uniform sampler2D tSrc, tB1, tB2, tB3, tFlare; uniform float uExposure, uBloom, uFrame, uGrain, uVignette, uSat, uContrast, uLift, uFlare, uHal, uDemag; uniform vec2 uRes;
       uniform vec3 uTeal, uOrange, uWB, uFlareTint; varying vec2 vUv;
       vec3 aces(vec3 v){
         const mat3 I = mat3(vec3(0.59719, 0.07600, 0.02840), vec3(0.35458, 0.90834, 0.13383), vec3(0.04823, 0.01566, 0.83777));
@@ -104,11 +129,13 @@ export function createPost(renderer, W, H) {
         vec3 fl = texture2D(tFlare, vUv).rgb;
         float fll = dot(fl, vec3(0.333));
         c = c + b * uBloom + b1 * vec3(1.0, 0.3, 0.12) * uBloom * uHal          // halation: red fringe around highlights
-          + (fl * 0.35 + uFlareTint * fll) * uFlare;                              // anamorphic streak, cool-tinted
+          + (fl * 0.5 + uFlareTint * fll * 0.5) * uFlare;                         // short, faint anamorphic streak, cool-tinted
         c *= uExposure * uWB;
         c = aces(c);
         // grade in display space
         c = pow(c, vec3(1.0 / 2.2));
+        // no magenta/purple cast (twilight skies, HDRI clouds): green is lifted toward the lower of red/blue
+        c.g += max(min(c.r, c.b) - c.g, 0.0) * uDemag;
         float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
         float mx = max(max(c.r, c.g), c.b), sat = (mx - min(min(c.r, c.g), c.b)) / max(mx, 1e-3);
         float keep = smoothstep(0.04, 0.2, sat);                                   // neutral greys (the hull) stay neutral
@@ -143,7 +170,10 @@ export function createPost(renderer, W, H) {
       cam = drawScene(n > 1 ? (i + 0.5) / n - 0.5 : 0, i);
       renderer.setRenderTarget(sceneRT); renderer.clear(true, true, false);
       renderer.render(cam.scene, cam.camera);
-      accumMat.uniforms.tSrc.value = sceneRT.texture; accumMat.uniforms.uW.value = 1 / n;
+      const au = accumMat.uniforms, lk = cam.look;
+      au.tSrc.value = sceneRT.texture; au.tDepth.value = sceneRT.depthTexture; au.uW.value = 1 / n;
+      au.uProjInv.value.copy(cam.camera.projectionMatrixInverse); au.uCamWorld.value.copy(cam.camera.matrixWorld); au.uCamPos.value.copy(cam.camera.position);
+      au.uHazeOn.value = lk.haze === false || !skyShared ? 0 : 1; au.uHazeDist.value = lk.hazeDist ?? lk.fogDist ?? 2500; au.uHazeH.value = lk.hazeH ?? 400;
       pass(accumMat, accumRT);
     }
     const look = cam.look, du = dofMat.uniforms;
@@ -159,16 +189,25 @@ export function createPost(renderer, W, H) {
     blur(q1.texture, q2b, q2, W >> 3, H >> 3);
     blur(q2.texture, q3b, q3, W >> 4, H >> 4);
     // anamorphic streak: only what is far above display white (sun disc, nav lights)
-    brightMat.uniforms.tSrc.value = dofRT.texture; brightMat.uniforms.uThresh.value = (look.flareThresh ?? 14) / Math.max(look.exposure, 1e-3); pass(brightMat, fHalf);
+    brightMat.uniforms.tSrc.value = dofRT.texture; brightMat.uniforms.uThresh.value = (look.flareThresh ?? 40) / Math.max(look.exposure, 1e-3); pass(brightMat, fHalf);
     streakMat.uniforms.tSrc.value = fHalf.texture; streakMat.uniforms.uStep.value = 1 / (W >> 2); pass(streakMat, fA);
-    streakMat.uniforms.tSrc.value = fA.texture; streakMat.uniforms.uStep.value = 6 / (W >> 2); pass(streakMat, fB);
-    streakMat.uniforms.tSrc.value = fB.texture; streakMat.uniforms.uStep.value = 30 / (W >> 2); pass(streakMat, fA);
+    streakMat.uniforms.tSrc.value = fA.texture; streakMat.uniforms.uStep.value = 2.5 / (W >> 2); pass(streakMat, fB);
+    streakMat.uniforms.tSrc.value = fB.texture; streakMat.uniforms.uStep.value = 6 / (W >> 2); pass(streakMat, fA);
     const f = finalMat.uniforms;
     f.tSrc.value = dofRT.texture; f.uExposure.value = look.exposure; f.uBloom.value = look.bloom ?? 0.06; f.uFrame.value = frame;
-    f.uFlare.value = look.flare ?? 0.5; f.uHal.value = look.halation ?? 0.35;
+    f.uFlare.value = look.flare ?? 0.12; f.uHal.value = look.halation ?? 0.35; f.uDemag.value = look.demag ?? 0.5;
     for (const k of ["grain", "vignette", "sat", "contrast", "lift"]) if (look[k] !== undefined) f["u" + k[0].toUpperCase() + k.slice(1)].value = look[k];
     f.uWB.value.set(...(look.wb || [1, 1, 1])); if (look.teal) f.uTeal.value.set(...look.teal); if (look.orange) f.uOrange.value.set(...look.orange);
     pass(finalMat, null);
   }
-  return { render, sceneRT };
+  // optional (realtime play build: adaptive resolution); the film never calls it
+  function setSize(w, h) {
+    W = w; H = h;
+    sceneRT.setSize(W, H); sceneRT.depthTexture.image.width = W; sceneRT.depthTexture.image.height = H; sceneRT.depthTexture.needsUpdate = true;
+    accumRT.setSize(W, H); dofRT.setSize(W, H); half.setSize(W >> 1, H >> 1); fHalf.setSize(W >> 1, H >> 1);
+    for (const rt of [q1, q1b, fA, fB]) rt.setSize(W >> 2, H >> 2);
+    q2.setSize(W >> 3, H >> 3); q2b.setSize(W >> 3, H >> 3); q3.setSize(W >> 4, H >> 4); q3b.setSize(W >> 4, H >> 4);
+    brightMat.uniforms.uTexel.value.set(1 / W, 1 / H); dofMat.uniforms.uRes.value.set(W, H); finalMat.uniforms.uRes.value.set(W, H);
+  }
+  return { render, sceneRT, setSize };
 }

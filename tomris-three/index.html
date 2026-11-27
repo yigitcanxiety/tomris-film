@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr">
+<html lang="tr" data-composition-variables='[{"id":"sub","type":"number","label":"Motion-blur sub-frames","default":8,"min":1,"max":32,"step":1}]'>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=1920, height=1080" />
@@ -18,8 +18,10 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:#000}
 </style>
 </head>
 <body>
-<!-- The whole 70 s timeline; 3D shots only (overlay and black-flash frames render black and are
-     replaced by the edit in tomris-film/build.sh). Render in chunks with --start/--end. -->
+<!-- The whole 70 s timeline (shots.json); 3D shots only. Opening (frames 0-149), black flashes and the end card
+     (1890-2099) render black here and are cut in by tomris-film/build.sh. Render in chunks with --start/--end.
+     Motion-blur sub-frames: ?sub=N (preview tool), or `hyperframes render --variables '{"sub":N}'`, or
+     assets/render.json {"sub":N}; default 8. -->
 <div id="root" data-composition-id="main" data-start="0" data-duration="70" data-width="1920" data-height="1080" data-fps="30">
   <div id="stage" class="clip" data-start="0" data-duration="70" data-track-index="0"><canvas id="gl" width="1920" height="804"></canvas></div>
 </div>
@@ -36,25 +38,35 @@ import { createEngine } from "./assets/js/engine.js";
 import { createFilm, FPS } from "./assets/js/film.js";
 
 const q = new URLSearchParams(location.search);
-const SUB = +(q.get("sub") || 8);
+const SCALE = +(q.get("scale") || 1), WARM = q.get("warm") !== "0";   // preview: ?sub=1&scale=0.5&warm=0
+let SUB = 8;
+async function resolveSub() {                     // query > HyperFrames variables > assets/render.json > 8
+  if (q.get("sub")) return +q.get("sub");
+  try { const v = window.__hyperframes && window.__hyperframes.getVariables && window.__hyperframes.getVariables(); if (v && +v.sub > 0) return +v.sub; } catch (e) {}
+  try { const r = await fetch("assets/render.json", { cache: "no-store" }); if (r.ok) { const j = await r.json(); if (+j.sub > 0) return +j.sub; } } catch (e) {}
+  return 8;
+}
 window.__hf = window.__hf || {}; window.__hf.buildReady = window.__hf.buildReady || {};
 let engine = null, film = null;
-function renderAt(t) {
+function renderAt(t, sub = SUB) {
   if (!engine) return;
   const frame = Math.round(t * FPS), ft = frame / FPS;
   if (!film.stateAt(ft)) {                      // overlay / black flash: black picture
     const r = engine.renderer; r.setRenderTarget(null); r.setClearColor(0x000000, 1); r.clear(true, true, true); return;
   }
-  engine.renderFrame(ft, (ts) => film.stateAt(ts, ft), { subframes: SUB, fps: FPS, shutter: 0.125, frame });
+  engine.renderFrame(ft, (ts) => film.stateAt(ts, ft), { subframes: sub, fps: FPS, shutter: 0.125, frame });
 }
 window.__hf.buildReady["tomris-3d"] = (async () => {
+  SUB = Math.max(1, Math.round(await resolveSub()));
+  console.log("tomris-3d sub-frames:", SUB);
   engine = await createEngine(document.getElementById("gl"), {
+    width: Math.round(1920 * SCALE), height: Math.round(804 * SCALE),
     skies: { sunset: "hdri/belfast_sunset_puresky_2k.hdr", dusk: "hdri/qwantani_dusk_2_puresky_2k.hdr" },
   });
   const shots = await (await fetch("assets/shots.json")).json();
   film = await createFilm(engine, shots);
-  window.__tomris = { engine, film, renderAt };
-  for (const t of film.warmTimes) renderAt(t);   // compiles every program used by every setup
+  window.__tomris = { engine, film, renderAt, sub: SUB };
+  if (WARM) for (const t of film.warmTimes) renderAt(t, 1);   // compiles every program of every setup (1 sub-frame: compile only)
   renderAt(window.__hfThreeTime || 0);
 })();
 window.addEventListener("hf-seek", (e) => renderAt(e.detail.time));

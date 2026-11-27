@@ -11,7 +11,7 @@ import { HULL_GLSL } from "./boat.js";
 
 // type: 0 bow sheet droplets, 1 bow sheet mist, 2 jet wash droplets, 3 wake mist, 4 jet wash mist,
 //       5 bow sheet fragments, 6 jet plume (rooster tail body)
-const COUNTS = [16000, 7000, 7000, 900, 1400, 3500, 2600];
+const COUNTS = [9000, 4500, 4500, 700, 1100, 2600, 2000];   // x8 sub-frames in film quality
 
 const vert = (sea) => /* glsl */ `
 ${wavesGLSL(sea)}
@@ -26,7 +26,7 @@ vec4 trailAt(float tau){ float f = clamp(tau / uTrailDt, 0.0, uTrailN - 1.001); 
   vec4 a = texelFetch(uTrail, ivec2(int(i), 0), 0), b = texelFetch(uTrail, ivec2(int(i) + 1, 0), 0); return mix(a, b, f - i); }
 ${HULL_GLSL}
 // position of this particle at absolute time t (emitted in the cycle that contains t)
-void particle(float t, out vec3 pos, out float age, out float life, out float sizeM, out float a0, out float g) {
+void particle(float t, out vec3 pos, out vec3 vel, out float age, out float life, out float sizeM, out float a0, out float g) {
   float type = aSeed.x;
   life = type < 0.5 ? mix(0.35, 1.0, aSeed.y) : type < 1.5 ? mix(0.6, 1.4, aSeed.y) : type < 2.5 ? mix(0.45, 1.2, aSeed.y)
        : type < 3.5 ? mix(2.2, 3.8, aSeed.y) : type < 4.5 ? mix(1.2, 2.4, aSeed.y) : type < 5.5 ? mix(0.22, 0.5, aSeed.y) : mix(0.35, 0.8, aSeed.y);
@@ -50,7 +50,7 @@ void particle(float t, out vec3 pos, out float age, out float life, out float si
     lv = vec3(-V * mix(0.86, 1.0, r3), (0.2 + 2.4 * fw * r4 * r4 + 2.6 * pow(fw, 6.0) * r4) , side * (1.5 + 7.5 * fw) * mix(0.55, 1.0, r5));
     if (frag) lv.y *= 0.8;
     drag = type < 0.5 ? 0.9 : frag ? 1.4 : 2.4;
-    sizeM = type < 0.5 ? mix(0.005, 0.024, r3 * r3 * r3) : frag ? mix(0.05, 0.16, r3) : mix(0.12, 0.4, r3);
+    sizeM = type < 0.5 ? mix(0.003, 0.016, r3 * r3 * r3) : frag ? mix(0.05, 0.16, r3) : mix(0.12, 0.4, r3);
     a0 = (type < 0.5 ? 0.8 : frag ? 0.42 : 0.17) * mix(0.2, 1.0, fw);   // the sheet is born at the root; aft emission is mostly mist
   } else if (type < 2.5 || (type > 3.5 && type < 4.5) || type > 5.5) {   // waterjet wash / rooster tail
     float jz = (r1 < 0.5 ? -0.62 : 0.62) + (r2 - 0.5) * 0.7;
@@ -58,7 +58,7 @@ void particle(float t, out vec3 pos, out float age, out float life, out float si
     bool plume = type > 5.5;
     lv = vec3(-V * mix(0.15, 0.45, r4), mix(0.8, 3.6, r5) * (0.3 + 0.7 * r2) * (plume ? 0.75 : 1.0), (r3 - 0.5) * (plume ? 2.4 : 3.5));
     drag = type < 2.5 ? 1.2 : plume ? 1.6 : 2.0;
-    sizeM = type < 2.5 ? mix(0.008, 0.035, r3 * r3) : plume ? mix(0.12, 0.32, r4) : mix(0.35, 0.9, r4);
+    sizeM = type < 2.5 ? mix(0.004, 0.022, r3 * r3) : plume ? mix(0.12, 0.32, r4) : mix(0.35, 0.9, r4);
     a0 = type < 2.5 ? 0.5 : plume ? 0.3 : 0.08;
   } else {                                       // drifting mist over the wake
     lp = vec3(-r2 * 7.0 + 2.0 * r3, 0.1, (r4 - 0.5) * 4.5);
@@ -67,16 +67,17 @@ void particle(float t, out vec3 pos, out float age, out float life, out float si
   }
   vec3 bp = vec3(bs.x, 0.0, bs.y);
   vec3 wp = bp + fwd * lp.x + stb * lp.z;
-  wp.y = seaHeight(wp.xz, te) + lp.y;
+  wp.y = seaHeightLong(wp.xz, te) + lp.y;
   vec3 wv = fwd * V + fwd * lv.x + stb * lv.z + vec3(0.0, lv.y, 0.0);
-  float ed = (1.0 - exp(-drag * age)) / drag;
+  float ex = exp(-drag * age), ed = (1.0 - ex) / drag, gk = 9.81 * (type > 2.5 && type < 3.5 ? 0.05 : 1.0);
   pos = wp + wv * ed;
-  pos.y -= 9.81 * (age / drag - ed / drag) * (type > 2.5 && type < 3.5 ? 0.05 : 1.0);
+  pos.y -= gk * (age - ed) / drag;
+  vel = wv * ex; vel.y -= gk * (1.0 - ex) / drag;                 // analytic velocity: streak / ligament tails
   g = type < 0.5 || (type > 1.5 && type < 2.5) ? 0.75 : type > 4.5 ? 0.6 : 0.5;
 }
 void main(){
-  vec3 p1, p0, pl; float age, life, sizeM, a0, g, age0, l0, s0, a00, g0;
-  particle(uTime, p1, age, life, sizeM, a0, g);
+  vec3 p1, vel; float age, life, sizeM, a0, g;
+  particle(uTime, p1, vel, age, life, sizeM, a0, g);
   float type = aSeed.x;
   bool mist = type > 0.5 && type < 1.5 || (type > 2.5 && type < 4.5);
   bool sheet = type > 4.5;
@@ -84,8 +85,16 @@ void main(){
   float lig = mist ? 0.0 : (sheet ? 0.07 : 0.045) * exp(-age / (sheet ? 0.25 : 0.12));
   lig = min(lig, age * 0.95);
   float st = min(uStreak, age * 0.95);
-  particle(uTime - st, p0, age0, l0, s0, a00, g0);
-  particle(uTime - lig, pl, age0, l0, s0, a00, g0);
+  // keep the spray outside the hull: the topsides flare out above the chine, so a sheet rising from the
+  // waterline would otherwise end up inside the hull and get cut along the hull's depth
+  {
+    vec4 b0 = trailAt(0.0); vec3 f0 = vec3(cos(b0.z), 0.0, -sin(b0.z)), s0 = vec3(sin(b0.z), 0.0, cos(b0.z));
+    vec3 rel = p1 - vec3(b0.x, 0.0, b0.y);
+    float lx = dot(rel, f0), lz = dot(rel, s0), ly = p1.y - uLift - uTrimTan * lx;
+    float bm = beamAt(lx, ly) + 0.04 + 0.6 * sizeM;
+    if (lx > -0.2 && lx < 13.0 && abs(lz) < bm) p1 += s0 * (sign(lz + 1e-4) * bm - lz);
+  }
+  vec3 p0 = p1 - vel * st, pl = p1 - vel * lig;
   if (mist) sizeM *= mix(0.6, 1.8, age / life);
   if (sheet) sizeM *= mix(1.0, 0.45, age / life);                // fragments tear apart
   vec4 v1 = viewMatrix * vec4(p1, 1.0);
@@ -101,10 +110,14 @@ void main(){
   vec2 dir = len > 1e-5 ? dv / len : vec2(1.0, 0.0), perp = vec2(-dir.y, dir.x);
   vec2 mid = (v1.xy + tail.xy) * 0.5;
   float hl = len * 0.5;
-  vec3 vpos = vec3(mid + dir * corner.x * (hl + sizeEff) + perp * corner.y * sizeEff, v1.z);
+  // pulled toward the camera by about its own size: a flat billboard that grazes the hull or the water would
+  // otherwise be cut along a hard depth-intersection line (soft particles without a depth read)
+  float pull = min(sizeEff * 1.3 + 0.03, z * 0.4);
+  vec3 vpos = vec3(mid + dir * corner.x * (hl + sizeEff) + perp * corner.y * sizeEff, v1.z + pull);
+  vpos.xy *= (z - pull) / z;                                       // same screen position and size
   vQ = vec2(corner.x * (hl / sizeEff + 1.0), corner.y); vLen = hl / sizeEff;
   // fade in/out, under water, low speed
-  float water = seaHeight(p1.xz, uTime);
+  float water = seaHeightLong(p1.xz, uTime);
   float fade = smoothstep(0.0, 0.06, age / life) * (1.0 - smoothstep(0.6, 1.0, age / life)) * smoothstep(water - 0.35, water + 0.0, p1.y);
   // a ligament keeps its water: thinning with length, not fading as fast as a pure motion streak
   vAlpha = a0 * fade * energy * uSpeedF * uGain / (1.0 + vLen * (sheet ? 0.25 : 0.5));
@@ -129,10 +142,13 @@ void main(){
   float dx = max(abs(vQ.x) - vLen, 0.0);
   float d2 = dx * dx + vQ.y * vQ.y;
   float a = exp(-d2 * 3.0);
-  if (vSoft > 1.5) {            // torn sheet fragment: streaky along its length, ragged edges
+  // the quad border must be fully transparent whatever the noise does (no rectangular "barcode" sprites)
+  float border = (1.0 - smoothstep(0.55, 1.0, abs(vQ.y))) * (1.0 - smoothstep(vLen + 0.55, vLen + 1.0, abs(vQ.x)));
+  if (vSoft > 1.5) {            // torn sheet fragment: thin translucent water film, streaky along its path, ragged edges
     float n = vnoise(vec2(vQ.x * 0.7, vQ.y * 3.5) + vSeed * 41.0) * 0.65 + vnoise(vec2(vQ.x * 2.1, vQ.y * 7.0) - vSeed * 13.0) * 0.35;
-    a = smoothstep(0.25, 0.6, n * exp(-d2 * 1.2)) * 0.9;
+    a = smoothstep(0.3, 0.7, n * exp(-d2 * 1.6)) * 0.75;
   } else if (vSoft > 0.5) a *= 0.45 + 0.9 * vnoise(vQ * 1.7 + vSeed * 31.0) * vnoise(vQ * 3.3 - vSeed * 17.0);
+  a *= border;
   a *= vAlpha;
   if (a < 0.001) discard;
   gl_FragColor = vec4(vCol * a, a);              // premultiplied

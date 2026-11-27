@@ -3,10 +3,10 @@
 //   boat   = { x, z, heading, speed, yawRate, s }      (s = odometer, metres along the track)
 //   trail  = (tau) => boat state tau seconds ago        (film: analytic track; realtime: recorded history)
 //   camera = { pos: Vector3, target: Vector3, lensMm, fstop, roll, focus? }
-//   look   = { sky, sunAz, exposure, ... }              (see film.js LOOKS)
+//   look   = { sky, sunAz, exposure, ... }              (see looks.js LOOKS)
 // Film mode calls it from hf-seek with 5 sub-frames; a realtime loop calls it once per rAF with subframes = 1.
 import * as THREE from "three";
-import { createSea } from "./waves.js";
+import { createSea, setQuality, QUALITY } from "./waves.js";
 import { loadSky, skyUniforms, createSkyDome } from "./sky.js";
 import { createOcean } from "./ocean.js";
 import { createWake, createTrailTexture } from "./wake.js";
@@ -16,7 +16,11 @@ import { createPost } from "./post.js";
 
 const SENSOR_W = 36;
 
-export async function createEngine(canvas, { width = 1920, height = 804, base = "assets/", skies = {} } = {}) {
+// quality: "film" (default; offline frames on any machine) | "realtime" (playable build on a real GPU at 60 fps:
+// coarser ocean grid, smaller tiles / shadow / reflection, no foam micro-detail, fewer particles, one sub-frame).
+// Omitted: keeps whatever waves.js already selected (?quality= in the page URL, globalThis.TOMRIS_QUALITY, else film).
+export async function createEngine(canvas, { width = 1920, height = 804, base = "assets/", skies = {}, quality } = {}) {
+  if (quality) setQuality(quality);
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, preserveDrawingBuffer: true, powerPreference: "high-performance" });
   renderer.setPixelRatio(1); renderer.setSize(width, height, false);
   renderer.autoClear = false;
@@ -32,20 +36,20 @@ export async function createEngine(canvas, { width = 1920, height = 804, base = 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, width / height, 0.2, 12000);
   scene.add(createSkyDome(skyShared));
-  const ocean = createOcean(sea, skyShared); scene.add(ocean.mesh);
+  const ocean = createOcean(sea, skyShared, { renderer }); scene.add(ocean.mesh);
   scene.add(boat.root);
   const wake = createWake(renderer);
   const trailTex = createTrailTexture();
   const spray = createSpray(sea, trailTex.tex); scene.add(spray.mesh);
   const sun = new THREE.DirectionalLight(0xffffff, 1);
-  sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03; sun.shadow.radius = 3;
+  sun.castShadow = true; sun.shadow.mapSize.set(QUALITY.shadow, QUALITY.shadow); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03; sun.shadow.radius = 3;
   Object.assign(sun.shadow.camera, { left: -10, right: 10, top: 10, bottom: -10, near: 1, far: 200 }); sun.shadow.camera.updateProjectionMatrix();
   scene.add(sun, sun.target);
-  const post = createPost(renderer, width, height);
+  const post = createPost(renderer, width, height, skyShared);
 
   // planar reflection of the boat (layer 1) in the mean water plane, sampled by the ocean with normal distortion
   boat.root.traverse((o) => o.layers.enable(1)); sun.layers.enable(1);
-  const reflRT = new THREE.WebGLRenderTarget(width >> 1, height >> 1, { type: THREE.HalfFloatType, samples: 2 });
+  const reflRT = new THREE.WebGLRenderTarget(Math.round(width * QUALITY.refl), Math.round(height * QUALITY.refl), { type: THREE.HalfFloatType, samples: QUALITY.msaa ? 2 : 0 });
   const reflCam = new THREE.PerspectiveCamera();
   reflCam.layers.set(1);
   const reflPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
@@ -83,8 +87,8 @@ export async function createEngine(canvas, { width = 1920, height = 804, base = 
     const m = Math.max(irr.x, irr.y, irr.z, 1e-6);
     sun.color.setRGB(irr.x / m, irr.y / m, irr.z / m, THREE.LinearSRGBColorSpace); sun.intensity = m * (look.keyGain ?? 1);
     ocean.uniforms.uFogDist.value = look.fogDist ?? 2500; ocean.uniforms.uGlitter.value = look.glitter ?? 1;
-    ocean.uniforms.uFoamGain.value = look.foamGain ?? 1; spray.uniforms.uGain.value = look.sprayGain ?? 1;
-    if (look.deep) ocean.uniforms.uDeep.value.set(...look.deep);
+    ocean.uniforms.uFoamGain.value = look.foamGain ?? 1; ocean.uniforms.uCapGain.value = look.capGain ?? 1; ocean.uniforms.uSubsurf.value = look.subsurf ?? 1; spray.uniforms.uGain.value = look.sprayGain ?? 1;
+    ocean.uniforms.uDeep.value.set(...(look.deep || [0.009, 0.026, 0.055]));      // always set: frames render out of order
     return sunDir;
   }
 
@@ -94,7 +98,7 @@ export async function createEngine(canvas, { width = 1920, height = 804, base = 
     if (cam.roll) c.rotateZ(cam.roll);
     c.updateMatrixWorld();
   }
-  function setup(st, shutterSub, prevSt) {
+  function setup(st, shutterSub, prevSt, tFrame) {
     const look = st.look, b = st.boat, t = st.time;
     const sunDir = applyLook(look);
     const pose = boatPose(b, sea, t);
@@ -114,6 +118,7 @@ export async function createEngine(canvas, { width = 1920, height = 804, base = 
     // wake & trail
     wake.update(st.trail, b);
     trailTex.update(st.trail);
+    ocean.bake(renderer, tFrame ?? t);                // fine-wave tiles: once per frame (not per sub-frame)
     ocean.update({ time: t, camPos: camera.position, boatInv: new THREE.Matrix4().copy(boat.root.matrixWorld).invert(), boatWater: pose.water,
       speedF: pose.speedF, rootX: pose.rootX, wakeTex: wake.rt.texture, wakeCenter: wake.center, s: b.s });
     renderReflection(pose.water);
@@ -125,17 +130,38 @@ export async function createEngine(canvas, { width = 1920, height = 804, base = 
   }
 
   return {
-    renderer, scene, camera, boat, sea, skies: loaded, wake, ocean, spray, post,
+    renderer, scene, camera, boat, sea, skies: loaded, wake, ocean, spray, post, quality: QUALITY.name,
     compile() { renderer.compile(scene, camera); },
+    // optional (realtime play build: adaptive resolution); the film never calls it
+    resize(w, h) {
+      if (w === width && h === height) return;
+      width = w; height = h;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h; camera.updateProjectionMatrix();
+      reflRT.setSize(Math.round(w * QUALITY.refl), Math.round(h * QUALITY.refl));
+      post.setSize(w, h);
+    },
     // t: frame time; stateAt: time -> state; subframes over a 180-degree shutter at fps
     renderFrame(t, stateAt, { subframes = 1, fps = 30, shutter = 0.5, frame = 0 } = {}) {
+      subframes = Math.min(subframes, QUALITY.maxSub ?? subframes);
       const span = shutter / fps;
       const sub = span / Math.max(subframes, 1);
       // stratified sub-frame times with a deterministic jitter: stepping turns into fine noise
       const jit = (i) => { const x = Math.sin((frame + 1) * 12.9898 + i * 78.233) * 43758.5453; return x - Math.floor(x) - 0.5; };
+      // film quality has no MSAA (software GL shades every sample): the sub-frames carry a sub-pixel camera jitter
+      // instead, so 4-8 sub-frames are also 4-8x supersampling (edges, glitter and foam), at no extra cost
+      const aaJit = subframes > 1 && !QUALITY.msaa;
+      const halton = (i, b) => { let f = 1, r = 0; while (i > 0) { f /= b; r += f * (i % b); i = Math.floor(i / b); } return r; };
+      const rot = [halton(frame + 1, 5), halton(frame + 1, 7)];
       post.render((off, i) => {
         const ts = t + (subframes > 1 ? off + jit(i) / subframes : 0) * span;
-        return setup(stateAt(ts, t), sub, stateAt(ts - sub, t));
+        const res = setup(stateAt(ts, t), sub, stateAt(ts - sub, t), t);
+        if (aaJit) {
+          const jx = ((halton(i + 1, 2) + rot[0]) % 1) - 0.5, jy = ((halton(i + 1, 3) + rot[1]) % 1) - 0.5;
+          const e = camera.projectionMatrix.elements; e[8] += (jx * 2.2) / width; e[9] += (jy * 2.2) / height;
+          camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+        }
+        return res;
       }, subframes, frame);
     },
   };

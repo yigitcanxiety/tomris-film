@@ -4,7 +4,7 @@
 // Input is a trail sampler: trail(tau) -> boat state tau seconds ago ({x, z, heading, speed, s, time}).
 import * as THREE from "three";
 
-export const WAKE = { extent: 480, res: 1024, points: 200, dtau: 0.14, armTan: Math.tan((13 * Math.PI) / 180) };
+export const WAKE = { extent: 480, res: 1024, points: 200, dtau: 0.14, lead: 4, armTan: Math.tan((13 * Math.PI) / 180) };
 
 export function createWake(renderer) {
   const N = WAKE.points;
@@ -41,10 +41,13 @@ export function createWake(renderer) {
       const w = 4 + WAKE.armTan * (d + 8) * 1.25 + 6;
       const sx = Math.sin(s.heading), sz = Math.cos(s.heading);          // starboard (+local z) in world
       const sf = Math.min(1, Math.max(0, (s.speed - 3) / 12));
+      // the ribbon starts WAKE.lead m ahead of the transom (track distance S beyond now.s): the ocean fades the
+      // wake in over that stretch instead of cutting it off along a straight line across the transom
+      const ld = k === 0 ? WAKE.lead : 0, lx = Math.cos(s.heading) * ld, lz = -Math.sin(s.heading) * ld;
       for (let j = 0; j < 2; j++) {
         const lat = j ? w : -w, i = 2 * k + j;
-        pos[i * 3] = s.x + sx * lat; pos[i * 3 + 1] = d; pos[i * 3 + 2] = s.z + sz * lat;
-        data.set([lat, s.s, s.time, sf], i * 4);
+        pos[i * 3] = s.x + lx + sx * lat; pos[i * 3 + 1] = d; pos[i * 3 + 2] = s.z + lz + sz * lat;
+        data.set([lat, s.s + ld, s.time, sf], i * 4);
       }
       dmax = Math.max(dmax, d);
     }

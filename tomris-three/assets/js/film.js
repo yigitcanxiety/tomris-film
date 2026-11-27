@@ -4,7 +4,9 @@
 // from t on every call, so frames can be rendered in any order and chunked renders match a single pass.
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { boatPose } from "./boat.js";
+import { boatPose, HULL_GLSL } from "./boat.js";
+import { LOOKS } from "./looks.js";
+export { LOOKS };
 
 const D2R = Math.PI / 180, KN = 0.514444;
 export const FPS = 30, TOTAL_FRAMES = 2100, DURATION = TOTAL_FRAMES / FPS;
@@ -14,66 +16,31 @@ const MID = 6.5;
 // named points on the boat, GLB frame (node positions in tomris.glb)
 const ANCHOR = {
   boat: [6.3, 1.3, 0], eoir: [4.37, 3.5, 0], flag: [2.6, 4.2, 0], stern: [0, 0.7, 0], bow: [12.6, 1.5, 0],
-  gun: [9.8, 2.55, 0], launcher: [1.6, 2.1, 0], radar: [4.17, 4.25, 0], mast: [3.35, 4.5, 0], muzzle: [10.95, 2.7, -0.07],
+  gun: [9.9, 2.45, 0], launcher: [1.6, 2.1, 0], radar: [4.17, 4.25, 0], mast: [3.35, 4.5, 0], muzzle: [11.0, 2.41, -0.07],
   noses: [2.35, 2.75, 0], wheelhouse_glass: [5.3, 2.45, -1.2], hull_text: [1.41, 0.52, -1.7],
 };
 
 // ---------------------------------------------------------------------------------------------------------
-// THE EDIT: director's changes on top of the validated shots.json (frame counts of the film stay 2100).
-//  - opening overlay is 150 frames (0-150): #2 starts at 150; endcard is 210 frames (1890-2100): #57/#58 shortened
-//  - no target beat: #40 #43 #51 become blue-hour beauty shots, #55 loses the lock, launcher stays stowed at sea
-//  - explicit look-at points from the plan are re-aimed at the real geometry of tomris.glb (abs = GLB frame)
+// shots.json (tomris-shots/gen.py) is the source of truth for timing, setups, lenses, camera paths, boat speed,
+// pivots and flag. EDIT only holds re-aims that need the exact GLB geometry (abs = GLB frame, origin at the
+// transom) or a camera distance; it never changes timing, setup, speed or animation.
 // ---------------------------------------------------------------------------------------------------------
-const STOWED = [{ target: "launcher_el", fromDeg: 0, toDeg: 0 }];
 const EDIT = {
-  2: { startFrame: 150, frames: 75 },
-  5: { target: "mast" },
-  6: { target: "wheelhouse_glass" },
   8: { dist: 6.5 },
-  13: { target: "hull_text" },
-  16: { target: "radar" },
-  28: { from: [13.1, 2.95, -2.3], to: [12.9, 2.95, -2.15], abs: true, target: "muzzle" },
+  28: { from: [14.1, 2.8, 2.3], to: [13.95, 2.84, 2.12], abs: true, target: [10.6, 2.45, -0.02] },  // barrel + muzzle brake from starboard-ahead, low (not #26's port side)
   31: { from: [3.45, 3.65, -1.75], to: [3.4, 3.65, -1.65], abs: true, target: "noses",
         rack: [[2.45, 2.75, -0.23], [2.45, 2.75, 0.23]] },
-  32: { anim: STOWED }, 34: { anim: STOWED }, 45: { anim: STOWED }, 53: { anim: STOWED, target: [2.0, 2.15, 0] },
-  // #40 replaced: the wake from the masthead, flag and mast in the foreground
-  40: { setup: "Ap", type: "detail", lens: 24, from: [2.2, 6.1, 0.7], to: [2.0, 6.15, 0.75], abs: true, target: [-40, 0, -2],
-        ease: "easeOut", handheld: 0.05, speedKn: 35, headingDeg: 0, anim: [], flag: true, fstop: 0 },
-  // #41/#42: turret and gun move as mechanical details only (no target), small arcs
-  42: { anim: [{ target: "gun_az", fromDeg: 0, toDeg: -20 }] },
-  // #43 replaced: 200 mm compression, the boat against the harbour cranes and coast lights astern
-  43: { setup: "Ap", type: "drone", lens: 200, from: [175, 3.2, -16], to: [175, 3.4, -19], abs: true, target: [6.3, 2.2, 0],
-        ease: "linear", handheld: 0.06, speedKn: 35, headingDeg: 0, anim: [], flag: true, fstop: 4 },
-  // #44: stern chase, launcher stays down (it only rises in the studio)
-  44: { anim: STOWED },
-  // #51 replaced: radar array turning against the afterglow, from the wheelhouse roof
-  51: { setup: "Ap", type: "detail", lens: 40, from: [6.6, 3.45, -1.05], to: [6.5, 3.42, -1.1], abs: true, target: "radar",
-        ease: "linear", handheld: 0, speedKn: 35, headingDeg: 0, anim: [], flag: true, fstop: 2.8 },
   46: { dist: 6.5 },
-  52: { target: "hull_text" },
-  55: { anim: [{ target: "launcher_el", fromDeg: 0, toDeg: 0 }, { target: "gun_az", fromDeg: 0, toDeg: 0 }] },
-  57: { frames: 75, anim: STOWED },
-  58: { startFrame: 1830, frames: 60 },
 };
+const ALLOWED_EDIT = new Set(["from", "to", "abs", "target", "dist", "rack"]);
+for (const [n, e] of Object.entries(EDIT)) for (const k of Object.keys(e)) if (!ALLOWED_EDIT.has(k)) throw new Error(`film.js EDIT #${n}: '${k}' belongs in shots.json`);
 
-// ---- looks (engine + post parameters) ----
-export const LOOKS = {
-  sunset: { sky: "sunset", exposure: 0.42, skyGain: 1, sunGain: 9, sunColor: [1.0, 0.62, 0.36], envGain: 1.4, keyGain: 1, fogDist: 2200, glitter: 1, bloom: 0.08, bloomThresh: 1.5,
-    navEmissive: 2, navLight: 0.2, navGlow: 0.15, grain: 0.03, vignette: 0.32, sat: 1.0, contrast: 1.06,
-    teal: [-0.014, 0.006, 0.02], orange: [0.035, 0.01, -0.03], lampGain: 0.25, fogDensity: 2.6e-4, fogTint: [1.0, 0.85, 0.75] },
-  bluehour: { sky: "dusk", exposure: 0.36, wb: [0.7, 0.9, 1.35], skyGain: 1, sunGain: 0.0, envGain: 1, keyGain: 1, fogDist: 1800, glitter: 0, bloom: 0.14, bloomThresh: 1.0,
-    navEmissive: 60, navLight: 0.6, navGlow: 1.0, grain: 0.04, vignette: 0.38, sat: 1.0, contrast: 1.06,
-    teal: [-0.01, 0.006, 0.03], orange: [0.02, 0.005, -0.02], lampGain: 1.2, fogDensity: 2.2e-4, fogTint: [0.8, 0.9, 1.1] },
-  studio: { sky: "sunset", exposure: 0.55, skyGain: 1, sunGain: 7, sunColor: [1.0, 0.95, 0.9], envGain: 0.05, keyGain: 1, fogDist: 2000, glitter: 0, bloom: 0.06, bloomThresh: 1.6,
-    navEmissive: 0, navLight: 0, navGlow: 0, grain: 0.035, vignette: 0.5, sat: 0.95, contrast: 1.1,
-    teal: [-0.01, 0.004, 0.016], orange: [0.02, 0.006, -0.016] },
-  wireframe: { sky: "dusk", exposure: 1.0, skyGain: 1, sunGain: 6, sunColor: [1, 1, 1], envGain: 0.05, keyGain: 1, fogDist: 2000, glitter: 0, bloom: 0.3, bloomThresh: 0.55,
-    navEmissive: 0, navLight: 0, navGlow: 0, grain: 0.03, vignette: 0.5, sat: 1.0, contrast: 1.05, teal: [0, 0, 0], orange: [0, 0, 0] },
-};
-const SETUP_LOOK = { B: "sunset", A: "sunset", Ap: "bluehour", C: "studio", W: "wireframe" };
+const SETUP_LOOK = { B: "harbour", A: "sunset", Ap: "bluehour", C: "studio", W: "wireframe" };
 const SEA_K = { B: 0.25, A: 1.0, Ap: 0.75, C: 0, W: 0 };     // multiplies the engine sea (built for Hs 0.8 m)
 const STUDIO = new Set(["C", "W"]);
 const STUDIO_KEY = { az: 315, elev: 38 };                  // single hard key from the port bow, high
+const STUDIO_RIM = { az: 150, elev: 28, gain: 3.2 };       // cool back/rim light, starboard quarter (opposite the key)
+const LAMP_B = 8;                                          // sunset (B) lamp boost over looks.js lampGain, so the quay lamps bloom
 
 // ---- small helpers ----
 const clamp01 = (x) => Math.min(1, Math.max(0, x));
@@ -89,20 +56,22 @@ function normalise(s, setups) {
   const e = EDIT[s.n] || {};
   const c = s.camera || {}, b = s.boat || {};
   const abs = !!e.abs, mid = (p) => (abs ? p : [p.x + MID, p.y, p.z]);
-  const f0 = e.startFrame ?? s.startFrame, frames = e.frames ?? s.frames;
-  const setup = e.setup ?? s.setup;
+  const f0 = s.startFrame, frames = s.frames;
+  const setup = s.setup;
   let target = e.target ?? c.lookAt;
   if (target && typeof target === "object" && !Array.isArray(target)) target = [target.x + MID, target.y, target.z];
   const sh = {
     n: s.n, kind: s.kind, f0, f1: f0 + frames, setup,
-    type: e.type ?? c.type, lens: e.lens ?? s.lensMm,
+    type: c.type, lens: s.lensMm,
     from: e.from ?? (c.from && mid(c.from)), to: e.to ?? (c.to && mid(c.to)), target,
-    ease: EASE[e.ease ?? c.ease] || EASE.linear, hh: e.handheld ?? c.handheld ?? 0,
-    fstop: e.fstop ?? c.fStop, focusOn: c.focusOn, rack: e.rack, rollDps: c.rollDegPerSec || 0,
-    orbit: (e.type ?? c.type) === "orbit" && !e.from, screenOffset: c.screenOffset, dist: e.dist,
-    v0: (e.speedKn ?? b.speedKn ?? 0) * KN, v1: (e.speedKn ?? b.speedToKn ?? b.speedKn ?? 0) * KN,
-    heading: -(e.headingDeg ?? b.headingDeg ?? 0) * D2R,
-    anim: e.anim ?? s.anim ?? [], flag: e.flag ?? s.flagVisible, look: SETUP_LOOK[setup], sea: SEA_K[setup],
+    ease: EASE[c.ease] || EASE.linear, hh: c.handheld ?? 0,
+    fstop: c.fStop, focusOn: c.focusOn, rack: e.rack, rollDps: c.rollDegPerSec || 0,
+    orbit: c.type === "orbit" && !e.from, screenOffset: c.screenOffset, dist: e.dist,
+    v0: (b.speedKn ?? 0) * KN, v1: (b.speedToKn ?? b.speedKn ?? 0) * KN,
+    heading: -(b.headingDeg ?? 0) * D2R,
+    anim: s.anim ?? [], flag: s.flagVisible, look: SETUP_LOOK[setup], sea: SEA_K[setup],
+    // per-shot grade/light trims (shots.json camera.ev / camera.lookSet / camera.bowRollDeg): shot-local only
+    ev: c.ev || 0, lookSet: c.lookSet || null, bowRoll: (c.bowRollDeg || 0) * D2R, alignBoat: !!c.alignBoat,
     sun: STUDIO.has(setup) ? STUDIO_KEY : setups[setup] ? { az: setups[setup].sunAzimuthDeg, elev: setups[setup].sunElevationDeg } : null,
   };
   if (sh.kind === "3d" && sh.type !== "orbit") {
@@ -157,6 +126,7 @@ export async function createFilm(engine, shotsJson, { base = "assets/" } = {}) {
     if (!o.isMesh) return;
     o.castShadow = false; o.receiveShadow = false;
     for (const m of [].concat(o.material)) {
+      m.fog = true;                                                // props always take the scene haze
       if (/^light_/.test(m.name) && !lampMats.includes(m)) { m.userData.e0 = m.emissiveIntensity; lampMats.push(m); }
       if (/^light_buoy/.test(m.name)) buoyLamps.push(m);
     }
@@ -165,20 +135,47 @@ export async function createFilm(engine, shotsJson, { base = "assets/" } = {}) {
   const fog = new THREE.FogExp2(0x000000, 0); scene.fog = fog;
   const coastNear = coast.getObjectByName("coast_ridge_near");
 
-  // ---- studio dressing: glossy black floor that mirrors the boat (engine's planar reflection) ----
+  // ---- studio dressing: dark satin floor that mirrors the boat (engine's planar reflection, softened so the
+  //      low-resolution reflection map shows no stair-stepped edges), a light pool under the boat and a soft
+  //      contact shadow along the hull, so the boat stands on the floor instead of floating in a void ----
   const floor = new THREE.Mesh(new THREE.CircleGeometry(70, 96).rotateX(-Math.PI / 2), new THREE.ShaderMaterial({
-    uniforms: { uRefl: ocean.uniforms.uRefl, uReflMat: ocean.uniforms.uReflMat, uCtr: { value: new THREE.Vector2(6.3, 0) } },
+    uniforms: { uRefl: ocean.uniforms.uRefl, uReflMat: ocean.uniforms.uReflMat, uCtr: { value: new THREE.Vector2(6.3, 0) }, uTex: { value: new THREE.Vector2(1e-3, 1e-3) } },
     vertexShader: `varying vec3 vW; varying vec4 vR; uniform mat4 uReflMat;
       void main(){ vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vR = uReflMat * w; gl_Position = projectionMatrix * viewMatrix * w; }`,
-    fragmentShader: `uniform sampler2D uRefl; uniform vec2 uCtr; varying vec3 vW; varying vec4 vR;
+    fragmentShader: `uniform sampler2D uRefl; uniform vec2 uCtr; uniform vec2 uTex; varying vec3 vW; varying vec4 vR;
+      ${HULL_GLSL}
       void main(){
-        vec4 r = texture2DProj(uRefl, vR);
+        vec2 uv = vR.xy / vR.w;
+        vec4 r = vec4(0.0);
+        for (int j = -1; j <= 1; j++) for (int i = -1; i <= 1; i++) {
+          float w = (i == 0 ? 2.0 : 1.0) * (j == 0 ? 2.0 : 1.0);
+          r += w * texture2D(uRefl, uv + vec2(float(i), float(j)) * uTex * 1.6);
+        }
+        r /= 16.0;
         float d = length(vW.xz - uCtr);
         float pool = exp(-d * d / 180.0);
-        vec3 c = r.rgb * r.a * 0.32 * (0.35 + 0.65 * pool) + vec3(0.010, 0.011, 0.013) * pool;
+        // distance outside the hull's footprint at floor level (the floor cuts the hull at the waterline)
+        float x = vW.x, hb = beamAt(clamp(x, 0.0, 12.4), 0.0);
+        float hd = max(abs(vW.z) - hb, 0.0) + max(-x, 0.0) + max(x - 12.4, 0.0);
+        float contact = mix(0.18, 1.0, smoothstep(0.0, 2.2, hd));
+        vec3 base = vec3(0.034, 0.036, 0.040) * (0.2 + 0.8 * pool) * contact;
+        vec3 c = r.rgb * 0.3 * (0.35 + 0.65 * pool) * mix(1.0, 0.55, smoothstep(1.0, 10.0, hd)) + base;
         gl_FragColor = vec4(c, 1.0);
       }`,
   }));
+  floor.onBeforeRender = () => { const im = ocean.uniforms.uRefl.value && ocean.uniforms.uRefl.value.image; if (im && im.width) floor.material.uniforms.uTex.value.set(1 / im.width, 1 / im.height); };
+  // studio backdrop: a dim cyclorama glow along the floor horizon (C only), so close-ups do not sit in a dead void
+  const backdrop = new THREE.Mesh(new THREE.SphereGeometry(600, 48, 24), new THREE.ShaderMaterial({
+    side: THREE.BackSide, depthWrite: false, fog: false,
+    vertexShader: `varying vec3 vD; void main(){ vD = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `varying vec3 vD; void main(){
+      float h = max(vD.y, 0.0), side = 0.6 + 0.4 * max(dot(normalize(vD.xz + 1e-4), normalize(vec2(0.7, -0.7))), 0.0);
+      vec3 c = vec3(0.006, 0.0065, 0.0075) + vec3(0.034, 0.036, 0.041) * exp(-h * 5.0) * side;
+      gl_FragColor = vec4(c, 1.0); }`,
+  }));
+  backdrop.renderOrder = -2; backdrop.visible = false; backdrop.frustumCulled = false; scene.add(backdrop);
+  // studio rim: a cool back light opposite the key (no shadows), so the dark side keeps an outline; off at sea
+  const rim = new THREE.DirectionalLight(0xdce6ff, 0); rim.castShadow = false; scene.add(rim, rim.target);
   floor.position.y = 0.0; floor.visible = false; floor.renderOrder = -1; scene.add(floor);
 
   // ---- wireframe: thin cyan edges on the real meshes, hidden-line removal by a depth-only ghost of the boat ----
@@ -247,6 +244,13 @@ export async function createFilm(engine, shotsJson, { base = "assets/" } = {}) {
     setSea(sh.sea);
     ocean.mesh.visible = !studio; if (spray && spray.mesh) spray.mesh.visible = !studio; if (dome) dome.visible = !studio;
     props.visible = !studio; floor.visible = sh.setup === "C";
+    backdrop.visible = sh.setup === "C";
+    rim.intensity = sh.setup === "C" ? STUDIO_RIM.gain : 0;
+    if (rim.intensity > 0) {
+      const ra = STUDIO_RIM.az * D2R, re = STUDIO_RIM.elev * D2R;
+      rim.target.position.set(6.3, 1.5, 0); rim.position.set(6.3 + 50 * Math.cos(re) * Math.cos(ra), 1.5 + 50 * Math.sin(re), 50 * Math.cos(re) * Math.sin(ra));
+      rim.target.updateMatrixWorld(); rim.updateMatrixWorld();
+    }
     // props placement per section
     if (sh.section === "B") { props.rotation.y = -Math.PI / 2; props.position.set(0, 0, 0); coastNear.visible = true; }
     else { props.rotation.y = 0; props.position.set(0, 0, 0); coastNear.visible = true; }
@@ -258,16 +262,18 @@ export async function createFilm(engine, shotsJson, { base = "assets/" } = {}) {
       fog.color.setRGB(sky.skyRad.x * k * tint[0], sky.skyRad.y * k * tint[1], sky.skyRad.z * k * tint[2], THREE.LinearSRGBColorSpace);
       fog.density = look.fogDensity ?? 2.5e-4;
     } else fog.density = 0;
-    for (const m of lampMats) m.emissiveIntensity = m.userData.e0 * (look.lampGain ?? 0);
+    // harbour/coast lamps: small glowing points; at sunset (B) they are already on and pushed so they bloom
+    const lampK = (look.lampGain ?? 0) * (sh.section === "B" ? LAMP_B : 1);
+    for (const m of lampMats) m.emissiveIntensity = m.userData.e0 * lampK;
     for (const m of buoyLamps) {                                   // Fl R 3 s / Fl G 4 s
       const per = /red/.test(m.name) ? 3 : 4, ph = (t % per) / per;
-      m.emissiveIntensity = m.userData.e0 * (look.lampGain ?? 0) * 3 * (ph < 0.17 ? 1 : 0.04);
+      m.emissiveIntensity = m.userData.e0 * lampK * 3 * (ph < 0.17 ? 1 : 0.04);
     }
     // wireframe / solid / ghost
     let X = 1e6, Xw = 1e6, showLines = false, showGhost = false;
     if (wire) {
       showLines = true; showGhost = true;
-      if (sh.n === 24) { X = -100; Xw = 13.6 - 15 * smooth(u / 0.8); }                 // drawn bow to stern
+      if (sh.n === 24) { X = -100; Xw = 9.0 - 10.5 * smooth(u / 0.8); }                // drawn bow to stern (fore third already drawn at the cut)
       else { Xw = -100; X = -1 + 15 * smooth((u - 0.3) / 0.62); }                       // solid sweeps in under the lines
     }
     solidClip.constant = X; ghostClip.constant = -X; lineClip.constant = -Xw;
@@ -337,13 +343,17 @@ export async function createFilm(engine, shotsJson, { base = "assets/" } = {}) {
       roll += hh * 0.5 * D2R * wob(t, 0.8, n + 4.2);
     }
     roll += sh.rollDps * D2R * (t - sh.f0 / FPS);
+    if (sh.alignBoat) {                                        // close-ups of hull lines: level with the boat, not the horizon
+      const bu = new THREE.Vector3(0, 1, 0).applyQuaternion(pose.quaternion);
+      roll += Math.atan2(-bu.dot(right), bu.dot(upv));
+    }
     // near-vertical views: keep the bow at the top of the frame (lookAt with world-up would spin)
     const f = tgt.clone().sub(pos).normalize();
     if (Math.abs(f.y) > 0.85) {
       tmpCam.position.copy(pos); tmpCam.up.set(0, 1, 0); tmpCam.lookAt(tgt); tmpCam.updateMatrixWorld();
       const xA = new THREE.Vector3().setFromMatrixColumn(tmpCam.matrixWorld, 0), yA = new THREE.Vector3().setFromMatrixColumn(tmpCam.matrixWorld, 1);
       const d = new THREE.Vector3(c, 0, -s); d.addScaledVector(f, -d.dot(f)).normalize();
-      roll += Math.atan2(-d.dot(xA), d.dot(yA));
+      roll += Math.atan2(-d.dot(xA), d.dot(yA)) + sh.bowRoll;    // bowRoll: bow toward a frame side (uses the 2.39 width)
     }
     const fstop = sh.fstop ?? ({ detail: 2.8, chase: 4, waterline: 2.8, static: 4, drone: 0, orbit: 0 }[sh.type] ?? 0);
     return { pos, target: tgt, lensMm: sh.lens, fstop, roll, focus };
@@ -360,6 +370,8 @@ export async function createFilm(engine, shotsJson, { base = "assets/" } = {}) {
       const on = sh.n > 5 ? 1 : sh.n === 5 ? (u > 0.35 ? 1 : 0) : 0;
       look.navEmissive = 2 + 14 * on; look.navGlow = 0.12 + 0.4 * on; look.navLight = 0.2 + 0.3 * on;
     }
+    if (sh.lookSet) Object.assign(look, sh.lookSet);           // shot trims win over the section defaults above
+    if (sh.ev) look.exposure *= Math.pow(2, sh.ev);
     dress(sh, t, u, look);
     const b = boatAt(sh, t);
     const pose = boatPose(b, sea, t);

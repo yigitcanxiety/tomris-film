@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#05070b" />
+<title>TOMRİS · Sürüş</title>
+<script type="importmap">
+  { "imports": { "three": "../tomris-three/assets/vendor/three/three.module.js", "three/addons/": "../tomris-three/assets/vendor/three/addons/" } }
+</script>
+<link rel="stylesheet" href="play.css" />
+</head>
+<body>
+<canvas id="gl"></canvas>
+
+<!-- 2.39:1 bars (photo mode option) -->
+<div id="barT" class="bar"></div><div id="barB" class="bar"></div>
+
+<div id="hud" class="hud">
+  <div id="shade"></div>
+  <div id="brand"><span class="name">TOMRİS</span><span class="hull">TCB-1601</span></div>
+  <div id="stats">
+    <div class="stat big"><div class="lab">HIZ</div><div class="val"><span id="vSpeed">0.0</span><small>kn</small></div></div>
+    <div class="stat"><div class="lab">ROTA</div><div class="val"><span id="vHead">000°</span><small id="vComp">K</small></div></div>
+    <div class="stat"><div class="lab">GAZ</div><div class="val"><span id="vThr">%0</span></div></div>
+  </div>
+  <div id="camName"><div class="lab">KAMERA</div><div class="val" id="vCam">TAKİP</div></div>
+</div>
+
+<button id="helpBtn" class="round" aria-label="Tuşlar">?</button>
+<div id="help" class="panel" hidden>
+  <div class="ptitle">TUŞLAR</div>
+  <dl>
+    <dt>W · ↑</dt><dd>gaz artır</dd>
+    <dt>S · ↓</dt><dd>gaz azalt · sıfırdan sonra geri</dd>
+    <dt>A · ←</dt><dd>dümen iskeleye</dd>
+    <dt>D · →</dt><dd>dümen sancağa</dd>
+    <dt>C</dt><dd>kamerayı değiştir</dd>
+    <dt>P</dt><dd>fotoğraf modu</dd>
+    <dt>H</dt><dd>göstergeleri gizle / göster</dd>
+    <dt>R</dt><dd>başa dön</dd>
+    <dt>sürükle</dt><dd>serbest kamerayı döndür</dd>
+    <dt>tekerlek</dt><dd>yakınlaş · uzaklaş</dd>
+    <dt>?</dt><dd>bu liste</dd>
+  </dl>
+  <div class="ptouch">Dokunmatik: soldaki kol gaz, sağdaki alan dümen. İki parmak: yakınlaş.</div>
+  <button class="link" id="helpClose">Kapat</button>
+</div>
+
+<!-- touch controls -->
+<div id="touch" class="hud">
+  <div id="lever"><div class="track"></div><div class="zero"></div><div id="leverKnob"></div><div class="tlab">GAZ</div></div>
+  <div id="pad"><div class="line"></div><div id="padKnob"></div><div class="tlab">DÜMEN</div></div>
+  <div id="tbtns"><button id="bCam" class="pill">Kamera</button><button id="bPhoto" class="pill">Foto</button></div>
+</div>
+
+<!-- photo mode -->
+<div id="photo" hidden>
+  <div class="prow">
+    <div class="seg" id="looks">
+      <button data-look="sunset">Gün batımı</button><button data-look="harbour">Liman</button><button data-look="bluehour">Mavi saat</button>
+    </div>
+    <div class="seg"><button id="pBars">2.39:1</button><button id="pLens">35 mm</button></div>
+    <div class="seg"><button id="pSave" class="warm">Kaydet</button><button id="pExit">Çık</button></div>
+  </div>
+  <div class="phint">sürükle: döndür · tekerlek / iki parmak: yakınlaş · P: çık</div>
+</div>
+<div id="flash"></div>
+<div id="toast"></div>
+
+<!-- guided intro -->
+<div id="intro" hidden>
+  <div class="istep" id="iStep">1 / 4</div>
+  <div class="ititle" id="iTitle">GAZ VER</div>
+  <div class="ihint" id="iHint"></div>
+  <button class="link" id="iSkip">Geç</button>
+</div>
+
+<!-- loading / errors -->
+<div id="loading">
+  <div class="lname">TOMRİS</div>
+  <div class="lhull">TCB-1601</div>
+  <div class="lbar"><div id="lfill"></div></div>
+  <div class="lmsg" id="lmsg">Yükleniyor…</div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

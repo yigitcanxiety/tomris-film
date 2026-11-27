@@ -1,27 +1,32 @@
 #!/usr/bin/env python3
-"""Effective shot list of the cut (shots.json + the timing edits in tomris-three/assets/js/film.js EDIT).
-usage: edl.py            -> table
-       edl.py mids [N..] -> comma list of mid-shot times (s) for 3D shots (all, or the given shot numbers)"""
+"""The cut, straight from tomris-shots/shots.json (the single source of truth for timing).
+usage: edl.py                 -> table: n start frames kind setup
+       edl.py mids [N..]      -> comma list of mid-shot FRAMES of the 3D shots (all, or the given shot numbers)
+       edl.py beats           -> the film's beats with frame ranges"""
 import json, os, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# keep in sync with film.js EDIT (startFrame/frames) and build.sh (overlay placement)
-TIMING = {2: (150, 75), 57: (1755, 75), 58: (1830, 60)}
-OPENING, ENDCARD = (0, 150), (1890, 210)
-REPLACED = {40: "masthead wake", 43: "200mm harbour compression", 51: "radar vs afterglow"}
+FPS = 30
+
+def doc():
+    return json.load(open(os.path.join(ROOT, "tomris-shots/shots.json")))
 
 def shots():
-    d = json.load(open(os.path.join(ROOT, "tomris-shots/shots.json")))
-    out = []
-    for s in d["shots"]:
-        f0, n = TIMING.get(s["n"], (s["startFrame"], s["frames"]))
-        if s["kind"] == "overlay": continue
-        out.append(dict(n=s["n"], f0=f0, frames=n, kind=s["kind"], setup="Ap" if s["n"] in REPLACED else s["setup"], vo=s["vo"]))
-    return out
+    return [dict(n=s["n"], f0=s["startFrame"], frames=s["frames"], kind=s["kind"], setup=s["setup"], vo=s["vo"], note=s["note"])
+            for s in doc()["shots"]]
+
+def overlay(n):
+    s = next(x for x in shots() if x["n"] == n)
+    return s["f0"], s["frames"]
+
+OPENING, ENDCARD = overlay(1), overlay(59)
 
 if __name__ == "__main__":
     S = shots()
     if len(sys.argv) > 1 and sys.argv[1] == "mids":
         want = set(map(int, sys.argv[2:]))
-        print(",".join(f"{(s['f0'] + s['frames'] / 2) / 30:.3f}" for s in S if s["kind"] == "3d" and (not want or s["n"] in want)))
+        print(",".join(str(s["f0"] + s["frames"] // 2) for s in S if s["kind"] == "3d" and (not want or s["n"] in want)))
+    elif len(sys.argv) > 1 and sys.argv[1] == "beats":
+        for b in doc().get("beats", []):
+            print(f"{b['from']:5d}-{b['to']:5d}  {(b['to'] - b['from'] + 1) / FPS:5.2f} s  {b['name']}")
     else:
-        for s in S: print(s["n"], s["f0"], s["frames"], s["kind"], s["setup"], REPLACED.get(s["n"], ""))
+        for s in S: print(s["n"], s["f0"], s["frames"], s["kind"], s["setup"] or "-")

@@ -331,22 +331,34 @@ def endcard_comp(vid, still, ec, out, look):
     dim, band, zoom = look.get("dim", 0.42), look.get("band", 0.55), look.get("zoom", 0.06)
     by, bw = look.get("band_y", 0.52), look.get("band_w", 0.2)
     z0, sx = look.get("zoom0", 1.0), look.get("shift_x", 0.0)   # start zoom; horizontal view shift (fraction of width, <0 moves the picture right)
+    ax, ay = look.get("anchor_x", 0.5), look.get("anchor_y", 0.5)  # point of the still that stays fixed during the push-in (0.5 = centre)
+    zx = f"{ax}*iw-({ax}*iw/zoom)+({sx})*iw"; zy = f"{ay}*ih-({ay}*ih/zoom)"
+    # card_fade {y0,y1,x0,x1}: the card's horizon line is faded out from x0 to x1 (zero right of x1) between rows y0..y1
+    cf = look.get("card_fade")
+    cmask = ""
+    if cf:
+        # mask = weight of a vertically blurred card (the thin line spread to nothing, the card's glow/background kept)
+        e = (f"255*if(between(Y\\,{cf['y0']}\\,{cf['y1']})\\,clip((X-{cf['x0']})/({cf['x1']}-{cf['x0']})\\,0\\,1)\\,0)")
+        cmask = (f"color=white:s=1920x1080:r=30:d=0.034,format=gbrp,geq=r='{e}':g='{e}':b='{e}',"
+                 f"loop=loop=-1:size=1:start=0,trim=end_frame=210[cm];")
     # soft horizontal band behind the boat/title/names (y 0.2-0.8), darker at band_y
     g = f"255*(1-{band}*exp(-pow((Y/H-{by})/{bw}\\,2)))"
     mask = f"geq=r='{g}':g='{g}':b='{g}'"
     if look.get("fit"):        # wide still: keep all of it inside the film's 2.39 band (1920x804 at y 138), bars as in the picture
         geo = (f"[0:v]scale=3840:1630:force_original_aspect_ratio=increase:flags=lanczos,crop=3840:1630,setsar=1,"
-               f"zoompan=z='{z0}+{zoom}*on/209':x='iw/2-(iw/zoom/2)+({sx})*iw':y='ih/2-(ih/zoom/2)':d=210:s=1920x816:fps=30,"
+               f"zoompan=z='{z0}+{zoom}*on/209':x='{zx}':y='{zy}':d=210:s=1920x816:fps=30,"
                f"crop=1920:804:0:6,pad=1920:1080:0:138:black,")
     else:
         geo = (f"[0:v]scale=3840:2160:force_original_aspect_ratio=increase:flags=lanczos,crop=3840:2160,setsar=1,"
-               f"zoompan=z='{z0}+{zoom}*on/209':x='iw/2-(iw/zoom/2)+({sx})*iw':y='ih/2-(ih/zoom/2)':d=210:s=1920x1080:fps=30,")
+               f"zoompan=z='{z0}+{zoom}*on/209':x='{zx}':y='{zy}':d=210:s=1920x1080:fps=30,")
     fc = (geo +
           f"format=yuv420p,vignette=PI/4.5,fade=t=in:st=0.45:d=1.1,fade=t=out:st=6.25:d=0.7,format=gbrp,"   # vignette/fade must run on yuv: on gbrp they tint
           f"colorchannelmixer=rr={dim}:gg={dim}:bb={dim}[bg0];"
           f"color=white:s=1920x1080:r=30:d=0.034,format=gbrp,{mask},loop=loop=-1:size=1:start=0,trim=end_frame=210[m];"
           f"[bg0][m]blend=all_mode=multiply:shortest=1[bg];"   # (fade lives in yuv above: fade on planar RGB tints green here)
-          f"[1:v]trim=end_frame=210,setpts=PTS-STARTPTS,fps=30,format=gbrp[card];"
+          + cmask +
+          f"[1:v]trim=end_frame=210,setpts=PTS-STARTPTS,fps=30,format=gbrp[card0];"
+          + ("[card0]split[ca][cb];[cb]avgblur=sizeX=1:sizeY=48[cbl];[ca][cbl][cm]maskedmerge[card];" if cmask else "[card0]null[card];") +
           f"[bg][card]blend=all_mode=screen,scale=out_color_matrix=bt709:out_range=tv,format=yuv420p,"
           f"setparams=range=tv:colorspace=bt709:color_primaries=bt709:color_trc=bt709[v]")   # else tagged GBR -> magenta
     ff("-loop", "1", "-framerate", "30", "-i", still, "-i", ec, "-filter_complex", fc, "-map", "[v]", "-frames:v", "210",

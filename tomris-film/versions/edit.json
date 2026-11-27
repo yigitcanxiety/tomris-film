@@ -7,7 +7,7 @@
     "osmanli": "tomris-ai/stills/endcard_c_osmanli_2.jpg"
   },
   "endcard_look": {
-    "default": {"dim": 0.5, "band": 0.55, "zoom": 0.06},
+    "default": {"dim": 0.65, "band": 0.5, "zoom": 0.06},
     "aksiyon": {},
     "milli": {},
     "osmanli": {}

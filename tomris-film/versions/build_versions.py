@@ -85,8 +85,9 @@ def norm_line(L, i):
                 text=str(pick(L, "text", "line", "tr", "say", "vo", default="")).strip(),
                 frame=int(round(num(fr))) if fr is not None else None,
                 gain=num(pick(L, "gain_db", "gainDb", "gain"), 0.0),
-                file=pick(L, "file", "audio", "clip"),
-                end_frame=num(pick(L, "end_frame", "endFrame", "max_end_frame", "until_frame")))
+                file=pick(L, "file", "vo_file", "audio", "clip"),
+                end_frame=num(pick(L, "must_end_by_frame", "end_frame", "endFrame", "max_end_frame", "until_frame")),
+                fallback_text=pick(L, "fallback_text"))
 
 
 def norm_version(vid, V):
@@ -95,13 +96,17 @@ def norm_version(vid, V):
     lines = [norm_line(L, i) for i, L in enumerate(lines)]
     lines = [L for L in lines if L["text"] and L["frame"] is not None]
     mus = pick(V, "music", "music_file", "bed", "score")
-    mg = None
+    mg = None; mdict = {}; mtarget = None
     if isinstance(mus, dict):
+        mdict = mus
         mg = num(pick(mus, "gain_db", "gainDb", "gain", "level_db")); mus = pick(mus, "file", "path", "name", "src")
-    duck = pick(V, "ducking", "duck", "music_ducking", default={})
+        lu = num(pick(mdict, "loudness_lufs", "lufs"))
+        if lu is not None: mtarget = lu + (mg or 0); mg = 0.0          # music target loudness = its stated LUFS + gain
+    duck = pick(V, "ducking", "duck", "music_ducking", default=None)
+    if duck is None: duck = {"depth_db": pick(mdict, "duck_db", "ducking_db", "duck")} if pick(mdict, "duck_db", "ducking_db", "duck") is not None else {}
     if isinstance(duck, (int, float, str)) and not isinstance(duck, dict): duck = {"depth_db": num(duck)}
     return dict(id=vid, title=pick(V, "title", "name", "label", default=vid),
-                lines=lines, music=mus,
+                lines=lines, music=mus, music_target=mtarget, music_offset=num(pick(mdict, "file_offset_s", "offset_s"), 0.0),
                 music_gain=mg if mg is not None else num(pick(V, "music_gain_db", "music_gain")),
                 duck_db=abs(num(pick(duck, "depth_db", "duck_db", "amount_db", "db", "depth", "reduction_db", "amount"), 9.0)),
                 duck_attack=num(pick(duck, "attack_s", "attack"), 0.25), duck_release=num(pick(duck, "release_s", "release"), 0.5),
@@ -247,8 +252,9 @@ def build_audio(v, tmp, picture):
     fade = v.get("music_fade") or 4.0
     if mpath:
         mi = ebur(mpath, f"atrim=0:{DUR}")["I"]
-        mg = (v["music_gain"] if v.get("music_gain") is not None else 0.0) + (MUS_T - mi if math.isfinite(mi) else 0)
-        args += ["-i", mpath]
+        mt = v.get("music_target") if v.get("music_target") is not None else MUS_T
+        mg = (v["music_gain"] if v.get("music_gain") is not None else 0.0) + (mt - mi if math.isfinite(mi) else 0)
+        args += ["-ss", f"{v.get('music_offset') or 0:.3f}", "-i", mpath]
         fc.append(f"[{n}:a]aformat=sample_rates=48000:channel_layouts=stereo,atrim=0:{DUR},asetpts=PTS-STARTPTS,volume={mg:.2f}dB,"
                   f"afade=t=out:st={DUR - fade:.2f}:d={fade - 0.15:.2f},apad,atrim=0:{DUR},asplit=2[mraw][mpre]")
         fc.append(f"[mpre]volume='{duck_expr(lines, v['duck_db'], v['duck_attack'], v['duck_release'])}':eval=frame[mus]"); n += 1
@@ -327,7 +333,8 @@ def endcard_comp(vid, still, ec, out, look):
     mask = f"geq=r='255*(1-{band}*exp(-pow((Y/H-0.52)/0.2\\,2)))':g='255*(1-{band}*exp(-pow((Y/H-0.52)/0.2\\,2)))':b='255*(1-{band}*exp(-pow((Y/H-0.52)/0.2\\,2)))'"
     fc = (f"[0:v]scale=3840:2160:force_original_aspect_ratio=increase:flags=lanczos,crop=3840:2160,setsar=1,"
           f"zoompan=z='1+{zoom}*on/209':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=210:s=1920x1080:fps=30,"
-          f"format=yuv420p,fade=t=in:st=0.45:d=1.1,fade=t=out:st=6.25:d=0.7,format=gbrp,colorchannelmixer=rr={dim}:gg={dim}:bb={dim},vignette=PI/4.5[bg0];"
+          f"format=yuv420p,vignette=PI/4.5,fade=t=in:st=0.45:d=1.1,fade=t=out:st=6.25:d=0.7,format=gbrp,"   # vignette/fade must run on yuv: on gbrp they tint
+          f"colorchannelmixer=rr={dim}:gg={dim}:bb={dim}[bg0];"
           f"color=white:s=1920x1080:r=30:d=0.034,format=gbrp,{mask},loop=loop=-1:size=1:start=0,trim=end_frame=210[m];"
           f"[bg0][m]blend=all_mode=multiply:shortest=1[bg];"   # (fade lives in yuv above: fade on planar RGB tints green here)
           f"[1:v]trim=end_frame=210,setpts=PTS-STARTPTS,fps=30,format=gbrp[card];"
@@ -377,9 +384,12 @@ def build_video(v, picture, tmp, cfg):
                 if fb < a or fa >= b: continue
                 bx = [int(x) for x in str(I.get("box", "0:138:1920:804")).split(":")]
                 ins += ["-ss", str(I.get("offset", 0)), "-i", os.path.join(ROOT, I["clip"])]
-                crop = f"crop={I['crop']}," if I.get("crop") else ""
-                fc.append(f"[{k}:v]{crop}scale={bx[2]}:{bx[3]}:force_original_aspect_ratio=increase,crop={bx[2]}:{bx[3]},fps=30,setsar=1,"
-                          f"setpts=PTS-STARTPTS+{(fa - a) / FPS:.6f}/TB[i{k}]")
+                crop = f"crop={I['crop']}," if I.get("crop") else f"crop=1920:804:0:{I.get('y', 138)},"   # 2.39 band of a 16:9 clip
+                speed = float(I.get("speed", 0.8))            # 0.8 = 24 fps source frames played at 30 fps (no duplicates)
+                grade = I.get("grade", "eq=contrast=0.94:saturation=0.92")
+                fc.append(f"[{k}:v]setpts=(PTS-STARTPTS)*{speed},fps=30,trim=end_frame={fb - fa + 1},{crop}"
+                          f"scale={bx[2]}:{bx[3]}:force_original_aspect_ratio=increase:flags=lanczos,crop={bx[2]}:{bx[3]},setsar=1,"
+                          f"{grade + ',' if grade else ''}format=yuv420p,setpts=PTS-STARTPTS+{(fa - a) / FPS:.6f}/TB[i{k}]")
                 fc.append(f"[{last}][i{k}]overlay={bx[0]}:{bx[1]}:eof_action=pass:enable='between(n,{fa - a},{fb - a})'[o{k}]"); last = f"o{k}"; k += 1
             if comp and a <= EC0 < b + 1 and b == NF:
                 ins += ["-i", comp]
@@ -412,6 +422,10 @@ def main():
     V = load_versions()
     src = "versions.json"
     if not V: V, src = defaults(), "DEFAULTS (versions.json missing)"
+    for vid in [x.strip() for x in os.environ.get("LEGACY_VO", "").split(",") if x.strip()]:
+        # stop-gap: the old narration files whose text still fits (vo_5 weapons and vo_6 target lines are dropped)
+        L = [l for l in defaults()["aksiyon"]["lines"] if not re.search(r"vo_[56]_", l["file"])]
+        V[vid] = dict(V[vid], lines=L, title=f"{V[vid].get('title')} (eski spiker vo_2/3/4/7)"); src += f" + LEGACY_VO for {vid}"
     print(f"picture: {picture}  ({nf} frames)   scripts: {src}")
     cfg = edit_cfg()
     want = want or [k for k in ("aksiyon", "milli", "osmanli") if k in V]

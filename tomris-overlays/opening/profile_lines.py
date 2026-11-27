@@ -108,6 +108,17 @@ for o, bm in meshes:
             T = [(xs_[k], top[k]) for k in range(N) if top[k] is not None]; B = [(xs_[k], bot[k]) for k in range(N) if bot[k] is not None]
             ring = [(xa, B[0][1])] + [(xa, T[0][1])] + T + [(xb, T[-1][1]), (xb, B[-1][1])] + B[::-1] + [(xa, B[0][1])]
             out.extend(zip(ring, ring[1:]))
+            # crescent and star (official proportions, G = hoist width; hoist at the mast = xa side), drawn flat
+            G = (xb - xa) / 1.5; ym = sum(t[1] + b_[1] for t, b_ in zip(T, B)) / (2 * min(len(T), len(B)))
+            c1, R, c2, r = xa + 0.5 * G, 0.25 * G, xa + 0.5625 * G, 0.2 * G
+            d = c2 - c1; aa = (R * R - r * r + d * d) / (2 * d); hh = math.sqrt(max(R * R - aa * aa, 0.0))
+            t0, u0 = math.atan2(hh, aa), math.atan2(hh, aa - d)
+            arc = lambda cx, rr, a0, a1, n: [(cx + rr * math.cos(a0 + (a1 - a0) * i / n), ym + rr * math.sin(a0 + (a1 - a0) * i / n)) for i in range(n + 1)]
+            cres = arc(c1, R, t0, 2 * math.pi - t0, 40) + arc(c2, r, 2 * math.pi - u0, u0, 36)[1:]
+            cres.append(cres[0]); out.extend(zip(cres, cres[1:]))
+            sc, sr = xa + 0.94 * G, 0.125 * G
+            star = [(sc + (sr if i % 2 == 0 else sr * 0.382) * math.cos(math.pi + i * math.pi / 5), ym + (sr if i % 2 == 0 else sr * 0.382) * math.sin(math.pi + i * math.pi / 5)) for i in range(10)]
+            star.append(star[0]); out.extend(zip(star, star[1:]))
     bm.free()
 print(f"{n_edges} candidate edges", flush=True)
 

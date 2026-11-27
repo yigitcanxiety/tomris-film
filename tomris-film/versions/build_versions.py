@@ -386,11 +386,11 @@ def build_video(v, picture, tmp, cfg):
                 ins += ["-ss", str(I.get("offset", 0)), "-i", os.path.join(ROOT, I["clip"])]
                 crop = f"crop={I['crop']}," if I.get("crop") else f"crop=1920:804:0:{I.get('y', 138)},"   # 2.39 band of a 16:9 clip
                 speed = float(I.get("speed", 0.8))            # 0.8 = 24 fps source frames played at 30 fps (no duplicates)
-                grade = I.get("grade", "eq=contrast=0.94:saturation=0.92")
+                grade = I.get("grade", "eq=contrast=1.1:saturation=1.12")   # Kling lifts blacks, drops saturation vs our CG
                 fc.append(f"[{k}:v]setpts=(PTS-STARTPTS)*{speed},fps=30,trim=end_frame={fb - fa + 1},{crop}"
                           f"scale={bx[2]}:{bx[3]}:force_original_aspect_ratio=increase:flags=lanczos,crop={bx[2]}:{bx[3]},setsar=1,"
                           f"{grade + ',' if grade else ''}format=yuv420p,setpts=PTS-STARTPTS+{(fa - a) / FPS:.6f}/TB[i{k}]")
-                fc.append(f"[{last}][i{k}]overlay={bx[0]}:{bx[1]}:eof_action=pass:enable='between(n,{fa - a},{fb - a})'[o{k}]"); last = f"o{k}"; k += 1
+                fc.append(f"[{last}][i{k}]overlay={bx[0]}:{bx[1]}:eof_action=repeat:enable='between(n,{fa - a},{fb - a})'[o{k}]"); last = f"o{k}"; k += 1   # repeat: trim EOF reached overlay before the last frame (fb was left as picture)
             if comp and a <= EC0 < b + 1 and b == NF:
                 ins += ["-i", comp]
                 fc.append(f"[{last}]trim=end_frame={EC0 - a},setpts=PTS-STARTPTS[h]")

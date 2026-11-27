@@ -74,7 +74,8 @@
     "clip": "tomris-ai/clips/07_direk_bayrak_radar.mp4",
     "offset": 0.0,
     "grade": "eq=contrast=1.1:saturation=1.12",
-    "note": "#55 direk/bayrak (0-1.25 s; radar genis yuzu gorunur, 2-3 s'teki kenar-gorunus disarida)"
+    "note": "#55 direk/bayrak (0-1.25 s; radar genis yuzu gorunur, 2-3 s'teki kenar-gorunus disarida). Round 2 (render v2): KAPALI - duzeltilmis CG #55 (fener yesil sizmasi kisik, bayrak dalgali) AI klibinden daha temiz; AI klipte direk yesil isikla boyanmis.",
+    "enabled": false
    },
    {
     "from": 1755,

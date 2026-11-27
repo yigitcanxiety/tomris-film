@@ -1,0 +1,123 @@
+{
+  "fps": 30,
+  "total_frames": 2100,
+  "note": "Uc ses versiyonu: resim ayni, yalniz muzik, spiker ve son kart degisir. Metinler ve kareler: aksiyon.md, milli.md, osmanli.md. Muzik kaynaklari: tomris-audio/MUZIK.md. Spiker dosyalari henuz yok (vo_file); mix adimi bunlari tomris-audio/ altinda arar. est_s = tahmini konusma suresi; must_end_by_frame = cumlenin bitmesi gereken son kare.",
+  "no_speech_frames": [[1444, 1447], [1715, 1720], [1751, 1754]],
+  "endcard_common": {
+    "frames": [1890, 2099],
+    "title": "TOMRİS",
+    "hull": "TCB-1601",
+    "team": ["Fatma Beyza Şahin", "Muhammed Sefa Coşgun", "Ekin Çağan Teymur", "Tunahan Yaylı", "Azra Gülhan"],
+    "faculty": "İTÜ Gemi İnşaatı ve Deniz Bilimleri Fakültesi"
+  },
+  "versions": {
+    "aksiyon": {
+      "label": "AKSİYON",
+      "music": {
+        "file": "music_aksiyon.mp3",
+        "start_frame": 0,
+        "file_offset_s": 0.0,
+        "length_s": 70.0,
+        "gain_db": -4,
+        "duck_db": 10,
+        "loudness_lufs": -16.0,
+        "source": "music_src/ende_blockbuster3_f60.mp3",
+        "source_offset_s": 13.40,
+        "hits_frames": [10, 1720, 1900, 2041],
+        "alternates": [
+          {"file": "music_aksiyon_alt1.mp3", "source": "music_src/km_exciting_trailer.ogg", "source_offset_s": 3.90, "gain_db": -4, "duck_db": 9}
+        ]
+      },
+      "voice": {"gender": "erkek", "age": "35-45", "tone": "derin, kısık, fragman spikeri; soğukkanlı ve kendinden emin, bağırmadan", "pace": "yavaş; her cümleden sonra nefes; kelimeler kısa ve vurgulu"},
+      "lines": [
+        {"id": "aks_01", "vo_file": "vo_aks_01.mp3", "start_frame": 45,   "must_end_by_frame": 149,  "est_s": 1.4, "shot": "#1 açılış çizgisi", "text": "Önce bir çizgiydi."},
+        {"id": "aks_02", "vo_file": "vo_aks_02.mp3", "start_frame": 318,  "must_end_by_frame": 425,  "est_s": 1.8, "shot": "#6 boş köşk camı", "text": "Gemide tek bir asker yok."},
+        {"id": "aks_03", "vo_file": "vo_aks_03.mp3", "start_frame": 513,  "must_end_by_frame": 680,  "est_s": 3.0, "shot": "#11-#13 açık deniz", "text": "On üç metre. On ton. Otuz beş knot."},
+        {"id": "aks_04", "vo_file": "vo_aks_04.mp3", "start_frame": 849,  "must_end_by_frame": 971,  "est_s": 2.3, "shot": "#20 dalga darbesi", "text": "Uzaktan ya da tamamen otonom."},
+        {"id": "aks_05", "vo_file": "vo_aks_05.mp3", "start_frame": 972,  "must_end_by_frame": 1140, "est_s": 4.0, "shot": "#24-#25 tel kafes", "text": "Yirmi insansız araç incelendi. Her ölçü doğrulandı."},
+        {"id": "aks_06", "vo_file": "vo_aks_06.mp3", "start_frame": 1452, "must_end_by_frame": 1714, "est_s": 1.8, "shot": "#39 mavi saat", "text": "Gün biter. Nöbet başlar."},
+        {"id": "aks_07", "vo_file": "vo_aks_07.mp3", "start_frame": 1758, "must_end_by_frame": 1889, "est_s": 3.2, "shot": "#57 drone geri çekilir", "text": "İstanbul Teknik Üniversitesi'nde tasarlandı."},
+        {"id": "aks_08", "vo_file": "vo_aks_08.mp3", "start_frame": 1940, "must_end_by_frame": 2050, "est_s": 0.8, "shot": "#59 son kart, başlık", "text": "TOMRİS."}
+      ],
+      "endcard": {"atatürk_silhouette": false, "extra_line": null},
+      "sfx": [
+        {"file": "sfx_riser.mp3",  "frame": 930,  "gain_db": -14, "note": "tel kafese geçişten önce 1,4 sn yükselen whoosh (yeni dosya)"},
+        {"file": "sfx_impact.mp3", "frame": 1444, "gain_db": -4,  "note": "siyah flaş: derin braam / sub drop"},
+        {"file": "sfx_riser.mp3",  "frame": 1660, "gain_db": -12, "note": "doruğa gerilim, 1715'te keskin kesilir"},
+        {"file": "sfx_impact.mp3", "frame": 1721, "gain_db": -6,  "note": "bayrak doruğu, müzik vuruşuyla aynı kare"},
+        {"file": "sfx_impact.mp3", "frame": 1940, "gain_db": -9,  "note": "başlık TOMRİS belirirken"}
+      ]
+    },
+    "milli": {
+      "label": "MİLLİ",
+      "music": {
+        "file": "music_izmir.mp3",
+        "start_frame": 0,
+        "file_offset_s": 0.0,
+        "length_s": 70.0,
+        "gain_db": -7,
+        "duck_db": 9,
+        "loudness_lufs": -16.0,
+        "source": "music_src/izmir_takabeg.mp3",
+        "source_offset_s": 0.0,
+        "edit": "ilk 4 sn'lik ölçü iki kez çalınır; marşın kendi bitişi kare 2036'da",
+        "quality_warning": "Commons'taki tek İzmir Marşı kaydı sentezlenmiş tek ses (mono, bando değil). Daha iyi bir bando kaydı aynı ada (music_izmir.mp3) konursa her şey aynen çalışır; bkz. MUZIK.md.",
+        "alternates": []
+      },
+      "voice": {"gender": "kadın (yedek: erkek bariton)", "age": "30-45", "tone": "sıcak, gururlu, içten; tören sunucusu gibi ama abartısız; kimseye karşı değil, gençlere ve denize dönük", "pace": "orta; virgüllerde kısa nefes; son alıntı ağır ve net"},
+      "lines": [
+        {"id": "mil_01", "vo_file": "vo_mil_01.mp3", "start_frame": 30,   "must_end_by_frame": 149,  "est_s": 2.2, "shot": "#1 açılış çizgisi", "text": "Her şey, bir çizgiyle başladı."},
+        {"id": "mil_02", "vo_file": "vo_mil_02.mp3", "start_frame": 165,  "must_end_by_frame": 425,  "est_s": 4.6, "shot": "#2-#5 liman, gün batımı", "text": "İstanbul Teknik Üniversitesi'nden beş Türk genci. Tek bir hayal."},
+        {"id": "mil_03", "vo_file": "vo_mil_03.mp3", "start_frame": 520,  "must_end_by_frame": 848,  "est_s": 3.4, "shot": "#11-#12 açık deniz", "text": "On üç metre, on ton. Gemide tek bir asker yok."},
+        {"id": "mil_04", "vo_file": "vo_mil_04.mp3", "start_frame": 975,  "must_end_by_frame": 1443, "est_s": 5.4, "shot": "#24-#26 tel kafes", "text": "Yirmi insansız deniz aracı incelendi; her ölçü, hesapla doğrulandı."},
+        {"id": "mil_05", "vo_file": "vo_mil_05.mp3", "start_frame": 1455, "must_end_by_frame": 1714, "est_s": 3.2, "shot": "#39-#41 mavi saat", "text": "Cumhuriyet'in gençlerinden, Mavi Vatan'a."},
+        {"id": "mil_06", "vo_file": "vo_mil_06.mp3", "start_frame": 1757, "must_end_by_frame": 2050, "est_s": 8.5, "shot": "#57-#58 kapanış + son kart (Atatürk silueti)", "text": "Ey Türk gençliği! Birinci vazifen, Türk istiklâlini, Türk Cumhuriyetini, ilelebet muhafaza ve müdafaa etmektir.", "attribution": "Mustafa Kemal Atatürk, Gençliğe Hitabe (1927)", "fallback_text": "Bu denizler, onu tasarlayan gençlere emanet."}
+      ],
+      "endcard": {"atatürk_silhouette": true, "extra_line": "Mustafa Kemal Atatürk · Gençliğe Hitabe"},
+      "sfx": [
+        {"file": "sfx_horn.mp3",   "frame": 354,  "gain_db": -16, "note": "mendirekten çıkarken uzak gemi düdüğü (yeni dosya)"},
+        {"file": "sfx_impact.mp3", "frame": 1444, "gain_db": -12, "note": "siyah flaş: yumuşak timpani vuruşu, sinematik braam değil"},
+        {"file": "sfx_impact.mp3", "frame": 1715, "gain_db": -12, "note": "siyah flaş"},
+        {"file": "sfx_impact.mp3", "frame": 1751, "gain_db": -12, "note": "siyah flaş"}
+      ]
+    },
+    "osmanli": {
+      "label": "OSMANLI",
+      "music": {
+        "file": "music_mehter.mp3",
+        "start_frame": 0,
+        "file_offset_s": 0.0,
+        "length_s": 70.0,
+        "gain_db": -7,
+        "duck_db": 11,
+        "loudness_lufs": -16.0,
+        "source": "music_src/ceddin_deden_gul.ogg",
+        "source_offset_s": 3.70,
+        "hits_frames": [2, 1719],
+        "alternates": [
+          {"file": "music_mehter_alt1.mp3", "source": "music_src/kure_mehteran_2020_audio.webm", "source_offset_s": 12.40, "gain_db": -7, "duck_db": 11, "edit": "iki video kesme boşluğu çıkarıldı; 3. bölüm başı kare 1444'e kadar, bölümün tamamı siyah flaştan sonra yeniden"},
+          {"file": "music_mehter_alt2.mp3", "source": "music_src/sivastopol_marsi.mp3", "source_offset_s": 17.20, "gain_db": -6, "duck_db": 10, "edit": "tarihî, bant genişliği dar arşiv kaydı"}
+        ]
+      },
+      "voice": {"gender": "erkek", "age": "55-70", "tone": "ağır, vakur, klasik Türkçe diksiyon (â, î uzatmaları); vakanüvis / belgesel anlatıcısı; düşmanlık yok, hürmet var", "pace": "yavaş; cümle sonlarında davulun bir vuruşunu bekler gibi"},
+      "lines": [
+        {"id": "osm_01", "vo_file": "vo_osm_01.mp3", "start_frame": 40,   "must_end_by_frame": 149,  "est_s": 2.2, "shot": "#1 açılış çizgisi", "text": "Her gemi, önce bir çizgidir."},
+        {"id": "osm_02", "vo_file": "vo_osm_02.mp3", "start_frame": 200,  "must_end_by_frame": 425,  "est_s": 4.5, "shot": "#2-#5 liman, gün batımı", "text": "Barbaros'un yelken açtığı denizlerde, yeni bir nöbetçi."},
+        {"id": "osm_03", "vo_file": "vo_osm_03.mp3", "start_frame": 520,  "must_end_by_frame": 848,  "est_s": 3.0, "shot": "#11-#12 açık deniz", "text": "On üç metre. On ton. İki su jeti."},
+        {"id": "osm_04", "vo_file": "vo_osm_04.mp3", "start_frame": 849,  "must_end_by_frame": 971,  "est_s": 2.6, "shot": "#20 dalga darbesi", "text": "Ne kürek, ne yelken, ne tayfa."},
+        {"id": "osm_05", "vo_file": "vo_osm_05.mp3", "start_frame": 985,  "must_end_by_frame": 1443, "est_s": 6.0, "shot": "#24-#27 tel kafes", "text": "Yirmi insansız deniz aracı incelendi; her ölçü, hesapla doğrulandı."},
+        {"id": "osm_06", "vo_file": "vo_osm_06.mp3", "start_frame": 1455, "must_end_by_frame": 1714, "est_s": 6.3, "shot": "#39-#47 mavi saat", "text": "Tersane-i Âmire'nin şehrinde, İstanbul Teknik Üniversitesi'nde tasarlandı."},
+        {"id": "osm_07", "vo_file": "vo_osm_07.mp3", "start_frame": 1760, "must_end_by_frame": 1889, "est_s": 3.8, "shot": "#57-#58 kapanış", "text": "Denizlere hâkim olan, cihana hâkim olur.", "attribution": "Barbaros Hayreddin Paşa'ya atfedilir"},
+        {"id": "osm_08", "vo_file": "vo_osm_08.mp3", "start_frame": 1945, "must_end_by_frame": 2050, "est_s": 0.9, "shot": "#59 son kart, başlık", "text": "TOMRİS."}
+      ],
+      "endcard": {"atatürk_silhouette": false, "extra_line": "“Denizlere hâkim olan cihana hâkim olur.” — Barbaros Hayreddin Paşa'ya atfedilir"},
+      "sfx": [
+        {"file": "sfx_bell.mp3",   "frame": 291,  "gain_db": -16, "note": "fenerler yanarken tek gemi çanı (yeni dosya)"},
+        {"file": "sfx_kos.mp3",    "frame": 1444, "gain_db": -6,  "note": "siyah flaş: kös/büyük davul vuruşu (sinematik impact yerine; yeni dosya)"},
+        {"file": "sfx_kos.mp3",    "frame": 1715, "gain_db": -6,  "note": "siyah flaş"},
+        {"file": "sfx_kos.mp3",    "frame": 1751, "gain_db": -6,  "note": "siyah flaş"},
+        {"file": "sfx_kos.mp3",    "frame": 1890, "gain_db": -8,  "note": "son kart"}
+      ]
+    }
+  }
+}

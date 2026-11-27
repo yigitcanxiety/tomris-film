@@ -18,12 +18,13 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 OUT = os.path.join(ROOT, "tomris-audio", "versions")
 LOG = os.path.join(OUT, "vo_log.json")
-MODEL = "eleven_v3"
-VOICES = {   # picked from creative_list_voices (languages=tr), 2026-11-27
-    "aksiyon": dict(name="ATLAS | Premium Deep Male Voice", id="jsAsQQM7mnaoyDprCcPp", why="derin, tok, otoriter; fragman spikeri"),
-    "milli": dict(name="Kadri - Warm, Trustworthy, energetic", id="2ImXB5YHogCVayUIqok7", why="sıcak, derin, sinematik, olgun erkek"),
-    "osmanli": dict(name="Seyfullah Kartal", id="mF7tIc9VLrznhGooGjaT", why="yaşlı (age=old), tok, İstanbul aksanı; ağır anlatıcı"),
+MODEL = "eleven_v4"
+VOICES = {   # the voices the narration was actually generated with (commit aa65530); keep them for re-takes
+    "aksiyon": dict(name="Alp", id="HV5rAif1q1ITHdvxqyMw", why="aksiyon spikeri"),
+    "milli": dict(name="GİZEM", id="YHK57o4iMmVGSTo059Sj", why="kadın, sıcak (milli.md birinci tercih: kadın)"),
+    "osmanli": dict(name="Seyfullah Kartal", id="mF7tIc9VLrznhGooGjaT", why="yaşlı (age=old), tok; ağır anlatıcı"),
 }
+# first pick in this session (not used for the delivered files): ATLAS jsAsQQM7mnaoyDprCcPp, Kadri 2ImXB5YHogCVayUIqok7
 TAGS = {"aksiyon": "[serious]", "milli": "[warmly]", "osmanli": "[slowly]"}   # eleven_v3 delivery tags (not spoken)
 
 
@@ -92,4 +93,15 @@ if __name__ == "__main__":
         kw = dict(zip(a[4::2], a[5::2]))
         fetch(a[1], a[2], a[3], kw.get("--flow"), kw.get("--chars"))
     elif a[0] == "md": md()
+    elif a[0] == "register":     # log files that were generated elsewhere (already on disk): register <version>...
+        sys.path.insert(0, HERE); import build_versions as bv
+        R = log()
+        for vid in a[1:]:
+            for L in lines(vid):
+                f = os.path.join(OUT, vid, L["file"]) if L.get("file") else os.path.join(OUT, vid, f"vo_{L['n']:02d}.mp3")
+                if not os.path.exists(f): continue
+                R = [r for r in R if not (r["version"] == vid and r["n"] == L["n"])] + [dict(
+                    version=vid, n=L["n"], file=os.path.relpath(f, ROOT), text=L["text"], voice=VOICES[vid]["name"], voice_id=VOICES[vid]["id"],
+                    model=MODEL, chars=len(L["text"]), flow=None, duration_s=round(bv.dur(f), 2), at=None)]
+        json.dump(R, open(LOG, "w"), ensure_ascii=False, indent=1); md()
     else: raise SystemExit(__doc__)

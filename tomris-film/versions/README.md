@@ -4,9 +4,9 @@ Tek resim → üç bitmiş 70 sn film. Resim (kurgu, AI eklemeleri) üçünde ay
 
 | Çıktı | Müzik | Spiker | Son kart arka planı |
 |---|---|---|---|
-| `tomris-film/tomris_aksiyon.mp4` | `music_aksiyon.mp3` (Sascha Ende, CC BY 4.0) | **geçici:** eski vo_2/vo_3/vo_4/vo_7 (silah ve hedef cümleleri vo_5, vo_6 çıkarıldı) | `endcard_a_aksiyon_2` (fırtınalı deniz) |
-| `tomris-film/tomris_milli.mp4` | `music_izmir.mp3` (İzmir Marşı, sentez tek ses; biraz daha alçak) | **yok** (üretilemedi) | `endcard_b_ulusal_2` (gün batımında Atatürk silueti, sağda; başlık solunda) |
-| `tomris-film/tomris_osmanli.mp4` | `music_mehter.mp3` (Ceddin Deden) | **yok** (üretilemedi) | `endcard_c_osmanli_1` (bordo-altın tezhip, 2.39 bandında, siyah bantlar filmdeki gibi) |
+| `tomris-film/tomris_aksiyon.mp4` | `music_aksiyon.mp3` (Sascha Ende, CC BY 4.0) | 8 satır, Alp (erkek, fragman) | `endcard_a_aksiyon_2` (fırtınalı deniz) |
+| `tomris-film/tomris_milli.mp4` | `music_izmir.mp3` (İzmir Marşı, sentez tek ses; biraz daha alçak) | 6 satır, GİZEM (kadın, sıcak); Gençliğe Hitabe 1757–2018 | `endcard_b_ulusal_2` (gün batımında Atatürk silueti, sağda; başlık solunda) |
+| `tomris-film/tomris_osmanli.mp4` | `music_mehter.mp3` (Ceddin Deden) | 8 satır, Seyfullah Kartal (yaşlı, ağır) | `endcard_c_osmanli_1` (bordo-altın tezhip, 2.39 bandında, siyah bantlar filmdeki gibi) |
 
 Spiker durumu ve üretim yolu: `tomris-audio/versions/VO.md`.
 
@@ -14,11 +14,12 @@ Spiker durumu ve üretim yolu: `tomris-audio/versions/VO.md`.
 
 ```sh
 # depo kökünden; resim 1920x1080, 30 fps, tam 2100 kare olmalı (build.sh --edit-only çıktısı)
-LEGACY_VO=aksiyon bash tomris-film/versions/build_versions.sh tomris-film/tomris_v1.mp4            # üçü
-LEGACY_VO=aksiyon bash tomris-film/versions/build_versions.sh tomris-film/tomris_v1.mp4 aksiyon    # tek versiyon
+bash tomris-film/versions/build_versions.sh tomris-film/tomris_v1.mp4            # üçü
+bash tomris-film/versions/build_versions.sh tomris-film/tomris_v1.mp4 aksiyon    # tek versiyon
 ```
 
-Yeni spiker dosyaları `tomris-audio/versions/<versiyon>/vo_NN.mp3` olarak geldiğinde `LEGACY_VO=aksiyon` kaldırılır.
+Spiker dosyaları `versions.json`'daki `vo_file` adlarıyla `tomris-audio/versions/<versiyon>/` altında (yoksa `vo_NN.mp3` aranır);
+eksik satır atlanır ve uyarı yazılır.
 Versiyon başına süre bu makinede (4 çekirdek, arkada render): ~6 dk. Sonuç ve ölçümler `versions/last_build.json`'a yazılır.
 
 ## Ne yapıyor
@@ -57,14 +58,15 @@ Versiyon başına süre bu makinede (4 çekirdek, arkada render): ~6 dk. Sonuç 
 |---|---|
 | `build_versions.sh` / `build_versions.py` | boru hattı |
 | `edit.json` | bizim ayarlar: son kart görselleri ve görünümü, AI eklemeleri |
-| `make_vo.py` | spiker: plan (metin, ses, dosya), indirme ve kayıt (`tomris-audio/versions/VO.md`) |
+| `make_vo.py` | spiker: plan (metin, ses, dosya), indirme, kayıt (`register`) ve `tomris-audio/versions/VO.md` |
 | `last_build.json` | son derlemenin ölçümleri (LUFS, dBTP, satır başı spiker/müzik, ffprobe) |
 | `versions.json`, `aksiyon.md`, `milli.md`, `osmanli.md` | metinler ve müzik kararları (başka ajan) |
 
-Çevre değişkenleri: `LEGACY_VO=aksiyon` (eski spiker), `ONLY_AUDIO=1`, `FULL=1` (bütün resmi yeniden kodla), `STRICT=1`, `KEEP=1`.
+Çevre değişkenleri: `LEGACY_VO=aksiyon` (yedek: eski vo_2/3/4/7), `ONLY_AUDIO=1`, `FULL=1` (bütün resmi yeniden kodla), `STRICT=1`, `KEEP=1`.
 
 ## Eksikler
 
-- Yeni spiker yok (bkz. VO.md). AKSİYON eski metinle konuşuyor; MİLLİ ve OSMANLI sessiz anlatımlı.
+- MİLLİ'nin İzmir Marşı kaydı sentez tek ses; daha iyi bir bando kaydı aynı adla konursa yeniden derlemek yeter.
+- MİLLİ son kartında kartın ince ufuk çizgisi siluetin yüzünün önünden geçiyor (kartın kendi çizgisi); kalpak üstü kırpık.
 - `versions.json`'daki ek SFX (riser, kös, çan, düdük, impact) dosyaları yok; uygulanmadı.
 - Müzik atıfları (CC BY) son kartta yok; sunumda kaynak sayfasına yazılmalı (bkz. `tomris-audio/MUZIK.md`).

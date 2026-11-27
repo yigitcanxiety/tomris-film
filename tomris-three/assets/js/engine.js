@@ -132,6 +132,15 @@ export async function createEngine(canvas, { width = 1920, height = 804, base = 
   return {
     renderer, scene, camera, boat, sea, skies: loaded, wake, ocean, spray, post, quality: QUALITY.name,
     compile() { renderer.compile(scene, camera); },
+    // optional (realtime play build: adaptive resolution); the film never calls it
+    resize(w, h) {
+      if (w === width && h === height) return;
+      width = w; height = h;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h; camera.updateProjectionMatrix();
+      reflRT.setSize(Math.round(w * QUALITY.refl), Math.round(h * QUALITY.refl));
+      post.setSize(w, h);
+    },
     // t: frame time; stateAt: time -> state; subframes over a 180-degree shutter at fps
     renderFrame(t, stateAt, { subframes = 1, fps = 30, shutter = 0.5, frame = 0 } = {}) {
       subframes = Math.min(subframes, QUALITY.maxSub ?? subframes);

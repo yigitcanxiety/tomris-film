@@ -339,11 +339,12 @@ export function boatPose(st, sea, t, out = {}) {
   const V = st.speed;
   const plan = THREE.MathUtils.smoothstep(V, 4, 14);
   const water = (hb + hs + hp + hst + 2 * hm) / 6;
-  const trim = THREE.MathUtils.degToRad(2.6) * plan;
+  // optional overrides (realtime play build: tomris-play/); the film never sets them, so its path is unchanged
+  const trim = st.trim !== undefined ? st.trim : THREE.MathUtils.degToRad(2.6) * plan;
   const pitch = Math.atan2(hb - hs, 10) * (1 - 0.45 * plan) + trim;
-  const roll = Math.atan2(hp - hst, 3.2) * 0.6 - THREE.MathUtils.clamp((st.yawRate || 0) * V * 0.05, -0.18, 0.18)
+  const roll = Math.atan2(hp - hst, 3.2) * 0.6 - (st.heel !== undefined ? -st.heel : THREE.MathUtils.clamp((st.yawRate || 0) * V * 0.05, -0.18, 0.18))
     + 0.006 * Math.sin(t * 2.3 + 1.1) * plan;                 // hull chatter at speed
-  const lift = 0.1 * plan;
+  const lift = st.lift !== undefined ? st.lift : 0.1 * plan;
   const y = water + lift + 0.012 * Math.sin(t * 3.1) * plan;
   // spray root: forward end of the wetted bottom for this trim (where the waterline meets the keel)
   let root = 0; for (let x = 12; x > 0; x -= 0.05) if (-lift - x * Math.tan(trim) > keelY(x)) { root = x; break; }

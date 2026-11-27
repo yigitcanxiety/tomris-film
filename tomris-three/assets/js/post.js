@@ -200,5 +200,14 @@ export function createPost(renderer, W, H, skyShared = null) {
     f.uWB.value.set(...(look.wb || [1, 1, 1])); if (look.teal) f.uTeal.value.set(...look.teal); if (look.orange) f.uOrange.value.set(...look.orange);
     pass(finalMat, null);
   }
-  return { render, sceneRT };
+  // optional (realtime play build: adaptive resolution); the film never calls it
+  function setSize(w, h) {
+    W = w; H = h;
+    sceneRT.setSize(W, H); sceneRT.depthTexture.image.width = W; sceneRT.depthTexture.image.height = H; sceneRT.depthTexture.needsUpdate = true;
+    accumRT.setSize(W, H); dofRT.setSize(W, H); half.setSize(W >> 1, H >> 1); fHalf.setSize(W >> 1, H >> 1);
+    for (const rt of [q1, q1b, fA, fB]) rt.setSize(W >> 2, H >> 2);
+    q2.setSize(W >> 3, H >> 3); q2b.setSize(W >> 3, H >> 3); q3.setSize(W >> 4, H >> 4); q3b.setSize(W >> 4, H >> 4);
+    brightMat.uniforms.uTexel.value.set(1 / W, 1 / H); dofMat.uniforms.uRes.value.set(W, H); finalMat.uniforms.uRes.value.set(W, H);
+  }
+  return { render, sceneRT, setSize };
 }

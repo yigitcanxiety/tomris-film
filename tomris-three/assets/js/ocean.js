@@ -45,9 +45,13 @@ vec4 wakeSample(vec2 p){ vec2 uv = (p - uWakeCenter) / uWakeExtent + 0.5;
   float edge = smoothstep(0.0, 0.04, min(min(uv.x, uv.y), min(1.0 - uv.x, 1.0 - uv.y)));
   w.w *= edge; return w; }
 // wake surface height (m) from a wake sample
+// onset of the wake behind the transom (the map ribbon starts a few metres ahead of it, at negative distance):
+// a ragged, V-shaped fade-in instead of a straight cut across the track
+float wakeLead(vec4 w, float n){ return smoothstep(-1.5, 4.5, uSnow - w.y + (n - 0.5) * 4.0 - abs(w.x) * 0.18); }
 float wakeHeight(vec4 w){
   if (w.w <= 0.001) return 0.0;
   float d = max(uSnow - w.y, 0.0), age = max(uTnow - w.z, 0.0), y = abs(w.x);
+  w.w *= smoothstep(-2.0, 2.0, uSnow - w.y);
   float wc = 1.4 + 0.055 * d;
   float mound = 0.2 * smoothstep(0.0, 3.0, d) * exp(-d / 7.0) * exp(-pow(y / (wc * 1.2), 2.0));
   float yA = 1.7 + ARM_TAN * (d + 7.5), q = yA - y;
@@ -165,6 +169,8 @@ void main(){
   if (nearHull) { imm = immersion(lp.x, lp.y); s = abs(lp.z) - beamAt(lp.x, lp.y); }
   vec4 wk = wakeSample(vP);
   float wd = max(uSnow - wk.y, 0.0), age = max(uTnow - wk.z, 0.0), wy = abs(wk.x);
+  float wcov = wk.w;                                                   // ribbon coverage (selects track coordinates)
+  wk.w *= wakeLead(wk, texture(uNoise, vP * 0.04 + 0.31).g);
   float wc = 1.5 + 0.06 * wd;
   float scar = exp(-pow(wy / (wc * 1.5), 2.0)) * exp(-age / 30.0) * wk.w;
   // ---- multi-scale structure: wind streaks (long along the wind) and gust patches modulate the fine waves ----
@@ -256,14 +262,18 @@ void main(){
     // ---- foam texture ----
     // inside the wake the foam lives in track coordinates (along-track stretched ~3.5x): marbled streaks that
     // follow the boat's path, curved tracks included; outside it (whitecaps) plain world coordinates
-    vec2 tq = vec2(wk.y * 0.28, wk.x);
-    vec2 bq = mix(fw, tq, step(0.3, wk.w));
+    // next to the hull, ahead of where the wake map starts, the same track coordinates come from the boat frame
+    // (S = now + x, lateral = z), so the white water along the hull runs into the wake without a seam
+    float onMap = step(0.3, wcov), inTrk = max(onMap, step(0.001, bowBand));
+    vec2 trk = mix(vec2(uSnow + lp.x, lp.z), wk.yx, onMap);
+    vec2 tq = vec2(trk.x * 0.28, trk.y);
+    vec2 bq = mix(fw, tq, inTrk);
     vec2 wq = bq * 0.35 + nT(fw * 0.21 + 3.1).rg * 1.7;
     vec4 n1 = nT(wq * 2.2 + uTime * 0.06);
     float f1 = n1.b;
     float f2 = nT(wq * 7.5 - f1 * 2.0).a;
-    float streak = nT(vec2(wk.y * 0.11, wk.x * 0.9) + f1 * 0.9).r;                // rooster-tail: streaks along the track
-    float churn = clamp((0.5 * f1 + 0.25 * f2 + 0.45 * mix(f1, streak, wk.w) - 0.32) / 0.5, 0.0, 1.0);
+    float streak = nT(vec2(trk.x * 0.11, trk.y * 0.9) + f1 * 0.9).r;                // rooster-tail: streaks along the track
+    float churn = clamp((0.5 * f1 + 0.25 * f2 + 0.45 * mix(f1, streak, inTrk) - 0.32) / 0.5, 0.0, 1.0);
     // bubble rafts with round holes (worley F1 on warped coordinates, two scales): holes shrink as the foam
     // gets denser; sparse foam breaks into separate patches instead of a thin cracked-ice network
     vec2 hw = bq + (n1.rg - 0.47) * 1.4 + (vec2(f2, n1.a) - 0.47) * 0.5;
@@ -272,15 +282,15 @@ void main(){
     float jit = (f2 - 0.47) * 0.5;                                                 // hole size varies hole to hole
     float rA = mix(0.5, 0.1, dens) + jit, rB = mix(0.42, 0.04, dens) - jit * 0.6;
     float mA = cA.r - 0.25 * cA.g, mB = cB.b - 0.25 * cB.a;                        // F1 - F2 mix: rounded-polygonal, not discs
-    float holes = smoothstep(rA - 0.1, rA + 0.1, mA) * mix(1.0, smoothstep(rB - 0.08, rB + 0.1, mB), 0.7);
+    float holes = smoothstep(rA - 0.18, rA + 0.16, mA) * mix(1.0, smoothstep(rB - 0.14, rB + 0.14, mB), 0.5);   // soft rims
     // fresh white water: dense core, edges that thin out (translucent) instead of a hard paper cut
     float Df = smoothstep(1.0 - fresh - 0.2, 1.0 - fresh + 0.3, churn) * smoothstep(0.0, 0.5, fresh);
-    Df = max(Df, smoothstep(0.7, 1.0, fresh) * (0.75 + 0.25 * f2)) * mix(1.0, holes, 0.4 * (1.0 - smoothstep(0.8, 1.0, fresh)));
+    Df = max(Df, smoothstep(0.7, 1.0, fresh) * (0.75 + 0.25 * f2)) * mix(1.0, holes, 0.28 * (1.0 - smoothstep(0.8, 1.0, fresh)));
     // old foam: marbled streaks (connected, thinning with age) with bubble-raft holes, never isolated blobs
     float marb = 0.6 * streak + 0.4 * f1;
-    float Do = smoothstep(0.64 - 0.32 * old, 0.8 - 0.32 * old, marb + 0.12 * f2) * mix(0.55, 1.0, holes) * smoothstep(0.02, 0.3, old);
+    float Do = smoothstep(0.64 - 0.32 * old, 0.8 - 0.32 * old, marb + 0.12 * f2) * mix(0.7, 1.0, holes) * smoothstep(0.02, 0.3, old);
     float capS = cap * smoothstep(0.35, 0.75, n1.a * 0.7 + f2 * 0.5 + cap * 0.25 - 0.1);   // whitecaps: ragged, streaky
-    float Dc = smoothstep(0.15, 0.6, capS * (0.4 + 0.8 * churn)) * mix(0.35, 1.0, holes) * 0.7;
+    float Dc = smoothstep(0.15, 0.6, capS * (0.4 + 0.8 * churn)) * mix(0.5, 1.0, holes) * 0.7;
     float D = clamp(max(max(Df, Do * 0.9), Dc * 0.9), 0.0, 1.0);
     float cov = clamp(max(max(fresh * 0.85, old * 0.35), cap * 0.3), 0.0, 1.0);   // what D averages to from far away
     D = mix(D, cov, smoothstep(0.06, 0.4, fp));

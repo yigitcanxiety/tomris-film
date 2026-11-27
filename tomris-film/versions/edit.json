@@ -82,8 +82,8 @@
     "clip": "tomris-ai/clips/08_kapanis_kahraman_yaklasma.mp4",
     "offset": 1.0,
     "crop": "1920:804:4:136",
-    "grade": "eq=contrast=1.12:saturation=1.6,colorbalance=rs=-0.05:bs=0.07:rm=-0.04:bm=0.06",
-    "note": "#57 kapanis yaklasma (1.0-4.125 s); kaynak #32 alacakaranlik, mavi saate sogutuldu"
+    "grade": "colorchannelmixer=rr=0.36:rb=0.04:gg=0.6:gb=0.08:bb=1.0,eq=gamma=1.08:contrast=1.04,huesaturation=colors=r:saturation=0.6:intensity=0.35",
+    "note": "#57 kapanis yaklasma (1.0-4.125 s); kaynak #32 alacakaranlik. Round 2: bej tekne -> notr mavi-gri (kirmizi/yesil kazanc 0.36/0.6, bayrak kirmizisi huesaturation ile korunur); govde medyan ~ (50,68,98), #50/#58 ile ayni r/b~0.5 g/b~0.7"
    }
   ],
   "aksiyon": [],

@@ -196,7 +196,7 @@ def check_timing(v, lines):
     for k, L in enumerate(sorted(lines, key=lambda x: x["t0"])):
         f0, f1 = L["t0"] * FPS, L["t1"] * FPS
         for a, b in FL:
-            if f0 <= b + 1 and f1 >= a: bad.append(f"line {L['n']:02d} frames {f0:.0f}-{f1:.0f} overlaps black flash {a}-{b}")
+            if f0 <= b and f1 >= a: bad.append(f"line {L['n']:02d} frames {f0:.0f}-{f1:.0f} overlaps black flash {a}-{b}")
         nxt = sorted(lines, key=lambda x: x["t0"])[k + 1]["t0"] * FPS if k + 1 < len(lines) else NF
         if f1 > nxt: bad.append(f"line {L['n']:02d} ends at frame {f1:.0f}, after the next line starts ({nxt:.0f})")
         if L.get("end_frame") and f1 > L["end_frame"]: bad.append(f"line {L['n']:02d} ends at {f1:.0f} > its end_frame {L['end_frame']:.0f}")
@@ -327,8 +327,8 @@ def endcard_comp(vid, still, ec, out, look):
     fc = (f"[0:v]scale=3840:2160:force_original_aspect_ratio=increase:flags=lanczos,crop=3840:2160,setsar=1,"
           f"zoompan=z='1+{zoom}*on/209':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=210:s=1920x1080:fps=30,"
           f"format=gbrp,colorchannelmixer=rr={dim}:gg={dim}:bb={dim},vignette=PI/4.5[bg0];"
-          f"color=white:s=1920x1080:r=30:d=7,format=gbrp,{mask}[m];"
-          f"[bg0][m]blend=all_mode=multiply,fade=t=in:st=0.45:d=1.1,fade=t=out:st=6.25:d=0.7[bg];"
+          f"color=white:s=1920x1080:r=30:d=0.034,format=gbrp,{mask},loop=loop=-1:size=1:start=0,trim=end_frame=210[m];"
+          f"[bg0][m]blend=all_mode=multiply:shortest=1,format=yuv444p,fade=t=in:st=0.45:d=1.1,fade=t=out:st=6.25:d=0.7,format=gbrp[bg];"
           f"[1:v]trim=end_frame=210,setpts=PTS-STARTPTS,fps=30,format=gbrp[card];"
           f"[bg][card]blend=all_mode=screen,format=yuv420p[v]")
     ff("-loop", "1", "-framerate", "30", "-i", still, "-i", ec, "-filter_complex", fc, "-map", "[v]", "-frames:v", "210",

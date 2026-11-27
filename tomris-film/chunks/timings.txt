@@ -1,1 +1,2 @@
 c_00: 114 frames in 2474 s (21.7 s/frame)
+c_01: 132 frames in 2591 s (19.6 s/frame)

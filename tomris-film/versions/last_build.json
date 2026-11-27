@@ -130,10 +130,10 @@
   "video": "h264,High,1920,1080,yuv420p,30/1,2100",
   "audio": "aac,48000,2",
   "duration": 70.0,
-  "size_mb": 70.5,
+  "size_mb": 68.5,
   "file_I": -14.2,
   "file_TP": -2.3,
-  "video_note": "pieces: copy 0-1888, enc 1889-2099; end-card backdrop: tomris-ai/stills/endcard_a_aksiyon_2.jpg; inserts: 0",
+  "video_note": "pieces: copy 0-653, enc 654-712, copy 713-848, enc 849-907, copy 908-935, enc 936-971, copy 972-1400, enc 1401-1471, copy 1472-1666, enc 1667-1829, copy 1830-1888, enc 1889-2099; end-card backdrop: tomris-ai/stills/endcard_a_aksiyon_2.jpg; inserts: 6",
   "decode_errors": "",
   "picture": "tomris-film/tomris_v1.mp4"
  }

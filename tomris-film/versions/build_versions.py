@@ -24,7 +24,8 @@ FPS, NF, DUR = 30, 2100, 70.0
 EC0 = 1890                                    # end card first frame
 NICE = ["nice", "-n", "10"]
 X264 = ["-c:v", "libx264", "-profile:v", "high", "-preset", "slow", "-crf", "18", "-maxrate", "9M", "-bufsize", "18M",
-        "-pix_fmt", "yuv420p", "-r", "30", "-g", "60"]          # identical to build.sh, so SPS/PPS match for stream concat
+        "-pix_fmt", "yuv420p", "-r", "30", "-g", "60",
+        "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-color_range", "tv"]          # identical to build.sh, so SPS/PPS match for stream concat
 
 
 def run(cmd, **kw):
@@ -306,7 +307,7 @@ def find_still(vid, cfg):
         p = s if os.path.isabs(s) else os.path.join(ROOT, s)
         if os.path.exists(p): return p
         print(f"    end-card still {s} not found")
-    kw = {"aksiyon": ["aksiyon", "action", "storm", "firtina", "sea"], "milli": ["milli", "national", "ataturk", "sunset"],
+    kw = {"aksiyon": ["aksiyon", "action", "storm", "firtina", "sea"], "milli": ["milli", "ulusal", "national", "ataturk", "sunset"],
           "osmanli": ["osmanli", "ottoman", "ornament", "bordo", "burgundy"]}[vid] if vid in ("aksiyon", "milli", "osmanli") else [vid]
     C = [f for f in sorted(glob.glob(os.path.join(ROOT, "tomris-ai/stills/*"))) if f.lower().endswith((".png", ".jpg", ".jpeg", ".webp"))]
     for k in kw:
@@ -326,13 +327,14 @@ def endcard_comp(vid, still, ec, out, look):
     mask = f"geq=r='255*(1-{band}*exp(-pow((Y/H-0.52)/0.2\\,2)))':g='255*(1-{band}*exp(-pow((Y/H-0.52)/0.2\\,2)))':b='255*(1-{band}*exp(-pow((Y/H-0.52)/0.2\\,2)))'"
     fc = (f"[0:v]scale=3840:2160:force_original_aspect_ratio=increase:flags=lanczos,crop=3840:2160,setsar=1,"
           f"zoompan=z='1+{zoom}*on/209':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=210:s=1920x1080:fps=30,"
-          f"format=gbrp,colorchannelmixer=rr={dim}:gg={dim}:bb={dim},vignette=PI/4.5[bg0];"
+          f"format=yuv420p,fade=t=in:st=0.45:d=1.1,fade=t=out:st=6.25:d=0.7,format=gbrp,colorchannelmixer=rr={dim}:gg={dim}:bb={dim},vignette=PI/4.5[bg0];"
           f"color=white:s=1920x1080:r=30:d=0.034,format=gbrp,{mask},loop=loop=-1:size=1:start=0,trim=end_frame=210[m];"
-          f"[bg0][m]blend=all_mode=multiply:shortest=1,format=yuv444p,fade=t=in:st=0.45:d=1.1,fade=t=out:st=6.25:d=0.7,format=gbrp[bg];"
+          f"[bg0][m]blend=all_mode=multiply:shortest=1[bg];"   # (fade lives in yuv above: fade on planar RGB tints green here)
           f"[1:v]trim=end_frame=210,setpts=PTS-STARTPTS,fps=30,format=gbrp[card];"
-          f"[bg][card]blend=all_mode=screen,format=yuv420p[v]")
+          f"[bg][card]blend=all_mode=screen,scale=out_color_matrix=bt709:out_range=tv,format=yuv420p,"
+          f"setparams=range=tv:colorspace=bt709:color_primaries=bt709:color_trc=bt709[v]")   # else tagged GBR -> magenta
     ff("-loop", "1", "-framerate", "30", "-i", still, "-i", ec, "-filter_complex", fc, "-map", "[v]", "-frames:v", "210",
-       "-c:v", "libx264", "-preset", "medium", "-crf", "12", "-pix_fmt", "yuv420p", out)
+       "-c:v", "libx264", "-preset", "medium", "-crf", "12", "-pix_fmt", "yuv420p", *X264[-8:], out)
 
 
 def build_video(v, picture, tmp, cfg):

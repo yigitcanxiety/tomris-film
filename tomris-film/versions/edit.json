@@ -1,1 +1,21 @@
-{"endcards":{"aksiyon":"tomris-ai/frames/v1_f700.jpg"}}
+{
+  "_doc": "build_versions.py knobs. endcards: per-version backdrop still for frames 1890-2099 (null/missing -> the end card as it is in the picture). endcard_look: dim = overall brightness of the still, band = extra darkening behind boat/title/names (0..1), zoom = push-in over 7 s. inserts: list of {from, to, clip, offset, crop, box, enabled} per version or 'all' - replace picture frames from..to (inclusive) with clip (seconds offset; crop w:h:x:y applied to the clip first; box x:y:w:h target, default the 2.39 picture area 0:138:1920:804). Empty in this pass.",
+  "endcard_overlay": "tomris-overlays/renders/endcard.mp4",
+  "endcards": {
+    "aksiyon": "tomris-ai/stills/endcard_a_aksiyon_2.jpg",
+    "milli": "tomris-ai/stills/endcard_b_ulusal_2.jpg",
+    "osmanli": "tomris-ai/stills/endcard_c_osmanli_2.jpg"
+  },
+  "endcard_look": {
+    "default": {"dim": 0.5, "band": 0.55, "zoom": 0.06},
+    "aksiyon": {},
+    "milli": {},
+    "osmanli": {}
+  },
+  "inserts": {
+    "all": [],
+    "aksiyon": [],
+    "milli": [],
+    "osmanli": []
+  }
+}
